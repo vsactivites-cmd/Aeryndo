@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aeryndo — La Business Class que personne d'autre ne déniche</title>
+<meta name="description" content="Aeryndo déniche des tarifs Business introuvables ailleurs : trajets combinés, tarifs erreur, promos flash. Suivez, recevez l'alerte, réservez avant tout le monde." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#ECEAE3;--card:#F6F4EF;--petrol:#0B403C;--petrol-deep:#082F2B;--brass:#A9824B;--ink:#1A1917;--muted:#6E6A5F;--hair:rgba(26,25,23,.10);--hair-petrol:rgba(11,64,60,.16);--shadow:0 30px 70px -34px rgba(26,25,23,.4);--shadow-sm:0 12px 30px -18px rgba(26,25,23,.35)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'Geist',system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(1100px 560px at 82% -6%,rgba(169,130,75,.10),transparent 62%),radial-gradient(900px 700px at 4% 6%,rgba(11,64,60,.07),transparent 58%)}
+::selection{background:rgba(11,64,60,.16)}
+a{color:inherit;text-decoration:none}
+.serif{font-family:'Instrument Serif',serif;font-weight:400}
+.mono{font-family:'Geist Mono',monospace}
+:focus-visible{outline:2px solid var(--petrol);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.eyebrow{font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--brass)}
+.hidden{display:none !important}
+/* CJK / Arabic / Devanagari font stacks by lang */
+:lang(zh){font-family:'Noto Sans SC','Geist',sans-serif}
+:lang(ja){font-family:'Noto Sans JP','Geist',sans-serif}
+:lang(ko){font-family:'Noto Sans KR','Geist',sans-serif}
+:lang(ar){font-family:'Noto Sans Arabic','Geist',sans-serif}
+:lang(hi){font-family:'Noto Sans Devanagari','Geist',sans-serif}
+[dir="rtl"] .trust,[dir="rtl"] .deals-head,[dir="rtl"] .results-head,[dir="rtl"] .foot-top{direction:rtl}
+[dir="rtl"] .price-cell{text-align:left}
+
+/* nav */
+header.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:linear-gradient(180deg,rgba(236,234,227,.9),rgba(236,234,227,.62));border-bottom:1px solid var(--hair)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:70px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer;flex:none}
+.brand .glyph{width:26px;height:26px;flex:none}
+.brand .word{font-family:'Instrument Serif',serif;font-size:27px;letter-spacing:.01em;color:var(--petrol)}
+.nav-links{display:flex;gap:26px;align-items:center}
+.nav-links a{font-size:14.5px;color:var(--muted);transition:color .2s;white-space:nowrap}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:.04em;color:var(--paper);background:var(--petrol);padding:10px 17px;border-radius:10px;transition:.2s}
+.nav-cta:hover{background:var(--petrol-deep);transform:translateY(-1px)}
+.lang-wrap{display:flex;align-items:center;gap:6px;flex:none}
+.lang-wrap svg{color:var(--petrol);flex:none}
+select.lang{appearance:none;-webkit-appearance:none;background:transparent;border:1px solid var(--hair-petrol);color:var(--petrol);font-family:'Geist Mono',monospace;font-size:12.5px;padding:8px 12px;border-radius:9px;cursor:pointer;outline:none;transition:.2s}
+select.lang:hover{border-color:var(--petrol)}
+@media(max-width:820px){.nav-links a:not(.nav-cta){display:none}.nav-cta{display:none}}
+@media(max-width:520px){.brand .word{font-size:23px}}
+
+/* hero */
+.hero{position:relative;padding:74px 0 38px;overflow:hidden}
+.hero-arc{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.9}
+.hero-in{position:relative;z-index:1}
+.hero h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(44px,7vw,86px);line-height:.99;letter-spacing:-.01em;max-width:16ch}
+.hero h1 em{font-style:italic;color:var(--petrol)}
+.hero .lede{margin-top:22px;max-width:56ch;color:var(--muted);font-size:clamp(16px,1.55vw,18.5px);line-height:1.6}
+:lang(zh) .hero h1,:lang(ja) .hero h1,:lang(ko) .hero h1{font-family:'Noto Sans SC','Noto Sans JP','Noto Sans KR',serif;font-weight:600;letter-spacing:0}
+:lang(ar) .hero h1{font-family:'Noto Sans Arabic',serif;font-weight:600}
+:lang(hi) .hero h1{font-family:'Noto Sans Devanagari',serif;font-weight:600}
+@keyframes drawArc{to{stroke-dashoffset:0}}
+@keyframes floatPlane{to{offset-distance:100%}}
+@media(prefers-reduced-motion:reduce){.arc-path{stroke-dashoffset:0!important;animation:none!important}.plane{animation:none!important;offset-distance:60%!important}}
+
+/* deck */
+.deck{margin-top:44px;position:relative;z-index:2;background:var(--card);border:1px solid var(--hair);border-radius:20px;box-shadow:var(--shadow);padding:8px}
+.deck-tabs{display:flex;gap:4px;padding:8px 8px 4px}
+.tab{font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:.04em;color:var(--muted);background:transparent;border:0;cursor:pointer;padding:8px 16px;border-radius:9px;transition:.18s}
+.tab[aria-selected="true"]{background:var(--petrol);color:var(--paper)}
+.deck-grid{display:grid;grid-template-columns:1.15fr auto 1.15fr 1fr 1fr .85fr auto;gap:1px;background:var(--hair);border-radius:14px;overflow:hidden;margin:6px 4px 4px}
+.field{background:var(--card);padding:14px 16px;min-width:0}
+.field label{display:block;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);margin-bottom:5px}
+.field input{width:100%;background:transparent;border:0;color:var(--ink);font-family:'Geist',sans-serif;font-size:15.5px;font-weight:500;outline:none}
+.field .code input{font-family:'Geist Mono',monospace;font-size:19px;font-weight:500;text-transform:uppercase}
+.field .sub{font-size:12px;color:var(--muted);margin-top:1px}
+.swap{display:flex;align-items:center;justify-content:center;background:var(--card);cursor:pointer;color:var(--petrol);transition:.2s;padding:0 6px}
+.swap:hover{color:var(--brass);transform:rotate(180deg)}
+.search-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--petrol);color:var(--paper);border:0;cursor:pointer;font-family:'Geist Mono',monospace;font-weight:500;font-size:14px;letter-spacing:.03em;padding:0 22px;transition:.2s;white-space:nowrap}
+.search-btn:hover{background:var(--petrol-deep)}
+.field.return.disabled{opacity:.4;pointer-events:none}
+@media(max-width:900px){.deck-grid{grid-template-columns:1fr 1fr}.swap{display:none}.search-btn{grid-column:1/-1;padding:15px}}
+.trust{display:flex;flex-wrap:wrap;gap:26px;margin:24px 4px 0;padding:0 4px}
+.trust span{display:flex;align-items:center;gap:9px;color:var(--muted);font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:.02em}
+.trust span svg{color:var(--petrol);flex:none}
+
+.mech{display:inline-flex;align-items:center;gap:6px;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:20px}
+.mech svg{width:12px;height:12px}
+.mech.combine,.mech.miles{background:rgba(11,64,60,.1);color:var(--petrol)}
+.mech.error,.mech.flash{background:rgba(169,130,75,.14);color:var(--brass)}
+
+.deals{padding:66px 0 20px}
+.deals-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:6px}
+.deals-head h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(32px,4vw,46px);line-height:1.02;max-width:16ch}
+.deals-head h2 em{font-style:italic;color:var(--petrol)}
+.deals-head .aside{color:var(--muted);font-size:14px;max-width:34ch;font-family:'Geist Mono',monospace;line-height:1.5}
+.deals-note{font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--muted);margin:16px 0 22px;letter-spacing:.02em}
+.deal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.deal{background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px;transition:.2s}
+.deal:hover{border-color:var(--hair-petrol);transform:translateY(-3px);box-shadow:var(--shadow-sm)}
+.deal .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.deal .spotted{font-family:'Geist Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.03em}
+.deal .route{font-family:'Instrument Serif',serif;font-size:30px;line-height:1}
+.deal .route span{color:var(--brass);font-style:italic}
+.deal .carrier{font-size:13px;color:var(--muted);margin-top:-4px}
+.deal .verified{display:inline-flex;align-items:center;gap:5px;font-family:'Geist Mono',monospace;font-size:11px;color:var(--petrol)}
+.deal .verified svg{width:13px;height:13px}
+.deal .foot{display:flex;align-items:flex-end;justify-content:space-between;margin-top:auto;padding-top:6px}
+.deal .price .save{font-family:'Geist Mono',monospace;font-size:11px;color:var(--brass)}
+.deal .price .amt{font-family:'Instrument Serif',serif;font-size:34px;line-height:.85;color:var(--petrol)}
+.deal .price .was{font-family:'Geist Mono',monospace;font-size:12px;color:var(--muted);text-decoration:line-through}
+.deal .go{background:var(--petrol);color:var(--paper);border:0;cursor:pointer;font-family:'Geist Mono',monospace;font-size:12.5px;padding:10px 15px;border-radius:9px;transition:.2s;white-space:nowrap}
+.deal .go:hover{background:var(--petrol-deep)}
+
+.results-wrap{padding:34px 0 30px}
+.results-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.results-head h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:38px}
+.route-chip{font-family:'Geist Mono',monospace;color:var(--petrol);font-size:15px}
+.demo-banner{display:flex;gap:12px;align-items:flex-start;background:rgba(169,130,75,.09);border:1px solid var(--hair-petrol);border-radius:12px;padding:13px 16px;margin:14px 0 22px;font-size:13.5px;color:var(--muted);line-height:1.5}
+.demo-banner b{color:var(--petrol);font-weight:600}
+.demo-banner svg{color:var(--brass);flex:none;margin-top:2px}
+.flight{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:20px 24px;margin-bottom:12px;transition:.2s}
+.flight:hover{border-color:var(--hair-petrol);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.airline{display:flex;align-items:center;gap:13px;min-width:170px}
+.airline .dot{width:44px;height:44px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--petrol);color:var(--paper);font-family:'Instrument Serif',serif;font-size:20px}
+.airline .meta small{display:block;color:var(--muted);font-size:12px}
+.airline .meta b{font-weight:600;font-size:14.5px}
+.airline .meta .mech{margin-top:5px}
+.leg{display:flex;align-items:center;gap:18px}
+.leg .pt{text-align:center}
+.leg .pt .t{font-family:'Geist Mono',monospace;font-size:20px;font-weight:500}
+.leg .pt .a{font-family:'Geist Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:.05em}
+.leg .path{flex:1;min-width:64px;text-align:center}
+.leg .path .dur{font-size:11.5px;color:var(--muted);font-family:'Geist Mono',monospace}
+.leg .path .line{height:1px;background:linear-gradient(90deg,transparent,var(--hair-petrol),transparent);margin:6px 0;position:relative}
+.leg .path .line::after{content:"✈";position:absolute;right:0;top:-9px;color:var(--brass);font-size:12px}
+.leg .path .stops{font-size:11px;color:var(--petrol);letter-spacing:.03em}
+.price-cell{text-align:right;min-width:150px}
+.price-cell .save{font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--brass);background:rgba(169,130,75,.12);border:1px solid rgba(169,130,75,.28);padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:8px}
+.price-cell .amt{font-family:'Instrument Serif',serif;font-size:32px;line-height:.9;color:var(--petrol)}
+.price-cell .was{font-size:12.5px;color:var(--muted);text-decoration:line-through;margin-top:3px;font-family:'Geist Mono',monospace}
+.book-btn{margin-top:12px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--petrol);border:1px solid var(--petrol);color:var(--paper);font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.03em;padding:10px 16px;border-radius:9px;cursor:pointer;transition:.2s}
+.book-btn:hover{background:var(--petrol-deep)}
+@media(max-width:820px){.flight{grid-template-columns:1fr;gap:16px}.price-cell{text-align:left}.book-btn{width:auto;padding:11px 24px}}
+
+.alert-sec{padding:70px 0}
+.alert-card{background:var(--petrol);color:var(--paper);border-radius:24px;padding:52px;display:grid;grid-template-columns:1.2fr 1fr;gap:44px;align-items:center;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.alert-card::after{content:"";position:absolute;right:-80px;top:-80px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(169,130,75,.22),transparent 70%)}
+.alert-card .eyebrow{color:var(--brass);margin-bottom:14px;position:relative}
+.alert-card h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:42px;line-height:1.05;margin-bottom:14px;position:relative}
+.alert-card > div{position:relative}
+.alert-card p{color:rgba(236,234,227,.78);max-width:44ch}
+.alert-form{display:flex;flex-direction:column;gap:12px}
+.alert-form .row{display:flex;gap:10px}
+.alert-form input{flex:1;background:rgba(236,234,227,.1);border:1px solid rgba(236,234,227,.22);border-radius:11px;padding:15px 16px;color:var(--paper);font-size:15px;outline:none;transition:.2s;min-width:0}
+.alert-form input::placeholder{color:rgba(236,234,227,.55)}
+.alert-form input:focus{border-color:var(--brass);background:rgba(236,234,227,.14)}
+.alert-form button{background:var(--brass);color:var(--ink);border:0;border-radius:11px;font-family:'Geist Mono',monospace;font-weight:500;font-size:14px;padding:0 24px;cursor:pointer;transition:.2s;white-space:nowrap}
+.alert-form button:hover{background:#bd935a}
+.alert-note{font-size:12px;color:rgba(236,234,227,.6);font-family:'Geist Mono',monospace}
+.alert-ok{color:var(--brass);font-family:'Geist Mono',monospace;font-size:14px}
+@media(max-width:820px){.alert-card{grid-template-columns:1fr;padding:34px}}
+
+.how{padding:20px 0 60px}
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.how .step{border-top:1px solid var(--hair-petrol);padding-top:18px}
+.how .step .n{font-family:'Geist Mono',monospace;font-size:12px;color:var(--brass);letter-spacing:.1em}
+.how .step h4{font-family:'Instrument Serif',serif;font-weight:400;font-size:24px;margin:8px 0 6px}
+.how .step p{color:var(--muted);font-size:14px}
+@media(max-width:760px){.how-grid{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--hair);padding:46px 0 32px;color:var(--muted)}
+.foot-top{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-bottom:26px}
+.foot-links{display:flex;gap:24px;flex-wrap:wrap}
+.foot-links a{font-size:13.5px;color:var(--muted);cursor:pointer;transition:.2s}
+.foot-links a:hover{color:var(--petrol)}
+.foot-disc{font-size:12.5px;line-height:1.6;padding-top:22px;border-top:1px solid var(--hair);color:var(--muted)}
+.foot-disc b{color:var(--ink)}
+
+.modal-back{position:fixed;inset:0;z-index:100;background:rgba(26,25,23,.44);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:24px}
+.modal{background:var(--card);border:1px solid var(--hair);border-radius:18px;max-width:680px;width:100%;max-height:82vh;overflow:auto;padding:38px;box-shadow:var(--shadow)}
+.modal .kicker{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin-bottom:14px}
+.modal h3{font-family:'Instrument Serif',serif;font-weight:400;font-size:32px;margin-bottom:6px}
+.modal p{color:var(--muted);font-size:14px;margin:12px 0;line-height:1.62}
+.modal h4{font-size:15px;margin:20px 0 4px;color:var(--ink);font-weight:600}
+.modal .todo{color:var(--petrol);background:rgba(11,64,60,.09);padding:1px 6px;border-radius:5px;font-family:'Geist Mono',monospace;font-size:13px}
+.modal-close{float:right;background:transparent;border:1px solid var(--hair);color:var(--muted);width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:16px}
+.modal-close:hover{color:var(--ink);border-color:var(--hair-petrol)}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);border:1px solid var(--brass);color:var(--paper);padding:13px 20px;border-radius:12px;font-size:14px;z-index:120;box-shadow:var(--shadow);opacity:0;transition:.28s;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast b{color:var(--brass)}
+.cookie{position:fixed;left:24px;right:24px;bottom:24px;z-index:90;max-width:520px;margin:0 auto;background:var(--card);border:1px solid var(--hair-petrol);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.cookie p{font-size:13px;color:var(--muted);flex:1;min-width:200px}
+.cookie a{color:var(--petrol);cursor:pointer;text-decoration:underline}
+.cookie button{font-family:'Geist Mono',monospace;font-size:12.5px;padding:9px 16px;border-radius:9px;cursor:pointer;border:0}
+.cookie .accept{background:var(--petrol);color:var(--paper)}
+.cookie .refuse{background:transparent;border:1px solid var(--hair);color:var(--muted)}
+</style>
+<!-- Travelpayouts Drive -->
+<script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
+ (function () {
+    var script = document.createElement("script");
+    script.async = 1;
+    script.src = 'https://tpembars.com/NTQ1Mjc4.js?t=545278';
+    document.head.appendChild(script);
+ })();
+</script>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <div class="brand" onclick="goHome()">
+      <svg class="glyph" viewBox="0 0 32 32" fill="none"><path d="M16 2 L20 13 L31 16 L20 19 L16 30 L12 19 L1 16 L12 13 Z" fill="#0B403C"/><circle cx="16" cy="16" r="2.4" fill="#ECEAE3"/></svg>
+      <span class="word">Aeryndo</span>
+    </div>
+    <nav class="nav-links">
+      <a data-i18n="navDeals" onclick="scrollTo2('deals')">Deals dénichés</a>
+      <a data-i18n="navAlerts" onclick="scrollToAlert()">Alertes prix</a>
+      <a data-i18n="navAbout" onclick="openLegal('about')">À propos</a>
+      <div class="lang-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg>
+        <select class="lang" id="lang" aria-label="Language" onchange="setLang(this.value)">
+          <option value="fr">Français</option><option value="en">English</option><option value="es">Español</option>
+          <option value="de">Deutsch</option><option value="it">Italiano</option><option value="pt">Português</option>
+          <option value="ru">Русский</option><option value="zh">中文</option><option value="ar">العربية</option>
+          <option value="ja">日本語</option><option value="ko">한국어</option><option value="hi">हिन्दी</option>
+        </select>
+      </div>
+      <a class="nav-cta" data-i18n="navCta" onclick="scrollToAlert()">Recevoir les deals</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="home">
+  <svg class="hero-arc" viewBox="0 0 1200 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path class="arc-path" d="M-40 430 Q 600 40 1260 300" fill="none" stroke="url(#g)" stroke-width="1.4" stroke-dasharray="1800" stroke-dashoffset="1800" style="animation:drawArc 2.4s cubic-bezier(.5,0,.1,1) .3s forwards"/>
+    <circle cx="120" cy="366" r="3.5" fill="#A9824B"/><circle cx="1180" cy="300" r="3.5" fill="#A9824B"/>
+    <text class="plane" font-size="15" fill="#0B403C" style="offset-path:path('M-40 430 Q 600 40 1260 300');offset-distance:0%;animation:floatPlane 2.4s cubic-bezier(.5,0,.1,1) .3s forwards">✈</text>
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0B403C" stop-opacity="0"/><stop offset=".5" stop-color="#0B403C" stop-opacity=".55"/><stop offset="1" stop-color="#0B403C" stop-opacity="0"/></linearGradient></defs>
+  </svg>
+  <div class="wrap hero-in">
+    <div class="eyebrow" data-i18n="heroEyebrow">Le dénicheur de Business Class</div>
+    <h1 data-i18n-html="heroH1">Des tarifs Business<br><em>que personne d'autre ne déniche.</em></h1>
+    <p class="lede" data-i18n="heroLede">Aeryndo déniche des tarifs Business introuvables ailleurs — trajets combinés, tarifs erreur, promos flash — tous vérifiés. Suivez une route, recevez l'alerte, réservez avant tout le monde.</p>
+
+    <div class="deck">
+      <div class="deck-tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-i18n="tabRound" onclick="setTrip('round',this)">Aller-retour</button>
+        <button class="tab" role="tab" aria-selected="false" data-i18n="tabOneway" onclick="setTrip('oneway',this)">Aller simple</button>
+      </div>
+      <div class="deck-grid">
+        <div class="field"><label data-i18n="lblFrom">Départ</label><div class="code"><input id="from" value="CDG" maxlength="3"></div><div class="sub" id="from-sub">Paris</div></div>
+        <div class="swap" onclick="swap()" role="button" aria-label="Swap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 4 L3 8 L7 12 M3 8 H17"/><path d="M17 20 L21 16 L17 12 M21 16 H7"/></svg></div>
+        <div class="field"><label data-i18n="lblTo">Arrivée</label><div class="code"><input id="to" value="HND" maxlength="3"></div><div class="sub" id="to-sub">Tokyo</div></div>
+        <div class="field"><label data-i18n="lblDep">Aller</label><input id="dep" type="date"></div>
+        <div class="field return" id="retField"><label data-i18n="lblRet">Retour</label><input id="ret" type="date"></div>
+        <div class="field"><label data-i18n="lblPax">Voyageurs</label><input id="pax" type="number" min="1" max="9" value="1"></div>
+        <button class="search-btn" onclick="search()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span data-i18n="btnSearch">Dénicher</span></button>
+      </div>
+      <div class="trust">
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span data-i18n="trust1">Trajets combinés</span></span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span data-i18n="trust2">Chaque deal vérifié</span></span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 004 0"/></svg><span data-i18n="trust3">Alerte avant tout le monde</span></span>
+        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="trust4">Sans frais cachés</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="results-wrap hidden" id="results">
+  <div class="wrap">
+    <div class="results-head"><h2 data-i18n="resultsTitle">Ce qu'on a déniché</h2><div class="route-chip" id="routeChip">CDG → HND</div></div>
+    <div class="demo-banner"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+      <div data-i18n-html="demoBanner"><b>Aperçu — prix de démonstration.</b> Les boutons « Réserver » sont actifs et affiliés (marker 545278). Les vrais prix en direct s'afficheront avec la connexion des données partenaires.</div>
+    </div>
+    <div id="flightList"></div>
+  </div>
+</section>
+
+<section class="deals" id="deals">
+  <div class="wrap">
+    <div class="deals-head">
+      <h2 data-i18n-html="dealsH2">Des prix que vous ne verrez <em>nulle part ailleurs.</em></h2>
+      <div class="aside" data-i18n="dealsAside">On assemble, on traque, on vérifie. Chaque deal porte le mécanisme qui le rend introuvable sur les gros moteurs.</div>
+    </div>
+    <div class="deals-note" data-i18n="dealsNote">◈ Exemples de démonstration — le flux réel se remplira automatiquement une fois les partenaires connectés.</div>
+    <div class="deal-grid" id="dealGrid"></div>
+  </div>
+</section>
+
+<section class="alert-sec" id="alert">
+  <div class="wrap">
+    <div class="alert-card">
+      <div>
+        <div class="eyebrow" data-i18n="alertEyebrow">Le cœur du produit</div>
+        <h2 data-i18n="alertH2">Les meilleurs deals partent en quelques heures.</h2>
+        <p data-i18n="alertP">Un tarif erreur ou une promo flash en Business ne dure que quelques heures. Choisissez vos routes, on surveille pour vous — et on vous prévient avant que le prix disparaisse.</p>
+      </div>
+      <div>
+        <div class="alert-form" id="alertForm">
+          <div class="row">
+            <input type="email" id="alertEmail" placeholder="votre@email.com" data-i18n-ph="alertPh" aria-label="email">
+            <button onclick="subscribe()" data-i18n="alertBtn">Recevoir les deals</button>
+          </div>
+          <div class="alert-note" data-i18n="alertNote">Gratuit. Les pépites Business, directement dans votre boîte. Désinscription à tout moment.</div>
+        </div>
+        <div id="alertDone" class="alert-ok hidden"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <div class="wrap">
+    <div class="how-grid">
+      <div class="step"><div class="n">01</div><h4 data-i18n="how1t">On déniche</h4><p data-i18n="how1p">Trajets combinés entre compagnies, tarifs erreur, promos flash, sweet spots en miles — les angles que les gros moteurs n'optimisent pas.</p></div>
+      <div class="step"><div class="n">02</div><h4 data-i18n="how2t">On vérifie</h4><p data-i18n="how2p">Chaque deal est contrôlé avant publication. Pas de faux tarif qui saute au paiement. Ce que vous voyez est réservable.</p></div>
+      <div class="step"><div class="n">03</div><h4 data-i18n="how3t">On vous alerte</h4><p data-i18n="how3p">Vous suivez vos routes, on vous prévient dès qu'une pépite tombe. Vous réservez chez le partenaire, avant que le prix parte.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="brand" onclick="goHome()" style="cursor:pointer"><svg class="glyph" viewBox="0 0 32 32" fill="none"><path d="M16 2 L20 13 L31 16 L20 19 L16 30 L12 19 L1 16 L12 13 Z" fill="#0B403C"/><circle cx="16" cy="16" r="2.4" fill="#ECEAE3"/></svg><span class="word">Aeryndo</span></div>
+      <div class="foot-links">
+        <a data-i18n="footMentions" onclick="openLegal('mentions')">Mentions légales</a>
+        <a data-i18n="footCgu" onclick="openLegal('cgu')">CGU</a>
+        <a data-i18n="footPrivacy" onclick="openLegal('privacy')">Confidentialité</a>
+        <a data-i18n="footAff" onclick="openLegal('affiliation')">Affiliation</a>
+      </div>
+    </div>
+    <p class="foot-disc" data-i18n-html="footDisc"><b>Divulgation d'affiliation —</b> Aeryndo est un dénicheur de deals, pas une agence de voyage. Nous ne vendons pas de billets : nous vous orientons vers nos partenaires (Skyscanner, Kiwi.com et autres via Travelpayouts). Certains liens sont affiliés : si vous réservez, nous pouvons percevoir une commission, sans surcoût pour vous. © <span id="year"></span> Aeryndo.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<div class="cookie" id="cookie">
+  <p data-i18n-html="cookieText">Cookies pour mesurer l'audience et faire fonctionner l'affiliation. <a onclick="openLegal('privacy')">En savoir plus</a>.</p>
+  <div style="display:flex;gap:8px"><button class="refuse" data-i18n="cookieRefuse" onclick="closeCookie()">Refuser</button><button class="accept" data-i18n="cookieAccept" onclick="closeCookie()">Accepter</button></div>
+</div>
+
+<script>
+const CONFIG={MARKER:"545278",PARTNER_HOST:"aviasales.com",CURRENCY:"eur"};
+const AIRPORTS={CDG:"Paris",ORY:"Paris",JFK:"New York",EWR:"New York",LHR:"Londres",DXB:"Dubaï",SIN:"Singapour",HKG:"Hong Kong",LAX:"Los Angeles",NRT:"Tokyo",HND:"Tokyo",DOH:"Doha",IST:"Istanbul",FRA:"Francfort",AMS:"Amsterdam",BKK:"Bangkok",GVA:"Genève",MAD:"Madrid",FCO:"Rome",MIA:"Miami",SFO:"San Francisco",YUL:"Montréal",GRU:"São Paulo",JNB:"Johannesburg",DEL:"Delhi",SYD:"Sydney",ICN:"Séoul",NCE:"Nice",LIS:"Lisbonne"};
+
+/* ===================== i18n ===================== */
+const SUPPORTED=["fr","en","es","de","it","pt","ru","zh","ar","ja","ko","hi"];
+const I18N={
+ fr:{navDeals:"Deals dénichés",navAlerts:"Alertes prix",navAbout:"À propos",navCta:"Recevoir les deals",heroEyebrow:"Le dénicheur de Business Class",heroH1:"Des tarifs Business<br><em>que personne d'autre ne déniche.</em>",heroLede:"Aeryndo déniche des tarifs Business introuvables ailleurs — trajets combinés, tarifs erreur, promos flash — tous vérifiés. Suivez une route, recevez l'alerte, réservez avant tout le monde.",tabRound:"Aller-retour",tabOneway:"Aller simple",lblFrom:"Départ",lblTo:"Arrivée",lblDep:"Aller",lblRet:"Retour",lblPax:"Voyageurs",btnSearch:"Dénicher",trust1:"Trajets combinés",trust2:"Chaque deal vérifié",trust3:"Alerte avant tout le monde",trust4:"Sans frais cachés",resultsTitle:"Ce qu'on a déniché",demoBanner:"<b>Aperçu — prix de démonstration.</b> Les boutons « Réserver » sont actifs et affiliés. Les vrais prix en direct s'afficheront avec la connexion des données partenaires.",dealsH2:"Des prix que vous ne verrez <em>nulle part ailleurs.</em>",dealsAside:"On assemble, on traque, on vérifie. Chaque deal porte le mécanisme qui le rend introuvable sur les gros moteurs.",dealsNote:"◈ Exemples de démonstration — le flux réel se remplira une fois les partenaires connectés.",mechCombine:"Combiné 2 compagnies",mechError:"Tarif erreur · vérifié",mechFlash:"Promo flash",mechMiles:"Sweet spot miles",verified:"Disponibilité vérifiée",spotted:"Repéré",vsPublic:"vs public",btnBook:"Réserver →",alertEyebrow:"Le cœur du produit",alertH2:"Les meilleurs deals partent en quelques heures.",alertP:"Un tarif erreur ou une promo flash en Business ne dure que quelques heures. Choisissez vos routes, on surveille pour vous — et on vous prévient avant que le prix disparaisse.",alertPh:"votre@email.com",alertBtn:"Recevoir les deals",alertNote:"Gratuit. Les pépites Business, directement dans votre boîte. Désinscription à tout moment.",alertDoneA:"✓ C'est fait, ",alertDoneB:". Les prochaines pépites Business arrivent dans votre boîte.",how1t:"On déniche",how1p:"Trajets combinés entre compagnies, tarifs erreur, promos flash, sweet spots en miles — les angles que les gros moteurs n'optimisent pas.",how2t:"On vérifie",how2p:"Chaque deal est contrôlé avant publication. Pas de faux tarif qui saute au paiement. Ce que vous voyez est réservable.",how3t:"On vous alerte",how3p:"Vous suivez vos routes, on vous prévient dès qu'une pépite tombe. Vous réservez chez le partenaire, avant que le prix parte.",footMentions:"Mentions légales",footCgu:"CGU",footPrivacy:"Confidentialité",footAff:"Affiliation",footDisc:"<b>Divulgation d'affiliation —</b> Aeryndo est un dénicheur de deals, pas une agence de voyage. Nous ne vendons pas de billets : nous vous orientons vers nos partenaires (Skyscanner, Kiwi.com et autres via Travelpayouts). Certains liens sont affiliés : si vous réservez, nous pouvons percevoir une commission, sans surcoût pour vous. © <span id='year'></span> Aeryndo.",cookieText:"Cookies pour mesurer l'audience et faire fonctionner l'affiliation. <a onclick=\"openLegal('privacy')\">En savoir plus</a>.",cookieRefuse:"Refuser",cookieAccept:"Accepter",toastEmail:"Entrez un email valide."},
+ en:{navDeals:"Deals found",navAlerts:"Price alerts",navAbout:"About",navCta:"Get the deals",heroEyebrow:"The Business Class deal-hunter",heroH1:"Business fares<br><em>no one else uncovers.</em>",heroLede:"Aeryndo uncovers Business fares you won't find elsewhere — combined routings, error fares, flash deals — all verified. Track a route, get the alert, book before everyone else.",tabRound:"Round trip",tabOneway:"One way",lblFrom:"From",lblTo:"To",lblDep:"Depart",lblRet:"Return",lblPax:"Travellers",btnSearch:"Hunt deals",trust1:"Combined routings",trust2:"Every deal verified",trust3:"Alerts before anyone",trust4:"No hidden fees",resultsTitle:"What we uncovered",demoBanner:"<b>Preview — demo prices.</b> The “Book” buttons are live and affiliated. Real-time fares will show once partner data is connected.",dealsH2:"Prices you won't see <em>anywhere else.</em>",dealsAside:"We combine, we hunt, we verify. Each deal shows the mechanism that makes it invisible to the big engines.",dealsNote:"◈ Demo examples — the live feed fills in once partners are connected.",mechCombine:"2-airline combo",mechError:"Error fare · verified",mechFlash:"Flash deal",mechMiles:"Miles sweet spot",verified:"Availability verified",spotted:"Spotted",vsPublic:"vs public",btnBook:"Book →",alertEyebrow:"The core of the product",alertH2:"The best deals vanish within hours.",alertP:"An error fare or a Business flash deal doesn't last. Pick your routes, we watch for you — and warn you before the price disappears.",alertPh:"you@email.com",alertBtn:"Get the deals",alertNote:"Free. Business gems straight to your inbox. Unsubscribe anytime.",alertDoneA:"✓ Done, ",alertDoneB:". The next Business gems are on their way to your inbox.",how1t:"We uncover",how1p:"Airline combos, error fares, flash deals, miles sweet spots — the angles the big engines don't optimise for.",how2t:"We verify",how2p:"Every deal is checked before publishing. No fake fare that collapses at checkout. What you see is bookable.",how3t:"We alert you",how3p:"You track your routes, we ping you the moment a gem drops. You book with the partner, before the price is gone.",footMentions:"Legal notice",footCgu:"Terms",footPrivacy:"Privacy",footAff:"Affiliation",footDisc:"<b>Affiliate disclosure —</b> Aeryndo is a deal-hunter, not a travel agency. We don't sell tickets: we point you to our partners (Skyscanner, Kiwi.com and others via Travelpayouts). Some links are affiliated: if you book, we may earn a commission at no extra cost to you. © <span id='year'></span> Aeryndo.",cookieText:"Cookies to measure audience and power affiliation. <a onclick=\"openLegal('privacy')\">Learn more</a>.",cookieRefuse:"Decline",cookieAccept:"Accept",toastEmail:"Enter a valid email."},
+ es:{navDeals:"Chollos",navAlerts:"Alertas de precio",navAbout:"Nosotros",navCta:"Recibir chollos",heroEyebrow:"El cazador de Business Class",heroH1:"Tarifas Business<br><em>que nadie más descubre.</em>",heroLede:"Aeryndo descubre tarifas Business que no encontrarás en otro sitio — rutas combinadas, tarifas error, ofertas flash — todas verificadas. Sigue una ruta, recibe la alerta, reserva antes que nadie.",tabRound:"Ida y vuelta",tabOneway:"Solo ida",lblFrom:"Origen",lblTo:"Destino",lblDep:"Ida",lblRet:"Vuelta",lblPax:"Viajeros",btnSearch:"Cazar",trust1:"Rutas combinadas",trust2:"Cada oferta verificada",trust3:"Alerta antes que nadie",trust4:"Sin cargos ocultos",resultsTitle:"Lo que hemos descubierto",demoBanner:"<b>Vista previa — precios de demostración.</b> Los botones «Reservar» están activos y afiliados. Los precios reales aparecerán al conectar los datos de los socios.",dealsH2:"Precios que no verás <em>en ningún otro sitio.</em>",dealsAside:"Combinamos, rastreamos, verificamos. Cada oferta muestra el mecanismo que la hace invisible para los grandes buscadores.",dealsNote:"◈ Ejemplos de demostración — el feed real se llenará al conectar los socios.",mechCombine:"Combo 2 aerolíneas",mechError:"Tarifa error · verif.",mechFlash:"Oferta flash",mechMiles:"Sweet spot millas",verified:"Disponibilidad verificada",spotted:"Detectado",vsPublic:"vs público",btnBook:"Reservar →",alertEyebrow:"El corazón del producto",alertH2:"Los mejores chollos desaparecen en horas.",alertP:"Una tarifa error o una oferta flash en Business no dura. Elige tus rutas, vigilamos por ti — y te avisamos antes de que el precio desaparezca.",alertPh:"tu@email.com",alertBtn:"Recibir chollos",alertNote:"Gratis. Joyas Business directas a tu correo. Cancela cuando quieras.",alertDoneA:"✓ Hecho, ",alertDoneB:". Las próximas joyas Business van camino a tu correo.",how1t:"Descubrimos",how1p:"Combinaciones de aerolíneas, tarifas error, ofertas flash, sweet spots de millas — los ángulos que los grandes no optimizan.",how2t:"Verificamos",how2p:"Cada oferta se comprueba antes de publicarla. Sin tarifas falsas que caen al pagar. Lo que ves es reservable.",how3t:"Te avisamos",how3p:"Sigues tus rutas, te avisamos en cuanto cae una joya. Reservas con el socio, antes de que el precio desaparezca.",footMentions:"Aviso legal",footCgu:"Términos",footPrivacy:"Privacidad",footAff:"Afiliación",footDisc:"<b>Divulgación de afiliación —</b> Aeryndo es un cazador de chollos, no una agencia de viajes. No vendemos billetes: te orientamos hacia nuestros socios (Skyscanner, Kiwi.com y otros vía Travelpayouts). Algunos enlaces son afiliados: si reservas, podemos ganar una comisión sin coste extra para ti. © <span id='year'></span> Aeryndo.",cookieText:"Cookies para medir audiencia y activar la afiliación. <a onclick=\"openLegal('privacy')\">Más información</a>.",cookieRefuse:"Rechazar",cookieAccept:"Aceptar",toastEmail:"Introduce un email válido."},
+ de:{navDeals:"Deals",navAlerts:"Preisalarme",navAbout:"Über uns",navCta:"Deals erhalten",heroEyebrow:"Der Business-Class-Deal-Jäger",heroH1:"Business-Tarife,<br><em>die sonst niemand findet.</em>",heroLede:"Aeryndo findet Business-Tarife, die es woanders nicht gibt — kombinierte Strecken, Fehlpreise, Blitz-Deals — alle geprüft. Route verfolgen, Alarm erhalten, vor allen anderen buchen.",tabRound:"Hin & zurück",tabOneway:"Nur Hinflug",lblFrom:"Von",lblTo:"Nach",lblDep:"Hinflug",lblRet:"Rückflug",lblPax:"Reisende",btnSearch:"Jagen",trust1:"Kombinierte Strecken",trust2:"Jeder Deal geprüft",trust3:"Alarm vor allen",trust4:"Keine versteckten Gebühren",resultsTitle:"Was wir gefunden haben",demoBanner:"<b>Vorschau — Demo-Preise.</b> Die „Buchen“-Buttons sind aktiv und affiliiert. Echtzeit-Preise erscheinen, sobald die Partnerdaten verbunden sind.",dealsH2:"Preise, die Sie <em>sonst nirgends sehen.</em>",dealsAside:"Wir kombinieren, jagen, prüfen. Jeder Deal zeigt den Mechanismus, der ihn für die großen Suchmaschinen unsichtbar macht.",dealsNote:"◈ Demo-Beispiele — der Live-Feed füllt sich, sobald die Partner verbunden sind.",mechCombine:"2-Airline-Combo",mechError:"Fehlpreis · geprüft",mechFlash:"Blitz-Deal",mechMiles:"Meilen-Sweet-Spot",verified:"Verfügbarkeit geprüft",spotted:"Entdeckt",vsPublic:"vs. öffentlich",btnBook:"Buchen →",alertEyebrow:"Das Herzstück",alertH2:"Die besten Deals sind in Stunden weg.",alertP:"Ein Fehlpreis oder Business-Blitz-Deal hält nicht lange. Wählen Sie Ihre Routen, wir beobachten für Sie — und warnen, bevor der Preis verschwindet.",alertPh:"du@email.com",alertBtn:"Deals erhalten",alertNote:"Kostenlos. Business-Perlen direkt ins Postfach. Jederzeit abbestellbar.",alertDoneA:"✓ Erledigt, ",alertDoneB:". Die nächsten Business-Perlen sind unterwegs zu Ihrem Postfach.",how1t:"Wir finden",how1p:"Airline-Kombinationen, Fehlpreise, Blitz-Deals, Meilen-Sweet-Spots — die Winkel, die die Großen nicht optimieren.",how2t:"Wir prüfen",how2p:"Jeder Deal wird vor Veröffentlichung geprüft. Kein Fake-Tarif, der beim Bezahlen platzt. Was Sie sehen, ist buchbar.",how3t:"Wir alarmieren",how3p:"Sie verfolgen Routen, wir melden uns, sobald eine Perle fällt. Sie buchen beim Partner, bevor der Preis weg ist.",footMentions:"Impressum",footCgu:"AGB",footPrivacy:"Datenschutz",footAff:"Affiliate",footDisc:"<b>Affiliate-Hinweis —</b> Aeryndo ist ein Deal-Jäger, keine Reiseagentur. Wir verkaufen keine Tickets: Wir leiten Sie zu unseren Partnern (Skyscanner, Kiwi.com u. a. über Travelpayouts). Manche Links sind Affiliate-Links: bei einer Buchung erhalten wir ggf. eine Provision, ohne Mehrkosten für Sie. © <span id='year'></span> Aeryndo.",cookieText:"Cookies zur Reichweitenmessung und für Affiliate. <a onclick=\"openLegal('privacy')\">Mehr erfahren</a>.",cookieRefuse:"Ablehnen",cookieAccept:"Akzeptieren",toastEmail:"Gültige E-Mail eingeben."},
+ it:{navDeals:"Offerte",navAlerts:"Avvisi prezzo",navAbout:"Chi siamo",navCta:"Ricevi le offerte",heroEyebrow:"Il cacciatore di Business Class",heroH1:"Tariffe Business<br><em>che nessun altro scova.</em>",heroLede:"Aeryndo scova tariffe Business introvabili altrove — rotte combinate, tariffe errore, offerte flash — tutte verificate. Segui una rotta, ricevi l'avviso, prenota prima di tutti.",tabRound:"Andata e ritorno",tabOneway:"Solo andata",lblFrom:"Partenza",lblTo:"Arrivo",lblDep:"Andata",lblRet:"Ritorno",lblPax:"Viaggiatori",btnSearch:"Scova",trust1:"Rotte combinate",trust2:"Ogni offerta verificata",trust3:"Avviso prima di tutti",trust4:"Nessun costo nascosto",resultsTitle:"Cosa abbiamo scovato",demoBanner:"<b>Anteprima — prezzi dimostrativi.</b> I pulsanti «Prenota» sono attivi e affiliati. I prezzi reali appariranno una volta collegati i dati dei partner.",dealsH2:"Prezzi che non vedrai <em>da nessun'altra parte.</em>",dealsAside:"Combiniamo, cerchiamo, verifichiamo. Ogni offerta mostra il meccanismo che la rende invisibile ai grandi motori.",dealsNote:"◈ Esempi dimostrativi — il feed reale si riempirà una volta collegati i partner.",mechCombine:"Combo 2 compagnie",mechError:"Tariffa errore · verif.",mechFlash:"Offerta flash",mechMiles:"Sweet spot miglia",verified:"Disponibilità verificata",spotted:"Individuato",vsPublic:"vs pubblico",btnBook:"Prenota →",alertEyebrow:"Il cuore del prodotto",alertH2:"Le offerte migliori spariscono in poche ore.",alertP:"Una tariffa errore o un'offerta flash Business non dura. Scegli le tue rotte, monitoriamo per te — e ti avvisiamo prima che il prezzo sparisca.",alertPh:"tu@email.com",alertBtn:"Ricevi le offerte",alertNote:"Gratis. Le perle Business dritte nella tua casella. Disiscrizione quando vuoi.",alertDoneA:"✓ Fatto, ",alertDoneB:". Le prossime perle Business stanno arrivando nella tua casella.",how1t:"Scoviamo",how1p:"Combinazioni tra compagnie, tariffe errore, offerte flash, sweet spot miglia — gli angoli che i grandi non ottimizzano.",how2t:"Verifichiamo",how2p:"Ogni offerta è controllata prima della pubblicazione. Nessuna tariffa falsa che salta al pagamento. Ciò che vedi è prenotabile.",how3t:"Ti avvisiamo",how3p:"Segui le tue rotte, ti avvisiamo appena cade una perla. Prenoti dal partner, prima che il prezzo sparisca.",footMentions:"Note legali",footCgu:"Termini",footPrivacy:"Privacy",footAff:"Affiliazione",footDisc:"<b>Informativa affiliazione —</b> Aeryndo è un cacciatore di offerte, non un'agenzia di viaggi. Non vendiamo biglietti: ti indirizziamo ai nostri partner (Skyscanner, Kiwi.com e altri via Travelpayouts). Alcuni link sono affiliati: se prenoti, possiamo ricevere una commissione senza costi aggiuntivi per te. © <span id='year'></span> Aeryndo.",cookieText:"Cookie per misurare il pubblico e per l'affiliazione. <a onclick=\"openLegal('privacy')\">Scopri di più</a>.",cookieRefuse:"Rifiuta",cookieAccept:"Accetta",toastEmail:"Inserisci un'email valida."},
+ pt:{navDeals:"Ofertas",navAlerts:"Alertas de preço",navAbout:"Sobre",navCta:"Receber ofertas",heroEyebrow:"O caçador de Classe Executiva",heroH1:"Tarifas Executiva<br><em>que mais ninguém descobre.</em>",heroLede:"A Aeryndo descobre tarifas Executiva que não encontra noutro lado — rotas combinadas, tarifas erro, promoções relâmpago — todas verificadas. Siga uma rota, receba o alerta, reserve antes de todos.",tabRound:"Ida e volta",tabOneway:"Só ida",lblFrom:"Origem",lblTo:"Destino",lblDep:"Ida",lblRet:"Volta",lblPax:"Viajantes",btnSearch:"Caçar",trust1:"Rotas combinadas",trust2:"Cada oferta verificada",trust3:"Alerta antes de todos",trust4:"Sem taxas ocultas",resultsTitle:"O que descobrimos",demoBanner:"<b>Pré-visualização — preços de demonstração.</b> Os botões «Reservar» estão ativos e afiliados. Os preços reais surgirão assim que os dados dos parceiros forem ligados.",dealsH2:"Preços que não verá <em>em mais lado nenhum.</em>",dealsAside:"Combinamos, caçamos, verificamos. Cada oferta mostra o mecanismo que a torna invisível aos grandes motores.",dealsNote:"◈ Exemplos de demonstração — o feed real preenche-se assim que os parceiros estiverem ligados.",mechCombine:"Combo 2 companhias",mechError:"Tarifa erro · verif.",mechFlash:"Promoção relâmpago",mechMiles:"Sweet spot milhas",verified:"Disponibilidade verificada",spotted:"Detetado",vsPublic:"vs público",btnBook:"Reservar →",alertEyebrow:"O coração do produto",alertH2:"As melhores ofertas desaparecem em horas.",alertP:"Uma tarifa erro ou promoção relâmpago Executiva não dura. Escolha as suas rotas, vigiamos por si — e avisamos antes de o preço desaparecer.",alertPh:"voce@email.com",alertBtn:"Receber ofertas",alertNote:"Grátis. Pérolas Executiva direto no seu email. Cancele quando quiser.",alertDoneA:"✓ Feito, ",alertDoneB:". As próximas pérolas Executiva vão a caminho do seu email.",how1t:"Descobrimos",how1p:"Combinações de companhias, tarifas erro, promoções relâmpago, sweet spots de milhas — os ângulos que os grandes não otimizam.",how2t:"Verificamos",how2p:"Cada oferta é conferida antes de publicar. Sem tarifa falsa que cai no pagamento. O que vê é reservável.",how3t:"Avisamos",how3p:"Segue as suas rotas, avisamos assim que cai uma pérola. Reserva com o parceiro, antes de o preço partir.",footMentions:"Avisos legais",footCgu:"Termos",footPrivacy:"Privacidade",footAff:"Afiliação",footDisc:"<b>Divulgação de afiliação —</b> A Aeryndo é um caçador de ofertas, não uma agência de viagens. Não vendemos bilhetes: encaminhamos para os nossos parceiros (Skyscanner, Kiwi.com e outros via Travelpayouts). Alguns links são afiliados: se reservar, podemos receber uma comissão sem custo extra para si. © <span id='year'></span> Aeryndo.",cookieText:"Cookies para medir audiência e ativar a afiliação. <a onclick=\"openLegal('privacy')\">Saber mais</a>.",cookieRefuse:"Recusar",cookieAccept:"Aceitar",toastEmail:"Introduza um email válido."},
+ ru:{navDeals:"Находки",navAlerts:"Оповещения о цене",navAbout:"О нас",navCta:"Получать находки",heroEyebrow:"Охотник за бизнес-классом",heroH1:"Тарифы бизнес-класса,<br><em>которые не найдёт никто другой.</em>",heroLede:"Aeryndo находит тарифы бизнес-класса, которых нет больше нигде — составные маршруты, ошибочные тарифы, флеш-акции — все проверены. Следите за маршрутом, получайте оповещение, бронируйте раньше всех.",tabRound:"Туда-обратно",tabOneway:"В одну сторону",lblFrom:"Откуда",lblTo:"Куда",lblDep:"Туда",lblRet:"Обратно",lblPax:"Пассажиры",btnSearch:"Найти",trust1:"Составные маршруты",trust2:"Каждая находка проверена",trust3:"Оповещение раньше всех",trust4:"Без скрытых сборов",resultsTitle:"Что мы нашли",demoBanner:"<b>Превью — демо-цены.</b> Кнопки «Забронировать» активны и партнёрские. Реальные цены появятся после подключения данных партнёров.",dealsH2:"Цены, которых вы <em>не увидите больше нигде.</em>",dealsAside:"Мы комбинируем, ищем, проверяем. У каждой находки — механизм, который делает её невидимой для крупных поисковиков.",dealsNote:"◈ Демонстрационные примеры — реальная лента заполнится после подключения партнёров.",mechCombine:"Комбо 2 а/к",mechError:"Ошибочный тариф · пров.",mechFlash:"Флеш-акция",mechMiles:"Выгодные мили",verified:"Наличие проверено",spotted:"Найдено",vsPublic:"vs публичной",btnBook:"Забронировать →",alertEyebrow:"Сердце продукта",alertH2:"Лучшие находки исчезают за часы.",alertP:"Ошибочный тариф или флеш-акция бизнес-класса живут недолго. Выберите маршруты — мы следим за вас и предупредим до того, как цена исчезнет.",alertPh:"you@email.com",alertBtn:"Получать находки",alertNote:"Бесплатно. Жемчужины бизнес-класса прямо на почту. Отписка в любой момент.",alertDoneA:"✓ Готово, ",alertDoneB:". Следующие находки бизнес-класса уже летят к вам на почту.",how1t:"Мы находим",how1p:"Комбинации авиакомпаний, ошибочные тарифы, флеш-акции, выгодные мили — углы, которые крупные поисковики не оптимизируют.",how2t:"Мы проверяем",how2p:"Каждая находка проверяется до публикации. Никаких фейковых тарифов, которые слетают при оплате. Что видите — то бронируется.",how3t:"Мы оповещаем",how3p:"Вы следите за маршрутами, мы сообщаем, как только падает жемчужина. Вы бронируете у партнёра, пока цена не ушла.",footMentions:"Правовая информация",footCgu:"Условия",footPrivacy:"Конфиденциальность",footAff:"Партнёрство",footDisc:"<b>Партнёрское уведомление —</b> Aeryndo — охотник за находками, а не турагентство. Мы не продаём билеты: мы направляем к нашим партнёрам (Skyscanner, Kiwi.com и др. через Travelpayouts). Некоторые ссылки партнёрские: при бронировании мы можем получить комиссию без доплаты с вашей стороны. © <span id='year'></span> Aeryndo.",cookieText:"Cookies для аналитики и работы партнёрства. <a onclick=\"openLegal('privacy')\">Подробнее</a>.",cookieRefuse:"Отклонить",cookieAccept:"Принять",toastEmail:"Введите корректный email."},
+ zh:{navDeals:"精选优惠",navAlerts:"价格提醒",navAbout:"关于",navCta:"获取优惠",heroEyebrow:"商务舱优惠猎手",heroH1:"别处找不到的<br><em>商务舱票价。</em>",heroLede:"Aeryndo 发掘别处找不到的商务舱票价——联程组合、错误票价、闪购优惠，均经核实。跟踪航线、接收提醒、抢在所有人之前预订。",tabRound:"往返",tabOneway:"单程",lblFrom:"出发",lblTo:"到达",lblDep:"去程",lblRet:"回程",lblPax:"乘客",btnSearch:"搜寻",trust1:"联程组合",trust2:"每单均已核实",trust3:"抢先提醒",trust4:"无隐藏费用",resultsTitle:"我们发掘到的",demoBanner:"<b>预览——演示价格。</b>“预订”按钮已启用并带推广标识。接入合作方数据后将显示实时票价。",dealsH2:"别处<em>看不到的价格。</em>",dealsAside:"我们组合、搜寻、核实。每单都标明让它对大型引擎“隐形”的机制。",dealsNote:"◈ 演示示例——接入合作方后实时列表将自动填充。",mechCombine:"两航司联程",mechError:"错误票价·已核实",mechFlash:"闪购优惠",mechMiles:"里程甜蜜点",verified:"可订状态已核实",spotted:"发现于",vsPublic:"对比公开价",btnBook:"预订 →",alertEyebrow:"产品核心",alertH2:"最好的优惠数小时内就会消失。",alertP:"错误票价或商务舱闪购不会持久。选好航线，我们替你盯着——在价格消失前通知你。",alertPh:"you@email.com",alertBtn:"获取优惠",alertNote:"免费。商务舱好价直达邮箱。随时退订。",alertDoneA:"✓ 完成，",alertDoneB:"。下一批商务舱好价正在发往你的邮箱。",how1t:"我们发掘",how1p:"航司组合、错误票价、闪购、里程甜蜜点——大型引擎不会优化的角度。",how2t:"我们核实",how2p:"每单发布前都会核对。绝无付款时失效的假票价。所见即可订。",how3t:"我们提醒",how3p:"你跟踪航线，好价一出现我们立刻通知。你在合作方处预订，抢在价格消失之前。",footMentions:"法律声明",footCgu:"条款",footPrivacy:"隐私",footAff:"推广说明",footDisc:"<b>推广披露——</b>Aeryndo 是优惠猎手，并非旅行社。我们不售票：而是将你引导至合作方（Skyscanner、Kiwi.com 等，经 Travelpayouts）。部分链接为推广链接：若你预订，我们可能获得佣金，你无需额外付费。© <span id='year'></span> Aeryndo.",cookieText:"我们使用 Cookie 以统计访问并支持推广。<a onclick=\"openLegal('privacy')\">了解更多</a>。",cookieRefuse:"拒绝",cookieAccept:"接受",toastEmail:"请输入有效邮箱。"},
+ ar:{navDeals:"عروض مكتشفة",navAlerts:"تنبيهات الأسعار",navAbout:"من نحن",navCta:"استلام العروض",heroEyebrow:"صائد عروض درجة الأعمال",heroH1:"أسعار درجة أعمال<br><em>لا يجدها أحد سوانا.</em>",heroLede:"تكتشف Aeryndo أسعار درجة أعمال لا تجدها في مكان آخر — مسارات مركّبة، أسعار خطأ، عروض خاطفة — جميعها موثّقة. تابِع مساراً، استلم التنبيه، واحجز قبل الجميع.",tabRound:"ذهاب وإياب",tabOneway:"ذهاب فقط",lblFrom:"من",lblTo:"إلى",lblDep:"الذهاب",lblRet:"العودة",lblPax:"المسافرون",btnSearch:"ابحث",trust1:"مسارات مركّبة",trust2:"كل عرض موثّق",trust3:"تنبيه قبل الجميع",trust4:"بدون رسوم خفية",resultsTitle:"ما اكتشفناه",demoBanner:"<b>معاينة — أسعار توضيحية.</b> أزرار «احجز» فعّالة وبروابط تسويق. ستظهر الأسعار الحقيقية عند ربط بيانات الشركاء.",dealsH2:"أسعار <em>لن تراها في أي مكان آخر.</em>",dealsAside:"نجمع، نبحث، نوثّق. كل عرض يوضّح الآلية التي تجعله خفياً عن المحرّكات الكبرى.",dealsNote:"◈ أمثلة توضيحية — ستمتلئ القائمة الحيّة عند ربط الشركاء.",mechCombine:"دمج شركتين",mechError:"سعر خطأ · موثّق",mechFlash:"عرض خاطف",mechMiles:"نقاط مميّزة",verified:"التوفّر موثّق",spotted:"رُصد",vsPublic:"مقابل العلني",btnBook:"احجز →",alertEyebrow:"جوهر المنتج",alertH2:"أفضل العروض تختفي خلال ساعات.",alertP:"سعر الخطأ أو العرض الخاطف في درجة الأعمال لا يدوم. اختر مساراتك، نراقب نيابةً عنك — وننبّهك قبل أن يختفي السعر.",alertPh:"you@email.com",alertBtn:"استلام العروض",alertNote:"مجاناً. جواهر درجة الأعمال مباشرةً إلى بريدك. إلغاء الاشتراك في أي وقت.",alertDoneA:"✓ تم، ",alertDoneB:". جواهر درجة الأعمال القادمة في طريقها إلى بريدك.",how1t:"نكتشف",how1p:"دمج شركات الطيران، أسعار الخطأ، العروض الخاطفة، نقاط الأميال المميّزة — الزوايا التي لا تحسّنها المحرّكات الكبرى.",how2t:"نوثّق",how2p:"يُفحص كل عرض قبل النشر. لا سعر زائف يسقط عند الدفع. ما تراه قابل للحجز.",how3t:"ننبّهك",how3p:"تتابع مساراتك، وننبّهك فور ظهور جوهرة. تحجز لدى الشريك قبل أن يختفي السعر.",footMentions:"إشعار قانوني",footCgu:"الشروط",footPrivacy:"الخصوصية",footAff:"الإفصاح",footDisc:"<b>إفصاح تسويقي —</b> Aeryndo صائد عروض وليست وكالة سفر. لا نبيع التذاكر: نوجّهك إلى شركائنا (Skyscanner وKiwi.com وغيرهما عبر Travelpayouts). بعض الروابط تسويقية: إذا حجزت قد نحصل على عمولة دون تكلفة إضافية عليك. © <span id='year'></span> Aeryndo.",cookieText:"نستخدم ملفات تعريف الارتباط لقياس الجمهور وتشغيل التسويق. <a onclick=\"openLegal('privacy')\">اعرف المزيد</a>.",cookieRefuse:"رفض",cookieAccept:"قبول",toastEmail:"أدخل بريداً صالحاً."},
+ ja:{navDeals:"見つけた特典",navAlerts:"価格アラート",navAbout:"概要",navCta:"特典を受け取る",heroEyebrow:"ビジネスクラスの掘り出し屋",heroH1:"他では見つからない<br><em>ビジネスクラス運賃。</em>",heroLede:"Aeryndo は他では見つからないビジネスクラス運賃を発掘します——乗継の組み合わせ、エラー運賃、フラッシュ特価、すべて検証済み。路線を追跡し、アラートを受け取り、誰よりも早く予約を。",tabRound:"往復",tabOneway:"片道",lblFrom:"出発",lblTo:"到着",lblDep:"往路",lblRet:"復路",lblPax:"人数",btnSearch:"探す",trust1:"乗継の組合せ",trust2:"全特典を検証",trust3:"誰より早く通知",trust4:"隠れた手数料なし",resultsTitle:"発掘した結果",demoBanner:"<b>プレビュー — デモ価格です。</b>「予約」ボタンは有効でアフィリエイト対応済み。パートナーデータ接続後にリアルタイム価格を表示します。",dealsH2:"他では<em>見られない価格。</em>",dealsAside:"組み合わせ、探索、検証。各特典には大手エンジンから見えなくする仕組みを表示します。",dealsNote:"◈ デモ例です — パートナー接続後にライブ一覧が自動で埋まります。",mechCombine:"2社乗継",mechError:"エラー運賃・検証済",mechFlash:"フラッシュ特価",mechMiles:"マイル妙手",verified:"空席検証済み",spotted:"発見",vsPublic:"公開価格比",btnBook:"予約 →",alertEyebrow:"プロダクトの核",alertH2:"最良の特典は数時間で消えます。",alertP:"エラー運賃やビジネスのフラッシュ特価は長続きしません。路線を選べば私たちが監視し——価格が消える前にお知らせします。",alertPh:"you@email.com",alertBtn:"特典を受け取る",alertNote:"無料。ビジネスの逸品を直接メールへ。いつでも解除可能。",alertDoneA:"✓ 完了、",alertDoneB:"。次のビジネスの逸品をメールでお届けします。",how1t:"発掘する",how1p:"航空会社の組合せ、エラー運賃、フラッシュ特価、マイルの妙手——大手が最適化しない角度。",how2t:"検証する",how2p:"公開前に各特典を確認。決済時に消える偽運賃はなし。表示はすべて予約可能。",how3t:"通知する",how3p:"路線を追跡すれば、逸品が出た瞬間に通知。価格が消える前にパートナーで予約。",footMentions:"特定商取引法",footCgu:"利用規約",footPrivacy:"プライバシー",footAff:"アフィリエイト",footDisc:"<b>アフィリエイト開示 —</b> Aeryndo は掘り出し屋であり旅行代理店ではありません。航空券は販売せず、パートナー（Travelpayouts 経由の Skyscanner・Kiwi.com 等）へご案内します。一部はアフィリエイトリンクで、ご予約時に追加費用なく手数料を得る場合があります。© <span id='year'></span> Aeryndo.",cookieText:"アクセス測定とアフィリエイトのために Cookie を使用します。<a onclick=\"openLegal('privacy')\">詳細</a>。",cookieRefuse:"拒否",cookieAccept:"同意",toastEmail:"有効なメールを入力してください。"},
+ ko:{navDeals:"발굴한 특가",navAlerts:"가격 알림",navAbout:"소개",navCta:"특가 받기",heroEyebrow:"비즈니스석 특가 헌터",heroH1:"다른 곳엔 없는<br><em>비즈니스석 요금.</em>",heroLede:"Aeryndo는 다른 곳에서 찾을 수 없는 비즈니스석 요금을 발굴합니다 — 결합 노선, 오류 요금, 플래시 특가, 모두 검증됨. 노선을 추적하고 알림을 받고 누구보다 먼저 예약하세요.",tabRound:"왕복",tabOneway:"편도",lblFrom:"출발",lblTo:"도착",lblDep:"가는 날",lblRet:"오는 날",lblPax:"승객",btnSearch:"찾기",trust1:"결합 노선",trust2:"모든 특가 검증",trust3:"누구보다 빠른 알림",trust4:"숨은 수수료 없음",resultsTitle:"발굴 결과",demoBanner:"<b>미리보기 — 데모 가격입니다.</b> ‘예약’ 버튼은 활성화된 제휴 링크입니다. 파트너 데이터 연결 시 실시간 요금이 표시됩니다.",dealsH2:"어디서도 <em>볼 수 없는 가격.</em>",dealsAside:"결합하고, 찾고, 검증합니다. 각 특가에는 대형 엔진에서 보이지 않게 만드는 메커니즘이 표시됩니다.",dealsNote:"◈ 데모 예시 — 파트너 연결 시 실시간 목록이 자동으로 채워집니다.",mechCombine:"2개 항공사 결합",mechError:"오류 요금 · 검증",mechFlash:"플래시 특가",mechMiles:"마일 스윗스팟",verified:"좌석 확인됨",spotted:"발견",vsPublic:"공개가 대비",btnBook:"예약 →",alertEyebrow:"제품의 핵심",alertH2:"최고의 특가는 몇 시간이면 사라집니다.",alertP:"오류 요금이나 비즈니스 플래시 특가는 오래가지 않습니다. 노선을 고르면 저희가 지켜보고 — 가격이 사라지기 전에 알려드립니다.",alertPh:"you@email.com",alertBtn:"특가 받기",alertNote:"무료. 비즈니스 특가를 바로 메일함으로. 언제든 해지 가능.",alertDoneA:"✓ 완료, ",alertDoneB:". 다음 비즈니스 특가가 메일함으로 가고 있습니다.",how1t:"발굴합니다",how1p:"항공사 결합, 오류 요금, 플래시 특가, 마일 스윗스팟 — 대형 엔진이 최적화하지 않는 각도.",how2t:"검증합니다",how2p:"모든 특가는 게시 전 확인합니다. 결제 시 무너지는 가짜 요금 없음. 보이는 그대로 예약 가능.",how3t:"알려드립니다",how3p:"노선을 추적하면 특가가 나오는 즉시 알림. 가격이 사라지기 전에 파트너에서 예약하세요.",footMentions:"법적 고지",footCgu:"약관",footPrivacy:"개인정보",footAff:"제휴 고지",footDisc:"<b>제휴 고지 —</b> Aeryndo는 특가 헌터이며 여행사가 아닙니다. 항공권을 판매하지 않고 파트너(Travelpayouts 통한 Skyscanner, Kiwi.com 등)로 안내합니다. 일부 링크는 제휴 링크로, 예약 시 추가 비용 없이 수수료를 받을 수 있습니다. © <span id='year'></span> Aeryndo.",cookieText:"방문 측정과 제휴를 위해 쿠키를 사용합니다. <a onclick=\"openLegal('privacy')\">자세히</a>.",cookieRefuse:"거부",cookieAccept:"동의",toastEmail:"유효한 이메일을 입력하세요."},
+ hi:{navDeals:"मिले सौदे",navAlerts:"मूल्य अलर्ट",navAbout:"हमारे बारे में",navCta:"सौदे पाएँ",heroEyebrow:"बिज़नेस क्लास डील-हंटर",heroH1:"बिज़नेस किराए<br><em>जो और कोई नहीं खोज पाता।</em>",heroLede:"Aeryndo ऐसे बिज़नेस किराए खोजता है जो कहीं और नहीं मिलते — संयुक्त मार्ग, एरर फेयर, फ़्लैश डील — सभी सत्यापित। रूट ट्रैक करें, अलर्ट पाएँ, सबसे पहले बुक करें।",tabRound:"राउंड ट्रिप",tabOneway:"वन वे",lblFrom:"से",lblTo:"तक",lblDep:"प्रस्थान",lblRet:"वापसी",lblPax:"यात्री",btnSearch:"खोजें",trust1:"संयुक्त मार्ग",trust2:"हर सौदा सत्यापित",trust3:"सबसे पहले अलर्ट",trust4:"कोई छिपा शुल्क नहीं",resultsTitle:"जो हमने खोजा",demoBanner:"<b>पूर्वावलोकन — डेमो मूल्य।</b> «बुक करें» बटन सक्रिय और एफ़िलिएट हैं। पार्टनर डेटा जुड़ते ही वास्तविक मूल्य दिखेंगे।",dealsH2:"ऐसे दाम जो आपको <em>और कहीं नहीं मिलेंगे।</em>",dealsAside:"हम जोड़ते हैं, खोजते हैं, सत्यापित करते हैं। हर सौदे पर वह तरकीब दिखती है जो उसे बड़े इंजनों से छिपा देती है।",dealsNote:"◈ डेमो उदाहरण — पार्टनर जुड़ते ही लाइव फ़ीड अपने आप भर जाएगी।",mechCombine:"2-एयरलाइन कॉम्बो",mechError:"एरर फेयर · सत्यापित",mechFlash:"फ़्लैश डील",mechMiles:"माइल्स स्वीट स्पॉट",verified:"उपलब्धता सत्यापित",spotted:"मिला",vsPublic:"बनाम सार्वजनिक",btnBook:"बुक करें →",alertEyebrow:"उत्पाद का हृदय",alertH2:"बेहतरीन सौदे घंटों में गायब हो जाते हैं।",alertP:"एरर फेयर या बिज़नेस फ़्लैश डील टिकती नहीं। अपने रूट चुनें, हम आपके लिए नज़र रखते हैं — और दाम गायब होने से पहले बता देते हैं।",alertPh:"you@email.com",alertBtn:"सौदे पाएँ",alertNote:"मुफ़्त। बिज़नेस के बेहतरीन सौदे सीधे आपके इनबॉक्स में। कभी भी अनसब्सक्राइब करें।",alertDoneA:"✓ हो गया, ",alertDoneB:"। अगले बिज़नेस सौदे आपके इनबॉक्स की ओर आ रहे हैं।",how1t:"हम खोजते हैं",how1p:"एयरलाइन कॉम्बो, एरर फेयर, फ़्लैश डील, माइल्स स्वीट स्पॉट — वे कोण जिन्हें बड़े इंजन ऑप्टिमाइज़ नहीं करते।",how2t:"हम सत्यापित करते हैं",how2p:"हर सौदा प्रकाशन से पहले जाँचा जाता है। भुगतान पर गिरने वाला नकली किराया नहीं। जो दिखता है वह बुक हो सकता है।",how3t:"हम अलर्ट करते हैं",how3p:"आप रूट ट्रैक करें, सौदा आते ही हम सूचित करते हैं। दाम जाने से पहले पार्टनर के साथ बुक करें।",footMentions:"कानूनी सूचना",footCgu:"शर्तें",footPrivacy:"गोपनीयता",footAff:"एफ़िलिएशन",footDisc:"<b>एफ़िलिएट प्रकटीकरण —</b> Aeryndo एक डील-हंटर है, ट्रैवल एजेंसी नहीं। हम टिकट नहीं बेचते: हम आपको अपने पार्टनर (Travelpayouts के ज़रिए Skyscanner, Kiwi.com आदि) तक भेजते हैं। कुछ लिंक एफ़िलिएट हैं: बुकिंग पर हमें बिना अतिरिक्त लागत कमीशन मिल सकता है। © <span id='year'></span> Aeryndo.",cookieText:"ऑडियंस मापने और एफ़िलिएशन चलाने के लिए कुकीज़। <a onclick=\"openLegal('privacy')\">और जानें</a>।",cookieRefuse:"अस्वीकार",cookieAccept:"स्वीकार",toastEmail:"मान्य ईमेल दर्ज करें।"}
+};
+let LANG="fr";
+function t(k){return (I18N[LANG]&&I18N[LANG][k])||I18N.fr[k]||k;}
+function setLang(code){
+  if(!SUPPORTED.includes(code))code="fr";
+  LANG=code;
+  document.documentElement.lang=code;
+  document.documentElement.dir=(code==="ar")?"rtl":"ltr";
+  const sel=document.getElementById("lang");if(sel)sel.value=code;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{el.textContent=t(el.getAttribute("data-i18n"));});
+  document.querySelectorAll("[data-i18n-html]").forEach(el=>{el.innerHTML=t(el.getAttribute("data-i18n-html"));});
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>{el.placeholder=t(el.getAttribute("data-i18n-ph"));});
+  const y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear();
+  renderDeals();
+  if(!document.getElementById("results").classList.contains("hidden")){
+    renderFlights(document.getElementById("from").value.toUpperCase(),document.getElementById("to").value.toUpperCase());
+  }
+}
+
+/* mechanism icons */
+const MECH={
+  combine:{cls:"combine",k:"mechCombine",svg:'<path d="M3 12h4l3-8 4 16 3-8h4"/>'},
+  error:{cls:"error",k:"mechError",svg:'<path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/>'},
+  flash:{cls:"flash",k:"mechFlash",svg:'<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>'},
+  miles:{cls:"miles",k:"mechMiles",svg:'<circle cx="12" cy="12" r="9"/><path d="M12 7l1.6 3.3 3.6.5-2.6 2.5.6 3.6L12 15.7 8.8 17l.6-3.6L6.8 10.8l3.6-.5z"/>'}
+};
+function mechChip(k){const m=MECH[k];return `<span class="mech ${m.cls}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${m.svg}</svg>${t(m.k)}</span>`;}
+
+const DEALS=[
+  {from:"CDG",to:"HND",c1:"CDG",c2:"HND",carrier:"Finnair + Japan Airlines",price:1890,was:4120,mech:"combine",spotted:"3h"},
+  {from:"CDG",to:"JFK",c1:"CDG",c2:"JFK",carrier:"La Compagnie",price:1490,was:2400,mech:"flash",spotted:"6h"},
+  {from:"CDG",to:"SIN",c1:"CDG",c2:"SIN",carrier:"Turkish Airlines · IST",price:2090,was:3560,mech:"error",spotted:"1d"},
+  {from:"NCE",to:"LAX",c1:"NCE",c2:"LAX",carrier:"Air France + Delta",price:2340,was:4280,mech:"combine",spotted:"2d"},
+  {from:"CDG",to:"DXB",c1:"CDG",c2:"DXB",carrier:"Qatar Airways · DOH",price:1650,was:2480,mech:"flash",spotted:"8h"},
+  {from:"CDG",to:"GRU",c1:"CDG",c2:"GRU",carrier:"TAP · LIS",price:1980,was:3120,mech:"miles",spotted:"1d"}
+];
+function renderDeals(){
+  const g=document.getElementById("dealGrid");
+  g.innerHTML=DEALS.map(d=>{
+    const save=Math.round((1-d.price/d.was)*100);
+    return `<div class="deal">
+      <div class="top">${mechChip(d.mech)}<span class="spotted">${t('spotted')} · ${d.spotted}</span></div>
+      <div><div class="route">${d.c1} <span>→</span> ${d.c2}</div><div class="carrier">${d.carrier}</div></div>
+      <div class="verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>${t('verified')}</div>
+      <div class="foot"><div class="price"><div class="save">−${save}% ${t('vsPublic')}</div><div class="amt">${d.price.toLocaleString()} €</div><div class="was">${d.was.toLocaleString()} €</div></div>
+      <button class="go" onclick="book('${d.from}','${d.to}')">${t('btnBook')}</button></div>
+    </div>`;
+  }).join("");
+}
+
+let trip="round";
+(function init(){
+  const d=new Date();d.setDate(d.getDate()+21);const r=new Date();r.setDate(r.getDate()+28);const iso=x=>x.toISOString().split("T")[0];
+  document.getElementById("dep").value=iso(d);document.getElementById("ret").value=iso(r);
+  const nav=(navigator.language||"fr").slice(0,2).toLowerCase();
+  setLang(SUPPORTED.includes(nav)?nav:"fr");
+})();
+
+["from","to"].forEach(id=>{document.getElementById(id).addEventListener("input",e=>{const v=e.target.value.toUpperCase().slice(0,3);document.getElementById(id+"-sub").textContent=AIRPORTS[v]||"—";});});
+function setTrip(tp,btn){trip=tp;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected","false"));btn.setAttribute("aria-selected","true");document.getElementById("retField").classList.toggle("disabled",tp==="oneway");}
+function swap(){const f=document.getElementById("from"),tt=document.getElementById("to");[f.value,tt.value]=[tt.value,f.value];f.dispatchEvent(new Event("input"));tt.dispatchEvent(new Event("input"));}
+
+function buildAffiliateLink(from,to,dep,ret,pax){const dm=s=>{const[y,m,d]=s.split("-");return d+m;};const path=from+dm(dep)+to+(trip==="round"&&ret?dm(ret):"")+pax;return `https://www.${CONFIG.PARTNER_HOST}/search/${path}?marker=${CONFIG.MARKER}&currency=${CONFIG.CURRENCY}&trip_class=C`;}
+function book(from,to){const dep=document.getElementById("dep").value,ret=document.getElementById("ret").value,pax=document.getElementById("pax").value||1;window.open(buildAffiliateLink(from,to,dep,ret,pax),"_blank","noopener");}
+
+function search(){const from=(document.getElementById("from").value||"CDG").toUpperCase();const to=(document.getElementById("to").value||"HND").toUpperCase();document.getElementById("routeChip").textContent=`${from} → ${to}`;renderFlights(from,to);document.getElementById("results").classList.remove("hidden");document.getElementById("results").scrollIntoView({behavior:"smooth"});}
+function renderFlights(from,to){
+  let seed=0;(from+to).split("").forEach(c=>seed+=c.charCodeAt(0));const rnd=n=>{seed=(seed*9301+49297)%233280;return seed/233280*n;};
+  const base=1650+Math.floor(rnd(1400));const list=document.getElementById("flightList");list.innerHTML="";
+  const CARRIERS=[{name:"Qatar Airways",m:"Q",c:"Qsuite"},{name:"Finnair + JAL",m:"F",c:"combiné",mech:"combine"},{name:"Emirates",m:"E",c:"suite"},{name:"Turkish Airlines",m:"T",c:"cabine",mech:"error"},{name:"Singapore Airlines",m:"S",c:"lie-flat"},{name:"ANA",m:"N",c:"The Room"}];
+  const picks=[...CARRIERS].sort(()=>rnd(1)-.5).slice(0,5);
+  picks.forEach((c,i)=>{
+    const price=base+i*Math.floor(160+rnd(240))-Math.floor(rnd(120));const was=Math.round(price*(1.2+rnd(.4)));const save=Math.round((1-price/was)*100);
+    const depH=6+Math.floor(rnd(14)),dur=7+Math.floor(rnd(9)),arrH=(depH+dur)%24;const p2=n=>String(n).padStart(2,"0");
+    list.insertAdjacentHTML("beforeend",`<div class="flight">
+      <div class="airline"><div class="dot">${c.m}</div><div class="meta"><b>${c.name}</b><small>Business</small>${c.mech?mechChip(c.mech):""}</div></div>
+      <div class="leg"><div class="pt"><div class="t">${p2(depH)}:15</div><div class="a">${from}</div></div><div class="path"><div class="dur">${dur}h ${p2(Math.floor(rnd(59)))}m</div><div class="line"></div><div class="stops">${c.mech==="combine"?"1":(rnd(10)>7?"1":"0")}</div></div><div class="pt"><div class="t">${p2(arrH)}:40</div><div class="a">${to}</div></div></div>
+      <div class="price-cell"><div class="save">−${save}% ${t('vsPublic')}</div><div class="amt">${price.toLocaleString()} €</div><div class="was">${was.toLocaleString()} €</div><button class="book-btn" onclick="book('${from}','${to}')">${t('btnBook')}</button></div>
+    </div>`);
+  });
+}
+
+function subscribe(){const email=document.getElementById("alertEmail").value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){toast(t('toastEmail'));return;}document.getElementById("alertForm").classList.add("hidden");const done=document.getElementById("alertDone");done.classList.remove("hidden");done.innerHTML=`${t('alertDoneA')}<b>${email}</b>${t('alertDoneB')}`;}
+
+function goHome(){document.getElementById("home").scrollIntoView({behavior:"smooth"});}
+function scrollTo2(id){document.getElementById(id).scrollIntoView({behavior:"smooth"});}
+function scrollToAlert(){document.getElementById("alert").scrollIntoView({behavior:"smooth"});}
+let toastT;function toast(msg){const el=document.getElementById("toast");el.innerHTML=msg;el.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),4200);}
+function closeCookie(){document.getElementById("cookie").style.display="none";}
+
+const LEGAL={
+  about:{k:"Aeryndo",t:"Aeryndo",h:`<p>Aeryndo — the Business Class deal-hunter. We assemble routings you won't find elsewhere, track error fares and flash deals, and verify each deal before publishing.</p><p>We don't sell tickets. We point you to trusted booking partners and earn an affiliate commission when you book — that's what keeps Aeryndo free for you.</p><p style="color:var(--brass)">▸ Ce texte légal reste à traduire/compléter avant le lancement public.</p>`},
+  mentions:{k:"Legal",t:"Mentions légales",h:`<p><b>Éditeur :</b> <span class="todo">[Nom / raison sociale]</span></p><p><b>Statut :</b> <span class="todo">[auto-entrepreneur / SASU]</span> — <b>SIREN :</b> <span class="todo">[à compléter]</span></p><p><b>Contact :</b> <span class="todo">[email]</span></p><p><b>Pays :</b> France</p><p><b>Hébergement :</b> Vercel Inc. — 340 S Lemon Ave #4133, Walnut, CA 91789, USA</p><p><b>Directeur de la publication :</b> <span class="todo">[votre nom]</span></p>`},
+  cgu:{k:"Legal",t:"CGU",h:`<p>Aeryndo fournit un service de curation et de comparaison de tarifs aériens à titre informatif. Les prix proviennent de partenaires tiers et peuvent varier jusqu'à la réservation finale.</p><h4>Rôle</h4><p>Aeryndo n'est pas une agence de voyage et ne vend aucun billet. Le contrat de transport est conclu entre vous et le transporteur ou l'agence partenaire.</p>`},
+  privacy:{k:"RGPD",t:"Confidentialité",h:`<p>Conformément au RGPD.</p><h4>Données</h4><p>Email (alertes), routes suivies, mesure d'audience (cookies).</p><h4>Vos droits</h4><p>Accès, rectification, effacement, opposition : <span class="todo">[email]</span>. Réclamation possible auprès de la CNIL.</p>`},
+  affiliation:{k:"Transparence",t:"Affiliation",h:`<p>Aeryndo utilise des liens d'affiliation (Skyscanner, Kiwi.com et autres via Travelpayouts). Si vous réservez, Aeryndo peut percevoir une commission — même prix pour vous, sans influence sur le classement.</p>`}
+};
+function openLegal(key){const d=LEGAL[key];if(!d)return;const back=document.createElement("div");back.className="modal-back";back.onclick=e=>{if(e.target===back)back.remove();};back.innerHTML=`<div class="modal" role="dialog" aria-modal="true"><button class="modal-close" onclick="this.closest('.modal-back').remove()">×</button><div class="kicker">${d.k}</div><h3>${d.t}</h3>${d.h}</div>`;document.body.appendChild(back);}
+</script>
+</body>
+</html>
