@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Aeryndo — La Business Class que personne d'autre ne déniche</title>
 <meta name="description" content="Aeryndo déniche des tarifs Business introuvables ailleurs : trajets combinés, tarifs erreur, promos flash. Suivez, recevez l'alerte, réservez avant tout le monde." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 2 L20 13 L31 16 L20 19 L16 30 L12 19 L1 16 L12 13 Z' fill='%230B403C'/></svg>">
+<meta name="theme-color" content="#ECEAE3">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Aeryndo">
+<meta property="og:title" content="Aeryndo — Des tarifs Business que personne d'autre ne déniche">
+<meta property="og:description" content="Trajets combinés, tarifs erreur, promos flash — tous vérifiés. Suivez une route, recevez l'alerte, réservez avant tout le monde.">
+<meta property="og:url" content="https://aeryndo.co">
+<meta property="og:image" content="https://aeryndo.co/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Aeryndo — La Business Class au juste prix">
+<meta name="twitter:description" content="Le dénicheur de tarifs Business. Recevez les pépites avant tout le monde.">
+<meta name="twitter:image" content="https://aeryndo.co/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
@@ -46,7 +58,7 @@ header.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);backgroun
 .lang-wrap svg{color:var(--petrol);flex:none}
 select.lang{appearance:none;-webkit-appearance:none;background:transparent;border:1px solid var(--hair-petrol);color:var(--petrol);font-family:'Geist Mono',monospace;font-size:12.5px;padding:8px 12px;border-radius:9px;cursor:pointer;outline:none;transition:.2s}
 select.lang:hover{border-color:var(--petrol)}
-@media(max-width:820px){.nav-links a:not(.nav-cta){display:none}.nav-cta{display:none}}
+@media(max-width:820px){.nav-links a:not(.nav-cta){display:none}.nav-cta{padding:9px 13px;font-size:11.5px}}
 @media(max-width:520px){.brand .word{font-size:23px}}
 
 /* hero */
@@ -205,6 +217,19 @@ footer{border-top:1px solid var(--hair);padding:46px 0 32px;color:var(--muted)}
 .ac-item .n{font-size:14px;color:var(--ink)}
 .ac-item .n small{color:var(--muted);font-size:12.5px}
 .ac-empty{padding:12px 14px;color:var(--muted);font-size:13px;font-family:'Geist Mono',monospace}
+/* hero email capture */
+.hero-cta{margin:22px 4px 0;padding:0 4px}
+.hero-cta .line{font-size:13.5px;color:var(--muted);margin-bottom:9px;font-family:'Geist Mono',monospace;letter-spacing:.02em}
+.mini-form{display:flex;gap:9px;max-width:440px}
+.mini-form input{flex:1;min-width:0;background:var(--card);border:1px solid var(--hair-petrol);border-radius:11px;padding:13px 15px;color:var(--ink);font-size:14.5px;outline:none;transition:.2s}
+.mini-form input:focus{border-color:var(--petrol)}
+.mini-form button{background:var(--petrol);color:var(--paper);border:0;border-radius:11px;font-family:'Geist Mono',monospace;font-weight:500;font-size:13px;padding:0 18px;cursor:pointer;white-space:nowrap;transition:.2s}
+.mini-form button:hover{background:var(--petrol-deep)}
+/* deal visual header */
+.deal .ph{height:92px;margin:-22px -22px 6px;border-radius:15px 15px 0 0;display:flex;align-items:flex-end;padding:12px 16px;position:relative;overflow:hidden}
+.deal .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.28))}
+.deal .ph .city{position:relative;z-index:1;font-family:'Instrument Serif',serif;color:#F6F4EF;font-size:23px;line-height:1;text-shadow:0 1px 8px rgba(0,0,0,.25)}
+.deal .ph .plane{position:absolute;top:12px;right:14px;color:rgba(246,244,239,.55);font-size:15px}
 </style>
 <!-- Travelpayouts Drive -->
 <script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
@@ -274,6 +299,14 @@ footer{border-top:1px solid var(--hair);padding:46px 0 32px;color:var(--muted)}
         <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 004 0"/></svg><span data-i18n="trust3">Alerte avant tout le monde</span></span>
         <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="trust4">Sans frais cachés</span></span>
       </div>
+    </div>
+    <div class="hero-cta">
+      <div class="line" id="heroCtaLine">Ou recevez les pépites directement par email</div>
+      <div class="mini-form" id="heroForm">
+        <input type="email" id="heroEmail" placeholder="votre@email.com" data-i18n-ph="alertPh" aria-label="email">
+        <button onclick="subscribe('heroEmail','heroDone','heroForm')" data-i18n="alertBtn">Recevoir les deals</button>
+      </div>
+      <div id="heroDone" class="alert-ok hidden" style="color:var(--petrol);margin-top:8px"></div>
     </div>
   </div>
 </section>
@@ -382,6 +415,7 @@ const AP=[
 const APM={};AP.forEach(a=>APM[a[0]]=a);
 function norm(s){return (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();}
 const ACPH={fr:"Ville ou aéroport",en:"City or airport",es:"Ciudad o aeropuerto",de:"Stadt oder Flughafen",it:"Città o aeroporto",pt:"Cidade ou aeroporto",ru:"Город или аэропорт",zh:"城市或机场",ar:"مدينة أو مطار",ja:"都市または空港",ko:"도시 또는 공항",hi:"शहर या हवाई अड्डा"};
+const HEROCTA={fr:"Ou recevez les pépites directement par email",en:"Or get the gems straight to your inbox",es:"O recibe las joyas directamente por email",de:"Oder erhalten Sie die Perlen direkt per E-Mail",it:"O ricevi le perle direttamente via email",pt:"Ou receba as pérolas diretamente no email",ru:"Или получайте находки прямо на почту",zh:"或直接把好价发到你的邮箱",ar:"أو استلم الجواهر مباشرة على بريدك",ja:"またはお得情報を直接メールで受け取る",ko:"또는 특가를 이메일로 바로 받기",hi:"या पेशकश सीधे अपने ईमेल पर पाएं"};
 
 /* ===================== i18n ===================== */
 const SUPPORTED=["fr","en","es","de","it","pt","ru","zh","ar","ja","ko","hi"];
@@ -411,6 +445,7 @@ function setLang(code){
   document.querySelectorAll("[data-i18n-html]").forEach(el=>{el.innerHTML=t(el.getAttribute("data-i18n-html"));});
   document.querySelectorAll("[data-i18n-ph]").forEach(el=>{el.placeholder=t(el.getAttribute("data-i18n-ph"));});
   const acph=(ACPH[code]||ACPH.fr);["from","to"].forEach(id=>{const e=document.getElementById(id);if(e)e.placeholder=acph;});
+  const hc=document.getElementById("heroCtaLine");if(hc)hc.textContent=(HEROCTA[code]||HEROCTA.fr);
   const y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear();
   renderDeals();
   if(!document.getElementById("results").classList.contains("hidden")){
@@ -437,9 +472,12 @@ const DEALS=[
 ];
 function renderDeals(){
   const g=document.getElementById("dealGrid");
-  g.innerHTML=DEALS.map(d=>{
+  const GRAD=["linear-gradient(135deg,#0B403C,#12645c)","linear-gradient(135deg,#1a3a4a,#0B403C)","linear-gradient(135deg,#6b4e2e,#A9824B)","linear-gradient(135deg,#0e2f2b,#1a3a4a)","linear-gradient(135deg,#2a4a45,#0B403C)","linear-gradient(135deg,#7a5a34,#0B403C)"];
+  g.innerHTML=DEALS.map((d,i)=>{
     const save=Math.round((1-d.price/d.was)*100);
+    const city=APM[d.to]?APM[d.to][1]:d.c2;
     return `<div class="deal">
+      <div class="ph" style="background:${GRAD[i%GRAD.length]}"><span class="plane">✈</span><span class="city">${city}</span></div>
       <div class="top">${mechChip(d.mech)}<span class="spotted">${t('spotted')} · ${d.spotted}</span></div>
       <div><div class="route">${d.c1} <span>→</span> ${d.c2}</div><div class="carrier">${d.carrier}</div></div>
       <div class="verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>${t('verified')}</div>
@@ -492,7 +530,7 @@ function renderFlights(from,to){
   });
 }
 
-function subscribe(){const email=document.getElementById("alertEmail").value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){toast(t('toastEmail'));return;}document.getElementById("alertForm").classList.add("hidden");const done=document.getElementById("alertDone");done.classList.remove("hidden");done.innerHTML=`${t('alertDoneA')}<b>${email}</b>${t('alertDoneB')}`;}
+function subscribe(emailId,doneId,formId){emailId=emailId||"alertEmail";doneId=doneId||"alertDone";formId=formId||"alertForm";const email=document.getElementById(emailId).value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){toast(t('toastEmail'));return;}const f=document.getElementById(formId);if(f)f.classList.add("hidden");const done=document.getElementById(doneId);done.classList.remove("hidden");done.innerHTML=`${t('alertDoneA')}<b>${email}</b>${t('alertDoneB')}`;}
 
 function goHome(){document.getElementById("home").scrollIntoView({behavior:"smooth"});}
 function scrollTo2(id){document.getElementById(id).scrollIntoView({behavior:"smooth"});}
