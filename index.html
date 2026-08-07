@@ -496,7 +496,7 @@ function renderFlights(from,to){
   });
 }
 
-function subscribe(emailId,doneId,formId){emailId=emailId||"alertEmail";doneId=doneId||"alertDone";formId=formId||"alertForm";const email=document.getElementById(emailId).value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){toast(t('toastEmail'));return;}const f=document.getElementById(formId);if(f)f.classList.add("hidden");const done=document.getElementById(doneId);done.classList.remove("hidden");done.innerHTML=`${t('alertDoneA')}<b>${email}</b>${t('alertDoneB')}`;}
+function subscribe(emailId,doneId,formId){emailId=emailId||"alertEmail";doneId=doneId||"alertDone";formId=formId||"alertForm";const email=document.getElementById(emailId).value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){toast(t('toastEmail'));return;}const f=document.getElementById(formId);if(f)f.classList.add("hidden");const done=document.getElementById(doneId);done.classList.remove("hidden");done.innerHTML=`${t('alertDoneA')}<b>${email}</b>${t('alertDoneB')}`;try{fetch("/api/subscribe",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:email})}).catch(function(){});}catch(e){}}
 
 function goHome(){document.getElementById("home").scrollIntoView({behavior:"smooth"});}
 function scrollTo2(id){document.getElementById(id).scrollIntoView({behavior:"smooth"});}
