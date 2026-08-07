@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Aeryndo — La Business Class que personne d'autre ne déniche</title>
 <meta name="description" content="Aeryndo déniche des tarifs Business introuvables ailleurs : trajets combinés, tarifs erreur, promos flash. Suivez, recevez l'alerte, réservez avant tout le monde." />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 2 L20 13 L31 16 L20 19 L16 30 L12 19 L1 16 L12 13 Z' fill='%230B403C'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 2 L20 13 L31 16 L20 19 L16 30 L12 19 L1 16 L12 13 Z' fill='%23F3F0E9'/></svg>">
 <link rel="canonical" href="https://aeryndo.co/">
-<meta name="theme-color" content="#ECEAE3">
+<meta name="theme-color" content="#0E0E0F">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Aeryndo">
 <meta property="og:title" content="Aeryndo — Des tarifs Business que personne d'autre ne déniche">
@@ -23,225 +23,197 @@
 <meta name="twitter:image" content="https://aeryndo.co/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500&family=Geist+Mono:wght@400;500&family=Noto+Sans+Arabic:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#ECEAE3;--card:#F6F4EF;--petrol:#0B403C;--petrol-deep:#082F2B;--brass:#A9824B;--ink:#1A1917;--muted:#6E6A5F;--hair:rgba(26,25,23,.10);--hair-petrol:rgba(11,64,60,.16);--shadow:0 30px 70px -34px rgba(26,25,23,.4);--shadow-sm:0 12px 30px -18px rgba(26,25,23,.35)}
+:root{--ink:#0E0E0F;--panel:#161516;--card:#141314;--ivory:#F3F0E9;--stone:#98938b;--faint:#6f6b64;--line:rgba(243,240,233,.14);--line2:rgba(243,240,233,.07);--accent:#B5495B}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--paper);color:var(--ink);font-family:'Geist',system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(1100px 560px at 82% -6%,rgba(169,130,75,.10),transparent 62%),radial-gradient(900px 700px at 4% 6%,rgba(11,64,60,.07),transparent 58%)}
-::selection{background:rgba(11,64,60,.16)}
+body{background:var(--ink);color:var(--ivory);font-family:'Jost',system-ui,sans-serif;font-weight:300;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:rgba(181,73,91,.3)}
 a{color:inherit;text-decoration:none}
-.serif{font-family:'Instrument Serif',serif;font-weight:400}
+.serif{font-family:'Playfair Display',serif}
 .mono{font-family:'Geist Mono',monospace}
-:focus-visible{outline:2px solid var(--petrol);outline-offset:3px;border-radius:6px}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-.eyebrow{font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--brass)}
+:focus-visible{outline:1px solid var(--ivory);outline-offset:3px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 40px}
+.kick{font-family:'Jost';font-weight:400;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--stone)}
 .hidden{display:none !important}
-/* CJK / Arabic / Devanagari font stacks by lang */
-:lang(zh){font-family:'Noto Sans SC','Geist',sans-serif}
-:lang(ja){font-family:'Noto Sans JP','Geist',sans-serif}
-:lang(ko){font-family:'Noto Sans KR','Geist',sans-serif}
-:lang(ar){font-family:'Noto Sans Arabic','Geist',sans-serif}
-:lang(hi){font-family:'Noto Sans Devanagari','Geist',sans-serif}
-[dir="rtl"] .trust,[dir="rtl"] .deals-head,[dir="rtl"] .results-head,[dir="rtl"] .foot-top{direction:rtl}
-[dir="rtl"] .price-cell{text-align:left}
+:lang(zh){font-family:'Noto Sans SC','Jost',sans-serif}
+:lang(ja){font-family:'Noto Sans JP','Jost',sans-serif}
+:lang(ko){font-family:'Noto Sans KR','Jost',sans-serif}
+:lang(ar){font-family:'Noto Sans Arabic','Jost',sans-serif}
+:lang(hi){font-family:'Noto Sans Devanagari','Jost',sans-serif}
+[dir="rtl"] .trust,[dir="rtl"] .deals-h{direction:rtl}
+@media(max-width:760px){.wrap{padding:0 22px}}
 
-/* nav */
-header.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:linear-gradient(180deg,rgba(236,234,227,.9),rgba(236,234,227,.62));border-bottom:1px solid var(--hair)}
-.nav-in{display:flex;align-items:center;justify-content:space-between;height:70px;gap:16px}
-.brand{display:flex;align-items:center;gap:10px;cursor:pointer;flex:none}
-.brand .glyph{width:26px;height:26px;flex:none}
-.brand .word{font-family:'Instrument Serif',serif;font-size:27px;letter-spacing:.01em;color:var(--petrol)}
-.nav-links{display:flex;gap:26px;align-items:center}
-.nav-links a{font-size:14.5px;color:var(--muted);transition:color .2s;white-space:nowrap}
-.nav-links a:hover{color:var(--ink)}
-.nav-cta{font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:.04em;color:var(--paper);background:var(--petrol);padding:10px 17px;border-radius:10px;transition:.2s}
-.nav-cta:hover{background:var(--petrol-deep);transform:translateY(-1px)}
+header.nav{position:sticky;top:0;z-index:50;background:rgba(14,14,15,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:74px;gap:16px}
+.brand{font-family:'Playfair Display',serif;font-weight:500;font-size:25px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;flex:none}
+.nav-links{display:flex;gap:34px;align-items:center}
+.nav-links a{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);transition:.2s;white-space:nowrap}
+.nav-links a:hover{color:var(--ivory)}
+.nav-cta{border:1px solid var(--line);padding:11px 18px;color:var(--ivory) !important}
+.nav-cta:hover{border-color:var(--ivory)}
 .lang-wrap{display:flex;align-items:center;gap:6px;flex:none}
-.lang-wrap svg{color:var(--petrol);flex:none}
-select.lang{appearance:none;-webkit-appearance:none;background:transparent;border:1px solid var(--hair-petrol);color:var(--petrol);font-family:'Geist Mono',monospace;font-size:12.5px;padding:8px 12px;border-radius:9px;cursor:pointer;outline:none;transition:.2s}
-select.lang:hover{border-color:var(--petrol)}
-.burger{display:none;background:transparent;border:1px solid var(--hair-petrol);color:var(--petrol);width:38px;height:38px;border-radius:9px;align-items:center;justify-content:center;cursor:pointer;flex:none}
-.mnav{display:none;position:absolute;top:64px;left:24px;right:24px;background:var(--card);border:1px solid var(--hair-petrol);border-radius:14px;box-shadow:var(--shadow);padding:8px;z-index:60}
+.lang-wrap svg{color:var(--stone)}
+select.lang{appearance:none;-webkit-appearance:none;background:transparent;border:1px solid var(--line);color:var(--ivory);font-family:'Jost';font-size:11px;letter-spacing:.1em;padding:9px 12px;cursor:pointer;outline:none}
+select.lang option{background:#161516;color:var(--ivory)}
+.burger{display:none;background:transparent;border:1px solid var(--line);color:var(--ivory);width:40px;height:40px;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.mnav{display:none;position:absolute;top:66px;left:22px;right:22px;background:#161516;border:1px solid var(--line);padding:8px;z-index:60}
 .mnav.show{display:block}
-.mnav a{display:block;padding:13px 14px;color:var(--ink);font-size:15px;border-radius:9px;cursor:pointer}
-.mnav a:hover{background:rgba(11,64,60,.06)}
-@media(max-width:820px){.burger{display:flex}}
-@media(max-width:820px){.nav-links a:not(.nav-cta){display:none}.nav-cta{padding:9px 13px;font-size:11.5px}}
-@media(max-width:520px){.brand .word{font-size:23px}}
+.mnav a{display:block;padding:14px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ivory)}
+.mnav a:hover{background:rgba(243,240,233,.05)}
+@media(max-width:860px){.nav-links a:not(.nav-cta){display:none}.burger{display:flex}}
+@media(max-width:560px){.nav-cta{display:none}}
 
-/* hero */
-.hero{position:relative;padding:74px 0 38px;overflow:hidden}
-.hero-arc{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.9}
-.hero-in{position:relative;z-index:1}
-.hero h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(44px,7vw,86px);line-height:.99;letter-spacing:-.01em;max-width:16ch}
-.hero h1 em{font-style:italic;color:var(--petrol)}
-.hero .lede{margin-top:22px;max-width:56ch;color:var(--muted);font-size:clamp(16px,1.55vw,18.5px);line-height:1.6}
-:lang(zh) .hero h1,:lang(ja) .hero h1,:lang(ko) .hero h1{font-family:'Noto Sans SC','Noto Sans JP','Noto Sans KR',serif;font-weight:600;letter-spacing:0}
-:lang(ar) .hero h1{font-family:'Noto Sans Arabic',serif;font-weight:600}
-:lang(hi) .hero h1{font-family:'Noto Sans Devanagari',serif;font-weight:600}
-@keyframes drawArc{to{stroke-dashoffset:0}}
-@keyframes floatPlane{to{offset-distance:100%}}
-@media(prefers-reduced-motion:reduce){.arc-path{stroke-dashoffset:0!important;animation:none!important}.plane{animation:none!important;offset-distance:60%!important}}
+.hero{border-bottom:1px solid var(--line)}
+.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;min-height:600px}
+.hero-txt{padding:76px 56px 76px 0;display:flex;flex-direction:column;justify-content:center}
+.hero-txt .kick{margin-bottom:26px}
+.hero-txt h1{font-family:'Playfair Display',serif;font-weight:500;font-size:clamp(42px,5.3vw,74px);line-height:1.04;letter-spacing:-.005em}
+.hero-txt h1 em{font-style:italic}
+.hero-txt .lede{margin-top:26px;max-width:42ch;color:var(--stone);font-size:15.5px;line-height:1.75}
+.hero-cta{margin-top:34px}
+.hero-cta .line{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);margin-bottom:12px}
+.mini-form{display:flex;max-width:440px;border:1px solid var(--line)}
+.mini-form input{flex:1;min-width:0;background:transparent;border:0;padding:15px 16px;color:var(--ivory);font-family:'Jost';font-size:14px;outline:none}
+.mini-form input::placeholder{color:var(--faint)}
+.mini-form button{background:var(--ivory);color:var(--ink);border:0;font-family:'Jost';font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:0 22px;cursor:pointer;white-space:nowrap}
+.mini-form button:hover{background:#fff}
+.hero-img{position:relative;background-size:cover;background-position:center;border-left:1px solid var(--line)}
+.hero-img::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,14,15,.55),transparent 32%),linear-gradient(0deg,rgba(14,14,15,.5),transparent 42%)}
+.hero-img .cap{position:absolute;bottom:24px;left:24px;z-index:1;font-family:'Playfair Display',serif;font-style:italic;font-size:16px;color:rgba(243,240,233,.85)}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr}.hero-txt{padding:52px 0 44px}.hero-img{min-height:300px;border-left:0;border-top:1px solid var(--line)}}
 
-/* deck */
-.deck{margin-top:44px;position:relative;z-index:2;background:var(--card);border:1px solid var(--hair);border-radius:20px;box-shadow:var(--shadow);padding:8px}
-.deck-tabs{display:flex;gap:4px;padding:8px 8px 4px}
-.tab{font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:.04em;color:var(--muted);background:transparent;border:0;cursor:pointer;padding:8px 16px;border-radius:9px;transition:.18s}
-.tab[aria-selected="true"]{background:var(--petrol);color:var(--paper)}
-.deck-grid{display:grid;grid-template-columns:1.15fr auto 1.15fr 1fr 1fr .85fr auto;gap:1px;background:var(--hair);border-radius:14px;overflow:hidden;margin:6px 4px 4px}
-.field{background:var(--card);padding:14px 16px;min-width:0}
-.field label{display:block;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);margin-bottom:5px}
-.field input{width:100%;background:transparent;border:0;color:var(--ink);font-family:'Geist',sans-serif;font-size:15.5px;font-weight:500;outline:none}
-.field .code input{font-family:'Geist Mono',monospace;font-size:19px;font-weight:500;text-transform:uppercase}
-.field .sub{font-size:12px;color:var(--muted);margin-top:1px}
-.swap{display:flex;align-items:center;justify-content:center;background:var(--card);cursor:pointer;color:var(--petrol);transition:.2s;padding:0 6px}
-.swap:hover{color:var(--brass);transform:rotate(180deg)}
-.search-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--petrol);color:var(--paper);border:0;cursor:pointer;font-family:'Geist Mono',monospace;font-weight:500;font-size:14px;letter-spacing:.03em;padding:0 22px;transition:.2s;white-space:nowrap}
-.search-btn:hover{background:var(--petrol-deep)}
+.deck-sec{border-bottom:1px solid var(--line);padding:30px 0}
+.deck-tabs{display:flex;gap:22px;margin-bottom:20px}
+.tab{background:transparent;border:0;color:var(--stone);font-family:'Jost';font-size:11px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;padding-bottom:8px;border-bottom:1px solid transparent}
+.tab[aria-selected="true"]{color:var(--ivory);border-bottom-color:var(--accent)}
+.deck-grid{display:grid;grid-template-columns:1.2fr auto 1.2fr 1fr 1fr .8fr auto;border:1px solid var(--line)}
+.field{padding:14px 18px;border-right:1px solid var(--line);min-width:0}
+.field label{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);margin-bottom:6px}
+.field input{width:100%;background:transparent;border:0;color:var(--ivory);font-family:'Jost';font-size:15px;outline:none}
+.field .code input{font-family:'Geist Mono',monospace;font-size:17px;text-transform:uppercase;letter-spacing:.02em}
+.field .sub{font-size:12px;color:var(--stone);margin-top:2px}
+.field input[type=date],.field input[type=number]{color-scheme:dark}
+.swap{display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--stone);border-right:1px solid var(--line);padding:0 8px}
+.swap:hover{color:var(--ivory)}
+.search-btn{background:var(--ivory);color:var(--ink);border:0;cursor:pointer;font-family:'Jost';font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:0 24px;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.search-btn:hover{background:#fff}
 .field.return.disabled{opacity:.4;pointer-events:none}
-@media(max-width:900px){.deck-grid{grid-template-columns:1fr 1fr}.swap{display:none}.search-btn{grid-column:1/-1;padding:15px}}
-.trust{display:flex;flex-wrap:wrap;gap:26px;margin:24px 4px 0;padding:0 4px}
-.trust span{display:flex;align-items:center;gap:9px;color:var(--muted);font-family:'Geist Mono',monospace;font-size:12.5px;letter-spacing:.02em}
-.trust span svg{color:var(--petrol);flex:none}
+@media(max-width:860px){.deck-grid{grid-template-columns:1fr 1fr}.field{border-bottom:1px solid var(--line)}.swap{display:none}.search-btn{grid-column:1/-1;padding:16px}}
+.trust{display:flex;flex-wrap:wrap;gap:28px;margin-top:20px}
+.trust span{display:flex;align-items:center;gap:9px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone)}
+.trust span svg{color:var(--accent);flex:none}
 
-.mech{display:inline-flex;align-items:center;gap:6px;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:20px}
-.mech svg{width:12px;height:12px}
-.mech.combine,.mech.miles{background:rgba(11,64,60,.1);color:var(--petrol)}
-.mech.error,.mech.flash{background:rgba(169,130,75,.14);color:var(--brass)}
+#acbox{position:fixed;z-index:200;background:#161516;border:1px solid var(--line);max-height:320px;overflow-y:auto;display:none}
+#acbox.show{display:block}
+.ac-item{display:flex;align-items:baseline;gap:12px;padding:12px 15px;cursor:pointer;border-bottom:1px solid var(--line2)}
+.ac-item:hover,.ac-item:active{background:rgba(243,240,233,.05)}
+.ac-item .c{font-family:'Geist Mono',monospace;color:var(--ivory);font-size:13px;min-width:34px;letter-spacing:.04em}
+.ac-item .n{font-size:14px;color:var(--ivory)}
+.ac-item .n small{color:var(--stone)}
+.ac-empty{padding:14px;color:var(--stone);font-size:13px}
 
-.deals{padding:66px 0 20px}
-.deals-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:6px}
-.deals-head h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(32px,4vw,46px);line-height:1.02;max-width:16ch}
-.deals-head h2 em{font-style:italic;color:var(--petrol)}
-.deals-head .aside{color:var(--muted);font-size:14px;max-width:34ch;font-family:'Geist Mono',monospace;line-height:1.5}
-.deals-note{font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--muted);margin:16px 0 22px;letter-spacing:.02em}
-.deal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
-.deal{background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:14px;transition:.2s}
-.deal:hover{border-color:var(--hair-petrol);transform:translateY(-3px);box-shadow:var(--shadow-sm)}
-.deal .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.deal .spotted{font-family:'Geist Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.03em}
-.deal .route{font-family:'Instrument Serif',serif;font-size:30px;line-height:1}
-.deal .route span{color:var(--brass);font-style:italic}
-.deal .carrier{font-size:13px;color:var(--muted);margin-top:-4px}
-.deal .verified{display:inline-flex;align-items:center;gap:5px;font-family:'Geist Mono',monospace;font-size:11px;color:var(--petrol)}
-.deal .verified svg{width:13px;height:13px}
-.deal .foot{display:flex;align-items:flex-end;justify-content:space-between;margin-top:auto;padding-top:6px}
-.deal .price .save{font-family:'Geist Mono',monospace;font-size:11px;color:var(--brass)}
-.deal .price .amt{font-family:'Instrument Serif',serif;font-size:34px;line-height:.85;color:var(--petrol)}
-.deal .price .was{font-family:'Geist Mono',monospace;font-size:12px;color:var(--muted);text-decoration:line-through}
-.deal .go{background:var(--petrol);color:var(--paper);border:0;cursor:pointer;font-family:'Geist Mono',monospace;font-size:12.5px;padding:10px 15px;border-radius:9px;transition:.2s;white-space:nowrap}
-.deal .go:hover{background:var(--petrol-deep)}
-
-.results-wrap{padding:34px 0 30px}
-.results-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
-.results-head h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:38px}
-.route-chip{font-family:'Geist Mono',monospace;color:var(--petrol);font-size:15px}
-.demo-banner{display:flex;gap:12px;align-items:flex-start;background:rgba(169,130,75,.09);border:1px solid var(--hair-petrol);border-radius:12px;padding:13px 16px;margin:14px 0 22px;font-size:13.5px;color:var(--muted);line-height:1.5}
-.demo-banner b{color:var(--petrol);font-weight:600}
-.demo-banner svg{color:var(--brass);flex:none;margin-top:2px}
-.flight{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:20px 24px;margin-bottom:12px;transition:.2s}
-.flight:hover{border-color:var(--hair-petrol);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.results-wrap{padding:44px 0;border-bottom:1px solid var(--line)}
+.results-head{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:22px}
+.results-head h2{font-family:'Playfair Display',serif;font-weight:500;font-size:30px}
+.route-chip{font-family:'Geist Mono',monospace;color:var(--stone);font-size:14px;letter-spacing:.05em}
+.demo-banner{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);padding:14px 16px;margin-bottom:22px;font-size:13px;color:var(--stone);line-height:1.6}
+.demo-banner b{color:var(--ivory);font-weight:400}
+.demo-banner svg{color:var(--accent);flex:none;margin-top:2px}
+.flight{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;border:1px solid var(--line);padding:20px 24px;margin-bottom:12px;transition:.2s}
+.flight:hover{border-color:rgba(243,240,233,.3)}
 .airline{display:flex;align-items:center;gap:13px;min-width:170px}
-.airline .dot{width:44px;height:44px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--petrol);color:var(--paper);font-family:'Instrument Serif',serif;font-size:20px}
-.airline .meta small{display:block;color:var(--muted);font-size:12px}
-.airline .meta b{font-weight:600;font-size:14.5px}
+.airline .dot{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);color:var(--ivory);font-family:'Playfair Display',serif;font-size:19px}
+.airline .meta b{font-weight:400;font-size:14px}
+.airline .meta small{display:block;color:var(--stone);font-size:11px;letter-spacing:.04em}
 .airline .meta .mech{margin-top:5px}
 .leg{display:flex;align-items:center;gap:18px}
 .leg .pt{text-align:center}
-.leg .pt .t{font-family:'Geist Mono',monospace;font-size:20px;font-weight:500}
-.leg .pt .a{font-family:'Geist Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:.05em}
+.leg .pt .t{font-family:'Geist Mono',monospace;font-size:19px}
+.leg .pt .a{font-family:'Geist Mono',monospace;font-size:11px;color:var(--stone);letter-spacing:.06em}
 .leg .path{flex:1;min-width:64px;text-align:center}
-.leg .path .dur{font-size:11.5px;color:var(--muted);font-family:'Geist Mono',monospace}
-.leg .path .line{height:1px;background:linear-gradient(90deg,transparent,var(--hair-petrol),transparent);margin:6px 0;position:relative}
-.leg .path .line::after{content:"✈";position:absolute;right:0;top:-9px;color:var(--brass);font-size:12px}
-.leg .path .stops{font-size:11px;color:var(--petrol);letter-spacing:.03em}
+.leg .path .dur{font-size:11px;color:var(--stone);font-family:'Geist Mono'}
+.leg .path .line{height:1px;background:var(--line);margin:6px 0;position:relative}
+.leg .path .line::after{content:"\2708";position:absolute;right:0;top:-9px;color:var(--accent);font-size:11px}
+.leg .path .stops{font-size:10px;color:var(--stone);letter-spacing:.08em;text-transform:uppercase}
 .price-cell{text-align:right;min-width:150px}
-.price-cell .save{font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--brass);background:rgba(169,130,75,.12);border:1px solid rgba(169,130,75,.28);padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:8px}
-.price-cell .amt{font-family:'Instrument Serif',serif;font-size:32px;line-height:.9;color:var(--petrol)}
-.price-cell .was{font-size:12.5px;color:var(--muted);text-decoration:line-through;margin-top:3px;font-family:'Geist Mono',monospace}
-.book-btn{margin-top:12px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--petrol);border:1px solid var(--petrol);color:var(--paper);font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.03em;padding:10px 16px;border-radius:9px;cursor:pointer;transition:.2s}
-.book-btn:hover{background:var(--petrol-deep)}
-@media(max-width:820px){.flight{grid-template-columns:1fr;gap:16px}.price-cell{text-align:left}.book-btn{width:auto;padding:11px 24px}}
+.price-cell .save{font-family:'Jost';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.price-cell .amt{font-family:'Playfair Display',serif;font-size:28px;line-height:1}
+.price-cell .was{font-size:12px;color:var(--stone);text-decoration:line-through;margin-top:3px;font-family:'Geist Mono'}
+.book-btn{margin-top:12px;background:transparent;border:0;color:var(--ivory);font-family:'Jost';font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-bottom:1px solid var(--accent);padding-bottom:3px}
+.mech{display:inline-flex;align-items:center;gap:6px;font-family:'Jost';font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--stone)}
+.mech svg{width:11px;height:11px;color:var(--accent)}
+@media(max-width:820px){.flight{grid-template-columns:1fr;gap:16px}.price-cell{text-align:left}}
 
-.alert-sec{padding:70px 0}
-.alert-card{background:var(--petrol);color:var(--paper);border-radius:24px;padding:52px;display:grid;grid-template-columns:1.2fr 1fr;gap:44px;align-items:center;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.alert-card::after{content:"";position:absolute;right:-80px;top:-80px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(169,130,75,.22),transparent 70%)}
-.alert-card .eyebrow{color:var(--brass);margin-bottom:14px;position:relative}
-.alert-card h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:42px;line-height:1.05;margin-bottom:14px;position:relative}
-.alert-card > div{position:relative}
-.alert-card p{color:rgba(236,234,227,.78);max-width:44ch}
+.deals{padding:64px 0;border-bottom:1px solid var(--line)}
+.deals-h{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:14px;gap:24px}
+.deals-h h2{font-family:'Playfair Display',serif;font-weight:500;font-size:clamp(28px,3.6vw,40px);max-width:20ch;line-height:1.06}
+.deals-h h2 em{font-style:italic}
+.deals-h .aside{color:var(--stone);font-size:13px;max-width:32ch;text-align:right}
+.deals-note{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 26px}
+.deal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+@media(max-width:820px){.deal-grid{grid-template-columns:1fr}.deals-h .aside{display:none}}
+.card .img{height:210px;background-size:cover;background-position:center;position:relative;margin-bottom:16px}
+.card .img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,14,15,.12),rgba(14,14,15,.55))}
+.card .img .tagm{position:absolute;top:14px;left:14px;z-index:1;font-family:'Jost';font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ivory);background:rgba(14,14,15,.55);backdrop-filter:blur(4px);padding:6px 10px}
+.card .city{font-family:'Playfair Display',serif;font-size:25px;margin-bottom:4px}
+.card .route{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--stone)}
+.card .foot{display:flex;align-items:flex-end;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.card .price .amt{font-family:'Playfair Display',serif;font-size:26px;line-height:1}
+.card .price .was{font-size:12px;color:var(--stone);text-decoration:line-through}
+.card .go{background:transparent;border:0;color:var(--ivory);font-family:'Jost';font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-bottom:1px solid var(--accent);padding-bottom:3px}
+
+.alert-sec{padding:70px 0;border-bottom:1px solid var(--line)}
+.alert-card{border:1px solid var(--line);padding:56px;display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:center}
+.alert-card .kick{margin-bottom:16px;color:var(--accent)}
+.alert-card h2{font-family:'Playfair Display',serif;font-weight:500;font-size:38px;line-height:1.08;margin-bottom:16px}
+.alert-card p{color:var(--stone);max-width:44ch;font-size:15px}
 .alert-form{display:flex;flex-direction:column;gap:12px}
-.alert-form .row{display:flex;gap:10px}
-.alert-form input{flex:1;background:rgba(236,234,227,.1);border:1px solid rgba(236,234,227,.22);border-radius:11px;padding:15px 16px;color:var(--paper);font-size:15px;outline:none;transition:.2s;min-width:0}
-.alert-form input::placeholder{color:rgba(236,234,227,.55)}
-.alert-form input:focus{border-color:var(--brass);background:rgba(236,234,227,.14)}
-.alert-form button{background:var(--brass);color:var(--ink);border:0;border-radius:11px;font-family:'Geist Mono',monospace;font-weight:500;font-size:14px;padding:0 24px;cursor:pointer;transition:.2s;white-space:nowrap}
-.alert-form button:hover{background:#bd935a}
-.alert-note{font-size:12px;color:rgba(236,234,227,.6);font-family:'Geist Mono',monospace}
-.alert-ok{color:var(--brass);font-family:'Geist Mono',monospace;font-size:14px}
-@media(max-width:820px){.alert-card{grid-template-columns:1fr;padding:34px}}
+.alert-form .row{display:flex;border:1px solid var(--line)}
+.alert-form input{flex:1;min-width:0;background:transparent;border:0;padding:16px;color:var(--ivory);font-family:'Jost';font-size:15px;outline:none}
+.alert-form input::placeholder{color:var(--faint)}
+.alert-form button{background:var(--ivory);color:var(--ink);border:0;font-family:'Jost';font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;padding:0 24px;cursor:pointer;white-space:nowrap}
+.alert-note{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.alert-ok{color:var(--ivory);font-family:'Jost';font-size:14px}
+@media(max-width:820px){.alert-card{grid-template-columns:1fr;padding:32px}}
 
-.how{padding:20px 0 60px}
-.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.how .step{border-top:1px solid var(--hair-petrol);padding-top:18px}
-.how .step .n{font-family:'Geist Mono',monospace;font-size:12px;color:var(--brass);letter-spacing:.1em}
-.how .step h4{font-family:'Instrument Serif',serif;font-weight:400;font-size:24px;margin:8px 0 6px}
-.how .step p{color:var(--muted);font-size:14px}
-@media(max-width:760px){.how-grid{grid-template-columns:1fr}}
+.how{padding:64px 0;border-bottom:1px solid var(--line)}
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.how .step{border-top:1px solid var(--accent);padding-top:20px}
+.how .step .n{font-family:'Geist Mono';font-size:11px;color:var(--accent);letter-spacing:.1em}
+.how .step h4{font-family:'Playfair Display',serif;font-weight:500;font-size:23px;margin:10px 0 8px}
+.how .step p{color:var(--stone);font-size:14px}
+@media(max-width:760px){.how-grid{grid-template-columns:1fr;gap:24px}}
 
-footer{border-top:1px solid var(--hair);padding:46px 0 32px;color:var(--muted)}
-.foot-top{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-bottom:26px}
-.foot-links{display:flex;gap:24px;flex-wrap:wrap}
-.foot-links a{font-size:13.5px;color:var(--muted);cursor:pointer;transition:.2s}
-.foot-links a:hover{color:var(--petrol)}
-.foot-disc{font-size:12.5px;line-height:1.6;padding-top:22px;border-top:1px solid var(--hair);color:var(--muted)}
-.foot-disc b{color:var(--ink)}
+footer{padding:54px 0 36px;color:var(--stone)}
+.foot-top{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-bottom:28px}
+.foot-links{display:flex;gap:26px;flex-wrap:wrap}
+.foot-links a{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--stone);cursor:pointer}
+.foot-links a:hover{color:var(--ivory)}
+.foot-disc{font-size:12px;line-height:1.7;padding-top:24px;border-top:1px solid var(--line);color:var(--faint)}
+.foot-disc b{color:var(--stone);font-weight:400}
 
-.modal-back{position:fixed;inset:0;z-index:100;background:rgba(26,25,23,.44);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:24px}
-.modal{background:var(--card);border:1px solid var(--hair);border-radius:18px;max-width:680px;width:100%;max-height:82vh;overflow:auto;padding:38px;box-shadow:var(--shadow)}
-.modal .kicker{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin-bottom:14px}
-.modal h3{font-family:'Instrument Serif',serif;font-weight:400;font-size:32px;margin-bottom:6px}
-.modal p{color:var(--muted);font-size:14px;margin:12px 0;line-height:1.62}
-.modal h4{font-size:15px;margin:20px 0 4px;color:var(--ink);font-weight:600}
-.modal .todo{color:var(--petrol);background:rgba(11,64,60,.09);padding:1px 6px;border-radius:5px;font-family:'Geist Mono',monospace;font-size:13px}
-.modal-close{float:right;background:transparent;border:1px solid var(--hair);color:var(--muted);width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:16px}
-.modal-close:hover{color:var(--ink);border-color:var(--hair-petrol)}
+.modal-back{position:fixed;inset:0;z-index:100;background:rgba(6,6,7,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px}
+.modal{background:#161516;border:1px solid var(--line);max-width:680px;width:100%;max-height:82vh;overflow:auto;padding:40px}
+.modal .kicker{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;font-family:'Jost'}
+.modal h3{font-family:'Playfair Display',serif;font-weight:500;font-size:30px;margin-bottom:6px}
+.modal p{color:var(--stone);font-size:14px;margin:12px 0;line-height:1.7}
+.modal h4{font-size:14px;margin:20px 0 4px;color:var(--ivory);font-weight:400;letter-spacing:.02em}
+.modal .todo{color:var(--accent);font-family:'Geist Mono';font-size:13px}
+.modal-close{float:right;background:transparent;border:1px solid var(--line);color:var(--stone);width:36px;height:36px;cursor:pointer;font-size:16px}
+.modal-close:hover{color:var(--ivory)}
 
-.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);border:1px solid var(--brass);color:var(--paper);padding:13px 20px;border-radius:12px;font-size:14px;z-index:120;box-shadow:var(--shadow);opacity:0;transition:.28s;pointer-events:none;max-width:90vw}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#161516;border:1px solid var(--accent);color:var(--ivory);padding:14px 20px;font-size:14px;z-index:120;opacity:0;transition:.28s;pointer-events:none;max-width:90vw}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast b{color:var(--brass)}
-.cookie{position:fixed;left:24px;right:24px;bottom:24px;z-index:90;max-width:520px;margin:0 auto;background:var(--card);border:1px solid var(--hair-petrol);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.cookie p{font-size:13px;color:var(--muted);flex:1;min-width:200px}
-.cookie a{color:var(--petrol);cursor:pointer;text-decoration:underline}
-.cookie button{font-family:'Geist Mono',monospace;font-size:12.5px;padding:9px 16px;border-radius:9px;cursor:pointer;border:0}
-.cookie .accept{background:var(--petrol);color:var(--paper)}
-.cookie .refuse{background:transparent;border:1px solid var(--hair);color:var(--muted)}
-#acbox{position:fixed;z-index:200;background:var(--card);border:1px solid var(--hair-petrol);border-radius:12px;box-shadow:var(--shadow);max-height:300px;overflow-y:auto;display:none}
-#acbox.show{display:block}
-.ac-item{display:flex;align-items:baseline;gap:11px;padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--hair)}
-.ac-item:last-child{border-bottom:0}
-.ac-item:active,.ac-item:hover{background:rgba(11,64,60,.07)}
-.ac-item .c{font-family:'Geist Mono',monospace;font-weight:500;color:var(--petrol);font-size:14px;min-width:34px}
-.ac-item .n{font-size:14px;color:var(--ink)}
-.ac-item .n small{color:var(--muted);font-size:12.5px}
-.ac-empty{padding:12px 14px;color:var(--muted);font-size:13px;font-family:'Geist Mono',monospace}
-/* hero email capture */
-.hero-cta{margin:22px 4px 0;padding:0 4px}
-.hero-cta .line{font-size:13.5px;color:var(--muted);margin-bottom:9px;font-family:'Geist Mono',monospace;letter-spacing:.02em}
-.mini-form{display:flex;gap:9px;max-width:440px}
-.mini-form input{flex:1;min-width:0;background:var(--card);border:1px solid var(--hair-petrol);border-radius:11px;padding:13px 15px;color:var(--ink);font-size:14.5px;outline:none;transition:.2s}
-.mini-form input:focus{border-color:var(--petrol)}
-.mini-form button{background:var(--petrol);color:var(--paper);border:0;border-radius:11px;font-family:'Geist Mono',monospace;font-weight:500;font-size:13px;padding:0 18px;cursor:pointer;white-space:nowrap;transition:.2s}
-.mini-form button:hover{background:var(--petrol-deep)}
-/* deal visual header */
-.deal .ph{height:112px;margin:-22px -22px 8px;border-radius:15px 15px 0 0;display:flex;align-items:flex-end;padding:14px 16px;position:relative;overflow:hidden}
-.deal .ph::before{content:attr(data-code);position:absolute;right:-4px;top:-16px;font-family:'Instrument Serif',serif;font-size:86px;color:rgba(246,244,239,.11);line-height:1;letter-spacing:-2px;z-index:0}
-.deal .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.32))}
-.deal .ph .arc{position:absolute;inset:0;width:100%;height:100%;z-index:0}
-.deal .ph .city{position:relative;z-index:1;font-family:'Instrument Serif',serif;color:#F6F4EF;font-size:24px;line-height:1;text-shadow:0 1px 10px rgba(0,0,0,.3)}
-.deal .ph .plane{position:absolute;top:13px;right:15px;z-index:1;color:rgba(246,244,239,.6);font-size:15px}
+.toast b{color:var(--ivory)}
+.cookie{position:fixed;left:24px;right:24px;bottom:24px;z-index:90;max-width:540px;margin:0 auto;background:#161516;border:1px solid var(--line);padding:18px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.cookie p{font-size:12px;color:var(--stone);flex:1;min-width:200px;letter-spacing:.02em}
+.cookie a{color:var(--ivory);text-decoration:underline;cursor:pointer}
+.cookie button{font-family:'Jost';font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:11px 16px;cursor:pointer;border:0}
+.cookie .accept{background:var(--ivory);color:var(--ink)}
+.cookie .refuse{background:transparent;border:1px solid var(--line);color:var(--stone)}
+
 </style>
 <!-- Travelpayouts Drive -->
 <script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1">
@@ -254,73 +226,65 @@ footer{border-top:1px solid var(--hair);padding:46px 0 32px;color:var(--muted)}
 </script>
 </head>
 <body>
-
 <header class="nav">
   <div class="wrap nav-in">
-    <div class="brand" onclick="goHome()">
-      <svg class="glyph" viewBox="0 0 32 32" fill="none"><path d="M16 2 L20 13 L31 16 L20 19 L16 30 L12 19 L1 16 L12 13 Z" fill="#0B403C"/><circle cx="16" cy="16" r="2.4" fill="#ECEAE3"/></svg>
-      <span class="word">Aeryndo</span>
-    </div>
+    <div class="brand" onclick="goHome()">Aeryndo</div>
     <nav class="nav-links">
-      <a data-i18n="navDeals" onclick="scrollTo2('deals')">Deals dénichés</a>
-      <a data-i18n="navAlerts" onclick="scrollToAlert()">Alertes prix</a>
+      <a data-i18n="navDeals" onclick="scrollTo2('deals')">Deals</a>
+      <a data-i18n="navAlerts" onclick="scrollToAlert()">Alertes</a>
       <a data-i18n="navAbout" onclick="openLegal('about')">À propos</a>
-      <button class="burger" onclick="toggleMenu(event)" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <button class="burger" onclick="toggleMenu(event)" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <div class="lang-wrap">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg>
         <select class="lang" id="lang" aria-label="Language" onchange="setLang(this.value)">
-          <option value="fr">Français</option><option value="en">English</option><option value="es">Español</option>
-          <option value="de">Deutsch</option><option value="it">Italiano</option><option value="pt">Português</option>
-          <option value="ru">Русский</option><option value="zh">中文</option><option value="ar">العربية</option>
-          <option value="ja">日本語</option><option value="ko">한국어</option><option value="hi">हिन्दी</option>
+          <option value="fr">Français</option><option value="en">English</option><option value="es">Español</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="pt">Português</option><option value="ru">Русский</option><option value="zh">中文</option><option value="ar">العربية</option><option value="ja">日本語</option><option value="ko">한국어</option><option value="hi">हिन्दी</option>
         </select>
       </div>
       <a class="nav-cta" data-i18n="navCta" onclick="scrollToAlert()">Recevoir les deals</a>
     </nav>
   </div>
-  <div class="mnav" id="mnav"><a data-i18n="navDeals" onclick="mgo('deals')">Deals dénichés</a><a data-i18n="navAlerts" onclick="mgo('alert')">Alertes prix</a><a data-i18n="navAbout" onclick="openLegal('about');closeMenu()">À propos</a></div>
+  <div class="mnav" id="mnav"><a data-i18n="navDeals" onclick="mgo('deals')">Deals</a><a data-i18n="navAlerts" onclick="mgo('alert')">Alertes</a><a data-i18n="navAbout" onclick="openLegal('about');closeMenu()">À propos</a></div>
 </header>
 
 <section class="hero" id="home">
-  <svg class="hero-arc" viewBox="0 0 1200 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-    <path class="arc-path" d="M-40 430 Q 600 40 1260 300" fill="none" stroke="url(#g)" stroke-width="1.4" stroke-dasharray="1800" stroke-dashoffset="1800" style="animation:drawArc 2.4s cubic-bezier(.5,0,.1,1) .3s forwards"/>
-    <circle cx="120" cy="366" r="3.5" fill="#A9824B"/><circle cx="1180" cy="300" r="3.5" fill="#A9824B"/>
-    <text class="plane" font-size="15" fill="#0B403C" style="offset-path:path('M-40 430 Q 600 40 1260 300');offset-distance:0%;animation:floatPlane 2.4s cubic-bezier(.5,0,.1,1) .3s forwards">✈</text>
-    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0B403C" stop-opacity="0"/><stop offset=".5" stop-color="#0B403C" stop-opacity=".55"/><stop offset="1" stop-color="#0B403C" stop-opacity="0"/></linearGradient></defs>
-  </svg>
-  <div class="wrap hero-in">
-    <div class="eyebrow" data-i18n="heroEyebrow">Le dénicheur de Business Class</div>
-    <h1 data-i18n-html="heroH1">Des tarifs Business<br><em>que personne d'autre ne déniche.</em></h1>
-    <p class="lede" data-i18n="heroLede">Aeryndo déniche des tarifs Business introuvables ailleurs — trajets combinés, tarifs erreur, promos flash — tous vérifiés. Suivez une route, recevez l'alerte, réservez avant tout le monde.</p>
-
-    <div class="deck">
-      <div class="deck-tabs" role="tablist">
-        <button class="tab" role="tab" aria-selected="true" data-i18n="tabRound" onclick="setTrip('round',this)">Aller-retour</button>
-        <button class="tab" role="tab" aria-selected="false" data-i18n="tabOneway" onclick="setTrip('oneway',this)">Aller simple</button>
-      </div>
-      <div class="deck-grid">
-        <div class="field"><label data-i18n="lblFrom">Départ</label><div class="code"><input id="from" value="CDG" autocomplete="off"></div><div class="sub" id="from-sub">Paris</div></div>
-        <div class="swap" onclick="swap()" role="button" aria-label="Swap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 4 L3 8 L7 12 M3 8 H17"/><path d="M17 20 L21 16 L17 12 M21 16 H7"/></svg></div>
-        <div class="field"><label data-i18n="lblTo">Arrivée</label><div class="code"><input id="to" value="HND" autocomplete="off"></div><div class="sub" id="to-sub">Tokyo</div></div>
-        <div class="field"><label data-i18n="lblDep">Aller</label><input id="dep" type="date"></div>
-        <div class="field return" id="retField"><label data-i18n="lblRet">Retour</label><input id="ret" type="date"></div>
-        <div class="field"><label data-i18n="lblPax">Voyageurs</label><input id="pax" type="number" min="1" max="9" value="1"></div>
-        <button class="search-btn" onclick="search()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span data-i18n="btnSearch">Dénicher</span></button>
-      </div>
-      <div class="trust">
-        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span data-i18n="trust1">Trajets combinés</span></span>
-        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span data-i18n="trust2">Chaque deal vérifié</span></span>
-        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 004 0"/></svg><span data-i18n="trust3">Alerte avant tout le monde</span></span>
-        <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="trust4">Sans frais cachés</span></span>
+  <div class="wrap"><div class="hero-grid">
+    <div class="hero-txt">
+      <div class="kick" data-i18n="heroEyebrow">Le dénicheur de Business Class</div>
+      <h1 data-i18n-html="heroH1">La Business Class,<br><em>au juste prix.</em></h1>
+      <p class="lede" data-i18n="heroLede">Aeryndo déniche des tarifs Business introuvables ailleurs.</p>
+      <div class="hero-cta">
+        <div class="line" id="heroCtaLine">Ou recevez les pépites directement par email</div>
+        <div class="mini-form" id="heroForm">
+          <input type="email" id="heroEmail" placeholder="votre@email.com" data-i18n-ph="alertPh" aria-label="email">
+          <button onclick="subscribe('heroEmail','heroDone','heroForm')" data-i18n="alertBtn">Recevoir les deals</button>
+        </div>
+        <div id="heroDone" class="alert-ok hidden" style="margin-top:10px"></div>
       </div>
     </div>
-    <div class="hero-cta">
-      <div class="line" id="heroCtaLine">Ou recevez les pépites directement par email</div>
-      <div class="mini-form" id="heroForm">
-        <input type="email" id="heroEmail" placeholder="votre@email.com" data-i18n-ph="alertPh" aria-label="email">
-        <button onclick="subscribe('heroEmail','heroDone','heroForm')" data-i18n="alertBtn">Recevoir les deals</button>
-      </div>
-      <div id="heroDone" class="alert-ok hidden" style="color:var(--petrol);margin-top:8px"></div>
+    <div class="hero-img" style="background-image:url('https://images.unsplash.com/photo-1706945629188-60679cd384b3?w=2000&q=75&auto=format&fit=crop')"><div class="cap">Suite Business, quelque part au-dessus du monde.</div></div>
+  </div></div>
+</section>
+
+<section class="deck-sec">
+  <div class="wrap">
+    <div class="deck-tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-i18n="tabRound" onclick="setTrip('round',this)">Aller-retour</button>
+      <button class="tab" role="tab" aria-selected="false" data-i18n="tabOneway" onclick="setTrip('oneway',this)">Aller simple</button>
+    </div>
+    <div class="deck-grid">
+      <div class="field"><label data-i18n="lblFrom">Départ</label><div class="code"><input id="from" value="CDG" autocomplete="off"></div><div class="sub" id="from-sub">Paris</div></div>
+      <div class="swap" onclick="swap()" role="button" aria-label="Swap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 4 L3 8 L7 12 M3 8 H17"/><path d="M17 20 L21 16 L17 12 M21 16 H7"/></svg></div>
+      <div class="field"><label data-i18n="lblTo">Arrivée</label><div class="code"><input id="to" value="HND" autocomplete="off"></div><div class="sub" id="to-sub">Tokyo</div></div>
+      <div class="field"><label data-i18n="lblDep">Aller</label><input id="dep" type="date"></div>
+      <div class="field return" id="retField"><label data-i18n="lblRet">Retour</label><input id="ret" type="date"></div>
+      <div class="field"><label data-i18n="lblPax">Voyageurs</label><input id="pax" type="number" min="1" max="9" value="1"></div>
+      <button class="search-btn" onclick="search()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span data-i18n="btnSearch">Dénicher</span></button>
+    </div>
+    <div class="trust">
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg><span data-i18n="trust1">Trajets combinés</span></span>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l7 4v6c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span data-i18n="trust2">Chaque deal vérifié</span></span>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 004 0"/></svg><span data-i18n="trust3">Alerte avant tout le monde</span></span>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="trust4">Sans frais cachés</span></span>
     </div>
   </div>
 </section>
@@ -328,60 +292,48 @@ footer{border-top:1px solid var(--hair);padding:46px 0 32px;color:var(--muted)}
 <section class="results-wrap hidden" id="results">
   <div class="wrap">
     <div class="results-head"><h2 data-i18n="resultsTitle">Ce qu'on a déniché</h2><div class="route-chip" id="routeChip">CDG → HND</div></div>
-    <div class="demo-banner"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
-      <div data-i18n-html="demoBanner"><b>Aperçu — prix de démonstration.</b> Les boutons « Réserver » sont actifs et affiliés (marker 545278). Les vrais prix en direct s'afficheront avec la connexion des données partenaires.</div>
-    </div>
+    <div class="demo-banner"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg><div data-i18n-html="demoBanner">Aperçu — prix de démonstration.</div></div>
     <div id="flightList"></div>
   </div>
 </section>
 
 <section class="deals" id="deals">
   <div class="wrap">
-    <div class="deals-head">
-      <h2 data-i18n-html="dealsH2">Des prix que vous ne verrez <em>nulle part ailleurs.</em></h2>
-      <div class="aside" data-i18n="dealsAside">On assemble, on traque, on vérifie. Chaque deal porte le mécanisme qui le rend introuvable sur les gros moteurs.</div>
-    </div>
-    <div class="deals-note" data-i18n="dealsNote">◈ Exemples de démonstration — le flux réel se remplira automatiquement une fois les partenaires connectés.</div>
+    <div class="deals-h"><h2 data-i18n-html="dealsH2">Des prix que vous ne verrez <em>nulle part ailleurs.</em></h2><div class="aside" data-i18n="dealsAside">On assemble, on traque, on vérifie.</div></div>
+    <div class="deals-note" data-i18n="dealsNote">Exemples de démonstration.</div>
     <div class="deal-grid" id="dealGrid"></div>
   </div>
 </section>
 
 <section class="alert-sec" id="alert">
-  <div class="wrap">
-    <div class="alert-card">
-      <div>
-        <div class="eyebrow" data-i18n="alertEyebrow">Le cœur du produit</div>
-        <h2 data-i18n="alertH2">Les meilleurs deals partent en quelques heures.</h2>
-        <p data-i18n="alertP">Un tarif erreur ou une promo flash en Business ne dure que quelques heures. Choisissez vos routes, on surveille pour vous — et on vous prévient avant que le prix disparaisse.</p>
-      </div>
-      <div>
-        <div class="alert-form" id="alertForm">
-          <div class="row">
-            <input type="email" id="alertEmail" placeholder="votre@email.com" data-i18n-ph="alertPh" aria-label="email">
-            <button onclick="subscribe()" data-i18n="alertBtn">Recevoir les deals</button>
-          </div>
-          <div class="alert-note" data-i18n="alertNote">Gratuit. Les pépites Business, directement dans votre boîte. Désinscription à tout moment.</div>
-        </div>
-        <div id="alertDone" class="alert-ok hidden"></div>
-      </div>
+  <div class="wrap"><div class="alert-card">
+    <div>
+      <div class="kick" data-i18n="alertEyebrow">Le cœur du produit</div>
+      <h2 data-i18n="alertH2">Les meilleurs deals partent en quelques heures.</h2>
+      <p data-i18n="alertP">Choisissez vos routes, on surveille pour vous.</p>
     </div>
-  </div>
+    <div>
+      <div class="alert-form" id="alertForm">
+        <div class="row"><input type="email" id="alertEmail" placeholder="votre@email.com" data-i18n-ph="alertPh" aria-label="email"><button onclick="subscribe()" data-i18n="alertBtn">Recevoir les deals</button></div>
+        <div class="alert-note" data-i18n="alertNote">Gratuit. Désinscription à tout moment.</div>
+      </div>
+      <div id="alertDone" class="alert-ok hidden"></div>
+    </div>
+  </div></div>
 </section>
 
 <section class="how">
-  <div class="wrap">
-    <div class="how-grid">
-      <div class="step"><div class="n">01</div><h4 data-i18n="how1t">On déniche</h4><p data-i18n="how1p">Trajets combinés entre compagnies, tarifs erreur, promos flash, sweet spots en miles — les angles que les gros moteurs n'optimisent pas.</p></div>
-      <div class="step"><div class="n">02</div><h4 data-i18n="how2t">On vérifie</h4><p data-i18n="how2p">Chaque deal est contrôlé avant publication. Pas de faux tarif qui saute au paiement. Ce que vous voyez est réservable.</p></div>
-      <div class="step"><div class="n">03</div><h4 data-i18n="how3t">On vous alerte</h4><p data-i18n="how3p">Vous suivez vos routes, on vous prévient dès qu'une pépite tombe. Vous réservez chez le partenaire, avant que le prix parte.</p></div>
-    </div>
-  </div>
+  <div class="wrap"><div class="how-grid">
+    <div class="step"><div class="n">01</div><h4 data-i18n="how1t">On déniche</h4><p data-i18n="how1p">Trajets combinés, tarifs erreur, promos flash, sweet spots.</p></div>
+    <div class="step"><div class="n">02</div><h4 data-i18n="how2t">On vérifie</h4><p data-i18n="how2p">Chaque deal est contrôlé avant publication.</p></div>
+    <div class="step"><div class="n">03</div><h4 data-i18n="how3t">On vous alerte</h4><p data-i18n="how3p">On vous prévient dès qu'une pépite tombe.</p></div>
+  </div></div>
 </section>
 
 <footer>
   <div class="wrap">
     <div class="foot-top">
-      <div class="brand" onclick="goHome()" style="cursor:pointer"><svg class="glyph" viewBox="0 0 32 32" fill="none"><path d="M16 2 L20 13 L31 16 L20 19 L16 30 L12 19 L1 16 L12 13 Z" fill="#0B403C"/><circle cx="16" cy="16" r="2.4" fill="#ECEAE3"/></svg><span class="word">Aeryndo</span></div>
+      <div class="brand" onclick="goHome()" style="cursor:pointer">Aeryndo</div>
       <div class="foot-links">
         <a data-i18n="footMentions" onclick="openLegal('mentions')">Mentions légales</a>
         <a data-i18n="footCgu" onclick="openLegal('cgu')">CGU</a>
@@ -389,18 +341,20 @@ footer{border-top:1px solid var(--hair);padding:46px 0 32px;color:var(--muted)}
         <a data-i18n="footAff" onclick="openLegal('affiliation')">Affiliation</a>
       </div>
     </div>
-    <p class="foot-disc" data-i18n-html="footDisc"><b>Divulgation d'affiliation —</b> Aeryndo est un dénicheur de deals, pas une agence de voyage. Nous ne vendons pas de billets : nous vous orientons vers nos partenaires (Skyscanner, Kiwi.com et autres via Travelpayouts). Certains liens sont affiliés : si vous réservez, nous pouvons percevoir une commission, sans surcoût pour vous. © <span id="year"></span> Aeryndo.</p>
+    <p class="foot-disc" data-i18n-html="footDisc">© <span id="year"></span> Aeryndo.</p>
   </div>
 </footer>
 
 <div class="toast" id="toast"></div>
 <div class="cookie" id="cookie">
-  <p data-i18n-html="cookieText">Cookies pour mesurer l'audience et faire fonctionner l'affiliation. <a onclick="openLegal('privacy')">En savoir plus</a>.</p>
+  <p data-i18n-html="cookieText">Cookies.</p>
   <div style="display:flex;gap:8px"><button class="refuse" data-i18n="cookieRefuse" onclick="closeCookie()">Refuser</button><button class="accept" data-i18n="cookieAccept" onclick="closeCookie()">Accepter</button></div>
 </div>
 
 <script>
+
 const CONFIG={MARKER:"545278",PARTNER_HOST:"aviasales.com",CURRENCY:"eur"};
+const DEAL_PHOTOS=["https://images.unsplash.com/photo-1718948740023-ebb6e6f9cf6e?w=1200&q=70&auto=format&fit=crop","https://images.unsplash.com/photo-1694029369139-87a047b7bc51?w=1200&q=70&auto=format&fit=crop","https://images.unsplash.com/photo-1661954864180-e61dea14208a?w=1200&q=70&auto=format&fit=crop","https://images.unsplash.com/photo-1694029368049-f6ad00c7f366?w=1200&q=70&auto=format&fit=crop","https://images.unsplash.com/photo-1706921296564-51662c392a15?w=1200&q=70&auto=format&fit=crop","https://images.unsplash.com/photo-1706921271123-c3bef3d8a8c1?w=1200&q=70&auto=format&fit=crop"];
 const AP=[
 ["CDG","Paris","France"],["ORY","Paris Orly","France"],["NCE","Nice","France"],["LYS","Lyon","France"],["MRS","Marseille","France"],["TLS","Toulouse","France"],["BOD","Bordeaux","France"],["NTE","Nantes","France"],["BSL","Bâle-Mulhouse","France"],
 ["LHR","Londres Heathrow","Royaume-Uni"],["LGW","Londres Gatwick","Royaume-Uni"],["LCY","Londres City","Royaume-Uni"],["MAN","Manchester","Royaume-Uni"],["EDI","Édimbourg","Royaume-Uni"],["DUB","Dublin","Irlande"],
@@ -486,17 +440,15 @@ const DEALS=[
 ];
 function renderDeals(){
   const g=document.getElementById("dealGrid");
-  const GRAD=["linear-gradient(135deg,#0B403C,#12645c)","linear-gradient(135deg,#1a3a4a,#0B403C)","linear-gradient(135deg,#6b4e2e,#A9824B)","linear-gradient(135deg,#0e2f2b,#1a3a4a)","linear-gradient(135deg,#2a4a45,#0B403C)","linear-gradient(135deg,#7a5a34,#0B403C)"];
   g.innerHTML=DEALS.map((d,i)=>{
     const save=Math.round((1-d.price/d.was)*100);
     const city=APM[d.to]?APM[d.to][1]:d.c2;
-    return `<div class="deal">
-      <div class="ph" data-code="${d.c2}" style="background:${GRAD[i%GRAD.length]}"><svg class="arc" viewBox="0 0 320 112" preserveAspectRatio="none"><path d="M14 84 Q160 18 306 60" fill="none" stroke="rgba(246,244,239,.4)" stroke-width="1.2" stroke-dasharray="3 4"/><circle cx="14" cy="84" r="2.4" fill="rgba(246,244,239,.75)"/><circle cx="306" cy="60" r="2.4" fill="rgba(246,244,239,.75)"/></svg><span class="plane">✈</span><span class="city">${city}</span></div>
-      <div class="top">${mechChip(d.mech)}<span class="spotted">${t('spotted')} · ${d.spotted}</span></div>
-      <div><div class="route">${d.c1} <span>→</span> ${d.c2}</div><div class="carrier">${d.carrier}</div></div>
-      <div class="verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>${t('verified')}</div>
-      <div class="foot"><div class="price"><div class="save">−${save}% ${t('vsPublic')}</div><div class="amt">${d.price.toLocaleString()} €</div><div class="was">${d.was.toLocaleString()} €</div></div>
-      <button class="go" onclick="book('${d.from}','${d.to}')">${t('btnBook')}</button></div>
+    const img=DEAL_PHOTOS[i%DEAL_PHOTOS.length];
+    return `<div class="card">
+      <div class="img" style="background-image:url('${img}')"><span class="tagm">${t(MECH[d.mech].k)}</span></div>
+      <div class="city">${city}</div>
+      <div class="route">${d.c1} \u2192 ${d.c2} \u00b7 ${d.carrier}</div>
+      <div class="foot"><div class="price"><div class="amt">${d.price.toLocaleString()} \u20ac</div><div class="was">${d.was.toLocaleString()} \u20ac</div></div><button class="go" onclick="book('${d.from}','${d.to}')">${t('btnBook')}</button></div>
     </div>`;
   }).join("");
 }
@@ -564,6 +516,7 @@ const LEGAL={
   affiliation:{k:"Transparence",t:"Divulgation d'affiliation",h:`<p>Aeryndo utilise des liens d'affiliation. Si vous cliquez sur « Réserver » et achetez chez un partenaire (Skyscanner, Kiwi.com et autres via Travelpayouts), Aeryndo peut percevoir une commission.</p><p><b>Cela ne change rien pour vous :</b> même prix, et cette rémunération n'influence ni le classement ni les tarifs affichés.</p>`}
 };
 function openLegal(key){const d=LEGAL[key];if(!d)return;const back=document.createElement("div");back.className="modal-back";back.onclick=e=>{if(e.target===back)back.remove();};back.innerHTML=`<div class="modal" role="dialog" aria-modal="true"><button class="modal-close" onclick="this.closest('.modal-back').remove()">×</button><div class="kicker">${d.k}</div><h3>${d.t}</h3>${d.h}</div>`;document.body.appendChild(back);}
+
 </script>
 </body>
 </html>
