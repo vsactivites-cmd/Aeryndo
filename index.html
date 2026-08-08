@@ -497,7 +497,7 @@ window.addEventListener("resize",acClose);
 function setTrip(tp,btn){trip=tp;document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected","false"));btn.setAttribute("aria-selected","true");document.getElementById("retField").classList.toggle("disabled",tp==="oneway");}
 function swap(){const f=document.getElementById("from"),tt=document.getElementById("to");const a=f.value;f.value=tt.value;tt.value=a;setSub("from");setSub("to");}
 
-function buildAffiliateLink(from,to,dep,ret,pax){const dm=s=>{const[y,m,d]=s.split("-");return d+m;};const path=from+dm(dep)+to+(trip==="round"&&ret?dm(ret):"")+pax;return `https://www.${CONFIG.PARTNER_HOST}/search/${path}?marker=${CONFIG.MARKER}&currency=${CONFIG.CURRENCY}&trip_class=C`;}
+function buildAffiliateLink(from,to,dep,ret,pax){const dm=s=>{const[y,m,d]=s.split("-");return d+m;};const path=from+dm(dep)+to+(trip==="round"&&ret?dm(ret):"")+"C"+pax;return `https://www.${CONFIG.PARTNER_HOST}/search/${path}?marker=${CONFIG.MARKER}&currency=${CONFIG.CURRENCY}&trip_class=C`;}
 function book(from,to){const dep=document.getElementById("dep").value,ret=document.getElementById("ret").value,pax=document.getElementById("pax").value||1;window.open(buildAffiliateLink(from,to,dep,ret,pax),"_blank","noopener");}
 
 function search(){const from=resolveField("from")||"CDG";const to=resolveField("to")||"HND";book(from,to);}
