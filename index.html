@@ -114,14 +114,6 @@ select.lang option{background:#161516;color:var(--ivory)}
 .ac-item .n small{color:var(--stone)}
 .ac-empty{padding:14px;color:var(--stone);font-size:13px}
 
-.live-sec{padding:64px 0;border-bottom:1px solid var(--line)}
-.live-sec .kick{color:var(--accent);margin-bottom:14px}
-.live-sec h2{font-family:'Playfair Display',serif;font-weight:500;font-size:clamp(26px,3.4vw,38px);line-height:1.08;margin-bottom:12px}
-.live-sec h2 em{font-style:italic}
-.live-p{color:var(--stone);font-size:14.5px;line-height:1.7;max-width:62ch;margin-bottom:28px}
-.live-widget{border:1px solid var(--line);background:var(--panel);padding:20px}
-.live-note{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:14px}
-@media(max-width:760px){.live-widget{padding:10px}}
 
 .results-wrap{padding:44px 0;border-bottom:1px solid var(--line)}
 .results-head{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:22px}
@@ -298,17 +290,6 @@ footer{padding:54px 0 36px;color:var(--stone)}
   </div>
 </section>
 
-<section class="live-sec" id="live">
-  <div class="wrap">
-    <div class="kick">Recherche en direct · Live search</div>
-    <h2>Explorez librement. <em>Prix réels, toutes dates.</em></h2>
-    <p class="live-p">Comparez les tarifs en temps réel auprès de centaines de compagnies — changez les dates, la destination, le nombre de voyageurs. Vous réservez directement chez le partenaire, au même prix. Live fares, flexible dates, book with the partner at the same price.</p>
-    <div class="live-widget">
-      <script async src="https://tpwgt.com/content?currency=eur&trs=545278&shmarker=745122.site-widget-recherche&show_hotels=false&powered_by=false&locale=fr&searchUrl=www.aviasales.fr%2Fsearch&primary_override=%23FF6B57&color_button=%23FF6B57&color_icons=%23FF6B57&dark=%23F3F0E9&light=%23FFFFFF&secondary=%2316161A&special=%233A3A3E&color_focused=%23FF6B57&border_radius=0&plain=false&promo_id=7879&campaign_id=100" charset="utf-8"></script>
-    </div>
-    <div class="live-note">Recherche opérée par notre partenaire Aviasales · liens affiliés, même prix pour vous</div>
-  </div>
-</section>
 
 <section class="results-wrap hidden" id="results">
   <div class="wrap">
@@ -515,7 +496,7 @@ function mgo(id){closeMenu();document.getElementById(id).scrollIntoView({behavio
 document.addEventListener("click",closeMenu);
 
 const LEGAL={
-  about:{k:"La maison",t:"À propos d'Aeryndo",h:`<p>Aeryndo n'est pas un comparateur de plus. C'est un <b>dénicheur</b> spécialisé Business Class : on assemble des trajets introuvables ailleurs, on traque les tarifs erreur et les promos flash, et on vérifie chaque deal avant de le publier.</p><p>Nous ne vendons pas de billets. Nous vous orientons vers des partenaires de réservation de confiance et percevons une commission d'affiliation quand vous réservez — c'est ce qui garde Aeryndo gratuit pour vous.</p>`},
+  about:{k:"La maison",t:"À propos d'Aeryndo",h:`<p>Aeryndo est une maison française de chasse tarifaire, née à Antibes, consacrée à une seule obsession : <b>la Business Class au juste prix.</b></p><p>Nous ne sommes pas un comparateur de plus. Les grands moteurs affichent le tarif public ; nous cherchons ce qu'ils n'optimisent pas — les trajets combinés entre compagnies, les tarifs erreur, les promotions éclair jamais annoncées, les fenêtres de dates que personne ne regarde.</p><h4>La méthode</h4><p>Chaque deal publié est trouvé à la main, puis vérifié : la disponibilité est contrôlée avant publication, le prix affiché est un prix réservable au moment où nous l'écrivons. Les meilleures pépites durent quelques heures — c'est précisément pour cela qu'Aeryndo existe : nos alertes partent avant que le tarif ne disparaisse.</p><h4>Le modèle, en toute transparence</h4><p>Aeryndo ne vend pas de billets et n'ajoute pas un centime au prix. Vous réservez directement chez des partenaires établis (via Travelpayouts : Aviasales, Kiwi.com et autres) ; certains liens sont affiliés et peuvent nous rapporter une commission, au même prix pour vous. C'est ce qui garde le service gratuit — et notre indépendance : nous ne publions jamais un tarif parce qu'il nous rapporte, mais parce qu'il en vaut la peine.</p><h4>La maison</h4><p>Aeryndo est édité par AURUM GLOBAL HOLDING, société française établie à Antibes, sur la Côte d'Azur. Une petite maison, volontairement : la curation ne se délègue pas.</p>`},
   mentions:{k:"Légal",t:"Mentions légales",h:`<p><b>Éditeur du site :</b> AURUM GLOBAL HOLDING, SASU au capital de 1 €.</p><p><b>SIREN :</b> 101 340 610 — <b>RCS Antibes.</b></p><p><b>Siège social :</b> 70 chemin des nielles, 06160 Antibes, France.</p><p><b>Présidente et directrice de la publication :</b> Sylka Valentyna.</p><p><b>Contact :</b> contact@aeryndo.co</p><p><b>Hébergement :</b> Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis.</p>`},
   cgu:{k:"Légal",t:"Conditions générales d'utilisation",h:`<p>Aeryndo fournit un service de curation et de comparaison de tarifs aériens à titre informatif. Les prix proviennent de partenaires tiers et peuvent varier jusqu'à la réservation finale sur le site du partenaire.</p><h4>Rôle d'Aeryndo</h4><p>Aeryndo n'est pas une agence de voyage et ne vend aucun billet. Le contrat de transport est conclu entre vous et le transporteur ou l'agence partenaire. Aeryndo ne saurait être tenu responsable de la disponibilité, du prix final ou de l'exécution des prestations réservées.</p><h4>Propriété intellectuelle</h4><p>La marque « Aeryndo », le design et les contenus du site sont la propriété d'AURUM GLOBAL HOLDING et sont protégés. Toute reproduction sans autorisation est interdite.</p>`},
   privacy:{k:"RGPD",t:"Politique de confidentialité",h:`<p>Conformément au RGPD, cette politique décrit le traitement de vos données par AURUM GLOBAL HOLDING (Aeryndo).</p><h4>Données collectées</h4><p>Email (si vous créez une alerte prix), données de recherche (routes, dates), mesure d'audience (cookies).</p><h4>Finalités</h4><p>Envoyer les alertes demandées, améliorer le service, mesurer l'audience.</p><h4>Vos droits</h4><p>Accès, rectification, effacement, opposition. Pour exercer vos droits : contact@aeryndo.co. Vous pouvez introduire une réclamation auprès de la CNIL.</p>`},
