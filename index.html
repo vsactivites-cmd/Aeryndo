@@ -434,7 +434,8 @@ const MECH={
 function mechChip(k){const m=MECH[k];return `<span class="mech ${m.cls}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${m.svg}</svg>${t(m.k)}</span>`;}
 
 const DEALS=[
-  {from:"ORY",to:"EWR",c1:"ORY",c2:"EWR",city:"New York",carrier:"La Compagnie \u00b7 direct \u00b7 lit plat",price:2012,was:2422,mech:"deal",dep:"2026-09-25",ret:"2026-10-11"}
+  {from:"ORY",to:"EWR",c1:"ORY",c2:"EWR",city:"New York",carrier:"La Compagnie \u00b7 direct \u00b7 lit plat",price:2012,was:2422,mech:"deal",dep:"2026-09-25",ret:"2026-10-11"},
+  {from:"CDG",to:"MLE",c1:"CDG",c2:"MLE",city:"Maldives",carrier:"Beond \u00b7 avion 100 % Business \u00b7 lit plat",price:3198,was:4982,mech:"deal",dep:"2027-02-07",ret:"2027-02-20",url:"https://www.flybeond.com"}
 ];
 function renderDeals(){
   const g=document.getElementById("dealGrid");
@@ -475,7 +476,7 @@ function setTrip(tp,btn){trip=tp;document.querySelectorAll(".tab").forEach(b=>b.
 function swap(){const f=document.getElementById("from"),tt=document.getElementById("to");const a=f.value;f.value=tt.value;tt.value=a;setSub("from");setSub("to");}
 
 function buildAffiliateLink(from,to,dep,ret,pax){const dm=s=>{const[y,m,d]=s.split("-");return d+m;};const path=from+dm(dep)+to+(trip==="round"&&ret?dm(ret):"")+"C"+pax;return `https://www.${CONFIG.PARTNER_HOST}/search/${path}?marker=${CONFIG.MARKER}&currency=${CONFIG.CURRENCY}&trip_class=C`;}
-function bookDeal(i){var d=DEALS[i];var f=function(s){var p=s.split("-");return p[2]+p[1];};var path=d.from+f(d.dep)+d.to+(d.ret?f(d.ret):"")+"C1";window.open("https://www.aviasales.fr/search/"+path+"?marker=545278.site-deal&currency=eur&trip_class=C","_blank","noopener");}
+function bookDeal(i){var d=DEALS[i];if(d.url){window.open(d.url,"_blank","noopener");return;}var f=function(s){var p=s.split("-");return p[2]+p[1];};var path=d.from+f(d.dep)+d.to+(d.ret?f(d.ret):"")+"C1";window.open("https://www.aviasales.fr/search/"+path+"?marker=545278.site-deal&currency=eur&trip_class=C","_blank","noopener");}
 function book(from,to){const dep=document.getElementById("dep").value,ret=document.getElementById("ret").value,pax=document.getElementById("pax").value||1;window.open(buildAffiliateLink(from,to,dep,ret,pax),"_blank","noopener");}
 
 function search(){const from=resolveField("from")||"CDG";const to=resolveField("to")||"HND";book(from,to);}
