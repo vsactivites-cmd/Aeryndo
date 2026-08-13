@@ -187,6 +187,21 @@ select.lang option{background:#161516;color:var(--ivory)}
 .how .step p{color:var(--stone);font-size:14px}
 @media(max-width:760px){.how-grid{grid-template-columns:1fr;gap:24px}}
 
+.kit-sec{padding:64px 0;border-bottom:1px solid var(--line)}
+.kit-sec .kick{color:var(--accent);margin-bottom:14px}
+.kit-sec h2{font-family:'Playfair Display',serif;font-weight:500;font-size:clamp(26px,3.4vw,38px);line-height:1.08;margin-bottom:10px}
+.kit-sec h2 em{font-style:italic}
+.kit-intro{color:var(--stone);font-size:14.5px;max-width:62ch;margin-bottom:30px}
+.kit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.kit-item{border:1px solid var(--line);padding:22px;display:flex;flex-direction:column;gap:10px;transition:.2s}
+.kit-item:hover{border-color:rgba(243,240,233,.3)}
+.kit-item .tag{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.kit-item h4{font-family:'Playfair Display',serif;font-weight:500;font-size:20px}
+.kit-item p{color:var(--stone);font-size:13.5px;line-height:1.6;flex:1}
+.kit-item a{font-family:'Jost';font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ivory);border-bottom:1px solid var(--accent);padding-bottom:3px;align-self:flex-start}
+.kit-disc{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:22px}
+@media(max-width:900px){.kit-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.kit-grid{grid-template-columns:1fr}}
 footer{padding:54px 0 36px;color:var(--stone)}
 .foot-top{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-bottom:28px}
 .foot-links{display:flex;gap:26px;flex-wrap:wrap}
@@ -304,6 +319,21 @@ footer{padding:54px 0 36px;color:var(--stone)}
     <div class="deals-h"><h2 data-i18n-html="dealsH2">Des prix que vous ne verrez <em>nulle part ailleurs.</em></h2><div class="aside" data-i18n="dealsAside">On assemble, on traque, on vérifie.</div></div>
     <div class="deals-note" data-i18n="dealsNote">Exemples de démonstration.</div>
     <div class="deal-grid" id="dealGrid"></div>
+  </div>
+</section>
+
+<section class="kit-sec" id="kit">
+  <div class="wrap">
+    <div class="kick">Le kit du voyageur · Travel kit</div>
+    <h2>Avant de partir, <em>le nécessaire.</em></h2>
+    <p class="kit-intro">Les quatre services que nous recommandons autour de chaque vol — les mêmes pour tous nos deals, choisis pour leur fiabilité.</p>
+    <div class="kit-grid">
+      <div class="kit-item"><div class="tag">Transfert</div><h4>Chauffeur à l'arrivée</h4><p>Un chauffeur vous attend, prix fixé à l'avance — aucune file de taxi après un vol de nuit.</p><a href="https://gettransfer.tpk.mx/Q0YT4yyd?sub_id=site-kit-transfert" target="_blank" rel="noopener sponsored">GetTransfer →</a></div>
+      <div class="kit-item"><div class="tag">Connexion</div><h4>eSIM instantanée</h4><p>Connecté dès l'atterrissage, sans changer de carte ni chercher un kiosque.</p><a href="https://tp.media/r?campaign_id=224&marker=745122&p=5998&sub_id=site-kit-esim&trs=545278&u=https%3A%2F%2Fyesim.tech" target="_blank" rel="noopener sponsored">Yesim →</a></div>
+      <div class="kit-item"><div class="tag">Assurance</div><h4>Couverture voyage</h4><p>Médical, annulation, bagages — souscrite en ligne en quelques minutes.</p><a href="https://tp.media/r?campaign_id=225&marker=745122&p=5869&sub_id=site-kit-assurance&trs=545278&u=https%3A%2F%2Fektatraveling.com%2F" target="_blank" rel="noopener sponsored">EKTA →</a></div>
+      <div class="kit-item"><div class="tag">Indemnisation</div><h4>Vol retardé ou annulé ?</h4><p>Jusqu'à 600 € d'indemnisation — ils montent le dossier, vous ne payez qu'en cas de succès.</p><a href="https://tp.media/r?campaign_id=120&marker=745122&p=9139&sub_id=site-kit-airhelp&trs=545278&u=https%3A%2F%2Fairhelp.com" target="_blank" rel="noopener sponsored">AirHelp →</a></div>
+    </div>
+    <div class="kit-disc">Liens partenaires — même prix pour vous, commission pour la maison</div>
   </div>
 </section>
 
