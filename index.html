@@ -509,16 +509,16 @@ function swap(){const f=document.getElementById("from"),tt=document.getElementBy
 /* Lien affilié — formulaire de recherche pré-rempli Travelpayouts.
    trip_class=1 : classe affaires. L'ancien format de chemin ignorait la classe. */
 function buildAffiliateLink(from,to,dep,ret,pax){
-  const p=new URLSearchParams({origin_iata:from,destination_iata:to,depart_date:dep,adults:pax||1,children:0,infants:0,trip_class:1,locale:"fr",currency:CONFIG.CURRENCY,marker:CONFIG.MARKER,one_way:(trip==="oneway")?"true":"false"});
-  if(trip==="round"&&ret)p.set("return_date",ret);
-  return "https://search.aviasales.com/flights/?"+p.toString();
+  const dm=s=>{const[y,m,d]=s.split("-");return d+m;};
+  const path=from+dm(dep)+to+(trip==="round"&&ret?dm(ret):"")+(pax||1)+"C";
+  return `https://www.${CONFIG.PARTNER_HOST}/search/${path}?marker=${CONFIG.MARKER}&currency=${CONFIG.CURRENCY}&trip_class=C&locale=fr`;
 }
 function bookDeal(i){
   var d=DEALS[i];
   if(d.url){window.open(d.url,"_blank","noopener");return;}
-  var p=new URLSearchParams({origin_iata:d.from,destination_iata:d.to,depart_date:d.dep,adults:1,children:0,infants:0,trip_class:1,locale:"fr",currency:"eur",marker:"545278.site-deal",one_way:d.ret?"false":"true"});
-  if(d.ret)p.set("return_date",d.ret);
-  window.open("https://search.aviasales.com/flights/?"+p.toString(),"_blank","noopener");
+  var f=function(s){var p=s.split("-");return p[2]+p[1];};
+  var path=d.from+f(d.dep)+d.to+(d.ret?f(d.ret):"")+"1C";
+  window.open("https://www.aviasales.fr/search/"+path+"?marker=545278.site-deal&currency=eur&trip_class=C&locale=fr","_blank","noopener");
 }
 function book(from,to){const dep=document.getElementById("dep").value,ret=document.getElementById("ret").value,pax=document.getElementById("pax").value||1;window.open(buildAffiliateLink(from,to,dep,ret,pax),"_blank","noopener");}
 
