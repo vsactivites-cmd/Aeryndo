@@ -510,15 +510,15 @@ function swap(){const f=document.getElementById("from"),tt=document.getElementBy
    trip_class=1 : classe affaires. L'ancien format de chemin ignorait la classe. */
 function buildAffiliateLink(from,to,dep,ret,pax){
   const dm=s=>{const[y,m,d]=s.split("-");return d+m;};
-  const path=from+dm(dep)+to+(trip==="round"&&ret?dm(ret):"")+(pax||1)+"C";
-  return `https://www.${CONFIG.PARTNER_HOST}/search/${path}?marker=${CONFIG.MARKER}&currency=${CONFIG.CURRENCY}&trip_class=C&locale=fr`;
+  const path=from+dm(dep)+to+(trip==="round"&&ret?dm(ret):"")+"c"+(pax||1);
+  return `https://www.${CONFIG.PARTNER_HOST}/search/${path}?marker=${CONFIG.MARKER}&currency=${CONFIG.CURRENCY}&locale=fr`;
 }
 function bookDeal(i){
   var d=DEALS[i];
   if(d.url){window.open(d.url,"_blank","noopener");return;}
   var f=function(s){var p=s.split("-");return p[2]+p[1];};
-  var path=d.from+f(d.dep)+d.to+(d.ret?f(d.ret):"")+"1C";
-  window.open("https://www.aviasales.fr/search/"+path+"?marker=545278.site-deal&currency=eur&trip_class=C&locale=fr","_blank","noopener");
+  var path=d.from+f(d.dep)+d.to+(d.ret?f(d.ret):"")+"c1";
+  window.open("https://www.aviasales.fr/search/"+path+"?marker=545278.site-deal&currency=eur&locale=fr","_blank","noopener");
 }
 function book(from,to){const dep=document.getElementById("dep").value,ret=document.getElementById("ret").value,pax=document.getElementById("pax").value||1;window.open(buildAffiliateLink(from,to,dep,ret,pax),"_blank","noopener");}
 
