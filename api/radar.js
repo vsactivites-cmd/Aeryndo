@@ -116,9 +116,13 @@ module.exports = async (req, res) => {
     });
   }
 
-  // Tri : meilleures remises d'abord, routes sans donnée à la fin
-  routes.sort((a, b) => (b.best ? b.best.pct : -999) - (a.best ? a.best.pct : -999));
+  // Bloc public : uniquement les remises >= 35 % (même seuil que l'alerte), meilleures d'abord
+  const minPct = Math.round((1 - D.THRESHOLD) * 100);
+  const hot = routes
+    .filter(r => r.best && typeof r.best.pct === "number" && r.best.pct >= minPct)
+    .sort((a, b) => b.best.pct - a.best.pct);
   D.sendJson(res, 200, {
-    ok: true, updated: new Date().toISOString(), threshold: D.THRESHOLD, marker: D.MARKER, routes
+    ok: true, updated: new Date().toISOString(), threshold: D.THRESHOLD, minPct, marker: D.MARKER,
+    watched: routes.length, routes: hot
   }, 3600);
 };
