@@ -1,5 +1,11 @@
 {
   "crons": [
     { "path": "/api/radar", "schedule": "0 5 * * *" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [{ "key": "X-Content-Type-Options", "value": "nosniff" }]
+    }
   ]
 }
