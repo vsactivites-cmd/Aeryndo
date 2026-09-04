@@ -1,87 +1,71 @@
 // ============================================================
-// RADAR AERYNDO — surveillance nocturne des tarifs Business
-// Interroge l'API de données Travelpayouts sur les routes cibles,
-// détecte les prix anormalement bas, envoie une alerte via Brevo.
-// Déclenché chaque nuit par le cron Vercel (voir vercel.json).
+// RADAR AERYNDO — le bloc vivant de la première page
+// GET /api/radar            → JSON : meilleur tarif Business par route surveillée
+// GET /api/radar?alert=1    → mode nuit : scan + email Brevo si prix sous le seuil
+// Le cron Vercel (vercel.json, 05:00 UTC) appelle /api/radar avec le
+// user-agent "vercel-cron" : il déclenche automatiquement le mode alerte.
 // ============================================================
+const D = require("./_data.js");
 
-const ROUTES = [
-  { o: "CDG", d: "JFK", city: "New York",  normal: 2600 },
-  { o: "CDG", d: "DXB", city: "Duba\u00ef",     normal: 2400 },
-  { o: "CDG", d: "HND", city: "Tokyo",     normal: 3200 },
-  { o: "CDG", d: "NRT", city: "Tokyo Narita", normal: 3200 },
-  { o: "CDG", d: "BKK", city: "Bangkok",   normal: 2800 },
-  { o: "CDG", d: "SIN", city: "Singapour", normal: 3000 },
-  { o: "NCE", d: "JFK", city: "New York (dep. Nice)", normal: 2800 }
-];
-
-// Seuil d'alerte : prix <= 65 % de la normale de la route
-const THRESHOLD = 0.65;
-const MARKER = "545278.radar";
-
-function dm(iso) { // "2026-09-15" -> "1509"
-  const [y, m, d] = iso.split("-");
-  return d + m;
+async function scan(token) {
+  const results = await Promise.all(D.ROUTES.map(async r => {
+    try {
+      // Aller-retour d'abord ; si le cache Business n'a que des allers simples, on les montre (le front l'indique).
+      let res = await D.fetchLatest(token, r.o, r.d, false, { limit: 100 });
+      let offers = res.ok ? res.offers.filter(o => o.ret) : [];
+      if (res.ok && !offers.length) {
+        const ow = await D.fetchLatest(token, r.o, r.d, true, { limit: 100 });
+        if (ow.ok) offers = ow.offers.filter(o => !o.ret);
+      }
+      return { route: r, ok: res.ok, error: res.ok ? null : res.error, offers };
+    } catch (e) { return { route: r, ok: false, error: String(e && e.message || e), offers: [] }; }
+  }));
+  return results.map(x => {
+    const best = x.offers.length ? x.offers.reduce((a, b) => (a.price <= b.price ? a : b)) : null;
+    return {
+      from: x.route.o, to: x.route.d, city: x.route.city, country: x.route.country,
+      normal: x.route.normal, ok: x.ok, count: x.offers.length, error: x.error || undefined,
+      best: best ? Object.assign({}, best, {
+        pct: best.ret ? Math.round((1 - best.price / x.route.normal) * 100) : null, // pas de remise sur un aller simple
+        link: D.aviasalesLink({ from: x.route.o, to: x.route.d, dep: best.dep, ret: best.ret, pax: 1, sub: D.SUB.radar })
+      }) : null,
+      airlines: D.airlinesFor(x.route.o, x.route.d)
+    };
+  });
 }
 
-function dealLink(o, d, dep, ret) {
-  const path = o + dm(dep) + d + (ret ? dm(ret) : "") + "C1";
-  return `https://www.aviasales.fr/search/${path}?marker=${MARKER}&currency=eur&trip_class=C`;
-}
-
-async function fetchRoute(token, r) {
-  const url =
-    "https://api.travelpayouts.com/v2/prices/latest" +
-    `?currency=eur&origin=${r.o}&destination=${r.d}` +
-    "&trip_class=1&period_type=year&page=1&limit=30&sorting=price";
-  const resp = await fetch(url, { headers: { "X-Access-Token": token } });
-  if (!resp.ok) return { route: r, error: "HTTP " + resp.status, offers: [] };
-  const json = await resp.json();
-  const today = new Date().toISOString().slice(0, 10);
-  const offers = (json.data || [])
-    .filter(x => x.value && x.depart_date && x.depart_date > today)
-    .map(x => ({
-      price: Math.round(x.value),
-      dep: x.depart_date,
-      ret: x.return_date || null
-    }));
-  return { route: r, error: null, offers };
-}
-
-function euros(n) {
-  return n.toLocaleString("fr-FR") + " \u20ac";
-}
+// ---------- mode alerte (email Brevo) ----------
+function euros(n) { return n.toLocaleString("fr-FR") + " €"; }
 
 function buildEmail(hits) {
   const rows = hits.map(h => {
-    const pct = Math.round((1 - h.best.price / h.route.normal) * 100);
-    const link = dealLink(h.route.o, h.route.d, h.best.dep, h.best.ret);
+    const link = D.aviasalesLink({ from: h.from, to: h.to, dep: h.best.dep, ret: h.best.ret, pax: 1, sub: D.SUB.mail });
     return `
       <tr>
         <td style="padding:14px 16px;border-bottom:1px solid #2a2a2e;">
-          <div style="font-size:18px;color:#F3F0E9;">${h.route.o} \u2192 ${h.route.d} \u00b7 ${h.route.city}</div>
-          <div style="font-size:13px;color:#b8b3aa;margin-top:4px;">D\u00e9part ${h.best.dep}${h.best.ret ? " \u00b7 retour " + h.best.ret : ""}</div>
+          <div style="font-size:18px;color:#F3F0E9;">${h.from} → ${h.to} · ${h.city}</div>
+          <div style="font-size:13px;color:#b8b3aa;margin-top:4px;">Départ ${h.best.dep}${h.best.ret ? " · retour " + h.best.ret : ""}</div>
         </td>
         <td style="padding:14px 16px;border-bottom:1px solid #2a2a2e;text-align:right;">
           <div style="font-size:20px;color:#FF6B57;">${euros(h.best.price)}</div>
-          <div style="font-size:12px;color:#b8b3aa;">\u2212${pct}% vs normale (${euros(h.route.normal)})</div>
-          <a href="${link}" style="font-size:12px;color:#F3F0E9;">V\u00e9rifier \u2192</a>
+          <div style="font-size:12px;color:#b8b3aa;">−${h.best.pct}% vs normale (${euros(h.normal)})</div>
+          <a href="${link}" style="font-size:12px;color:#F3F0E9;">Vérifier →</a>
         </td>
       </tr>`;
   }).join("");
-
+  const intro = hits.length
+    ? `Le radar a détecté ${hits.length} tarif(s) Business sous le seuil d'alerte.`
+    : "Aucun tarif sous le seuil cette nuit — test de bon fonctionnement réussi.";
   return `
   <div style="background:#0E0E0F;padding:32px;font-family:Arial,Helvetica,sans-serif;">
     <div style="max-width:560px;margin:0 auto;">
       <div style="font-size:22px;letter-spacing:4px;color:#F3F0E9;">AERYNDO</div>
-      <div style="font-size:11px;letter-spacing:3px;color:#FF6B57;margin:6px 0 24px;">RADAR \u00b7 RAPPORT DE NUIT</div>
-      <p style="color:#b8b3aa;font-size:14px;line-height:1.6;">
-        Le radar a d\u00e9tect\u00e9 ${hits.length} tarif(s) Business sous le seuil d'alerte.
-        \u00c0 v\u00e9rifier \u00e0 la main avant toute publication : disponibilit\u00e9, compagnie, vraie cabine.
-      </p>
+      <div style="font-size:11px;letter-spacing:3px;color:#FF6B57;margin:6px 0 24px;">RADAR · RAPPORT DE NUIT</div>
+      <p style="color:#b8b3aa;font-size:14px;line-height:1.6;">${intro}
+        À vérifier à la main avant toute publication : disponibilité, compagnie, vraie cabine.</p>
       <table style="width:100%;border-collapse:collapse;background:#161516;">${rows}</table>
       <p style="color:#8f8a82;font-size:11px;margin-top:20px;">
-        Seuil : ${Math.round(THRESHOLD * 100)}% de la normale par route \u00b7 donn\u00e9es Travelpayouts \u00b7 liens marqu\u00e9s ${MARKER}
+        Seuil : ${Math.round(D.THRESHOLD * 100)}% de la normale par route · données Travelpayouts · marker ${D.MARKER}
       </p>
     </div>
   </div>`;
@@ -94,9 +78,7 @@ async function sendEmail(apiKey, html, subject) {
     headers: { "Content-Type": "application/json", "api-key": apiKey },
     body: JSON.stringify({
       sender: { name: "Radar Aeryndo", email: "contact@aeryndo.co" },
-      to: [{ email: to }],
-      subject: subject,
-      htmlContent: html
+      to: [{ email: to }], subject, htmlContent: html
     })
   });
   return resp.ok;
@@ -104,41 +86,39 @@ async function sendEmail(apiKey, html, subject) {
 
 module.exports = async (req, res) => {
   const token = process.env.TP_API_TOKEN;
-  const brevo = process.env.BREVO_API_KEY;
-  const isTest = req.query && req.query.test === "1";
+  const q = req.query || {};
+  const ua = String((req.headers && req.headers["user-agent"]) || "");
+  const alertMode = q.alert === "1" || /vercel-cron/i.test(ua);
+  const isTest = q.test === "1";
 
-  if (!token) return res.status(500).json({ ok: false, error: "TP_API_TOKEN manquant dans Vercel" });
-  if (!brevo) return res.status(500).json({ ok: false, error: "BREVO_API_KEY manquant dans Vercel" });
-
-  const results = [];
-  for (const r of ROUTES) {
-    try { results.push(await fetchRoute(token, r)); }
-    catch (e) { results.push({ route: r, error: String(e), offers: [] }); }
+  if (!token) {
+    // Pas de token : on renvoie quand même les routes pour que le bloc reste lisible.
+    return D.sendJson(res, 200, {
+      ok: false, error: "TP_API_TOKEN manquant dans Vercel", updated: new Date().toISOString(),
+      routes: D.ROUTES.map(r => ({ from: r.o, to: r.d, city: r.city, country: r.country, normal: r.normal, ok: false, count: 0, best: null, airlines: D.airlinesFor(r.o, r.d) }))
+    });
   }
 
-  const hits = [];
-  for (const r of results) {
-    if (!r.offers.length) continue;
-    const best = r.offers.reduce((a, b) => (a.price <= b.price ? a : b));
-    if (best.price <= r.route.normal * THRESHOLD) hits.push({ route: r.route, best });
+  const routes = await scan(token);
+
+  if (alertMode) {
+    const brevo = process.env.BREVO_API_KEY;
+    if (!brevo) return D.sendJson(res, 500, { ok: false, error: "BREVO_API_KEY manquant dans Vercel" });
+    const hits = routes.filter(r => r.best && r.best.price <= r.normal * D.THRESHOLD);
+    let emailed = false;
+    if (hits.length) emailed = await sendEmail(brevo, buildEmail(hits), `✈ Radar Aeryndo — ${hits.length} tarif(s) sous le seuil`);
+    else if (isTest) emailed = await sendEmail(brevo, buildEmail([]), "✈ Radar Aeryndo — test OK, radar opérationnel");
+    return D.sendJson(res, 200, {
+      ok: true, mode: "alert", scanned: routes.length,
+      routesAvecDonnees: routes.filter(r => r.count).length,
+      alertes: hits.map(h => ({ route: h.from + "-" + h.to, prix: h.best.price, normale: h.normal })),
+      emailEnvoye: emailed
+    });
   }
 
-  let emailed = false;
-  if (hits.length) {
-    emailed = await sendEmail(brevo, buildEmail(hits), `\u2708 Radar Aeryndo \u2014 ${hits.length} tarif(s) sous le seuil`);
-  } else if (isTest) {
-    emailed = await sendEmail(
-      brevo,
-      buildEmail([]).replace("0 tarif(s) Business sous le seuil d'alerte", "aucun tarif sous le seuil cette nuit \u2014 test de bon fonctionnement r\u00e9ussi"),
-      "\u2708 Radar Aeryndo \u2014 test OK, radar op\u00e9rationnel"
-    );
-  }
-
-  res.status(200).json({
-    ok: true,
-    scanned: ROUTES.length,
-    routesAvecDonnees: results.filter(r => r.offers.length).length,
-    alertes: hits.map(h => ({ route: h.route.o + "-" + h.route.d, prix: h.best.price, normale: h.route.normal })),
-    emailEnvoye: emailed
-  });
+  // Tri : meilleures remises d'abord, routes sans donnée à la fin
+  routes.sort((a, b) => (b.best ? b.best.pct : -999) - (a.best ? a.best.pct : -999));
+  D.sendJson(res, 200, {
+    ok: true, updated: new Date().toISOString(), threshold: D.THRESHOLD, marker: D.MARKER, routes
+  }, 3600);
 };
