@@ -116,13 +116,11 @@ module.exports = async (req, res) => {
     });
   }
 
-  // Bloc public : uniquement les remises >= 35 % (même seuil que l'alerte), meilleures d'abord
-  const minPct = Math.round((1 - D.THRESHOLD) * 100);
-  const hot = routes
-    .filter(r => r.best && typeof r.best.pct === "number" && r.best.pct >= minPct)
-    .sort((a, b) => b.best.pct - a.best.pct);
+  // Bloc public : toutes les routes surveillées, meilleures remises d'abord, sans donnée à la fin.
+  // (Le seuil THRESHOLD ne sert qu'à l'alerte email.)
+  const score = r => (r.best && typeof r.best.pct === "number") ? r.best.pct : (r.best ? -1 : -999);
+  routes.sort((a, b) => score(b) - score(a));
   D.sendJson(res, 200, {
-    ok: true, updated: new Date().toISOString(), threshold: D.THRESHOLD, minPct, marker: D.MARKER,
-    watched: routes.length, routes: hot
+    ok: true, updated: new Date().toISOString(), threshold: D.THRESHOLD, marker: D.MARKER, routes
   }, 3600);
 };
