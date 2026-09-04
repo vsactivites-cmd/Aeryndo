@@ -26,7 +26,7 @@ async function scan(token) {
       from: x.route.o, to: x.route.d, city: x.route.city, country: x.route.country,
       normal: x.route.normal, ok: x.ok, count: x.offers.length, error: x.error || undefined,
       best: best ? Object.assign({}, best, {
-        pct: Math.round((1 - best.price / x.route.normal) * 100),
+        pct: best.ret ? Math.round((1 - best.price / x.route.normal) * 100) : null, // pas de remise sur un aller simple
         link: D.aviasalesLink({ from: x.route.o, to: x.route.d, dep: best.dep, ret: best.ret, pax: 1, sub: D.SUB.radar })
       }) : null,
       airlines: D.airlinesFor(x.route.o, x.route.d)

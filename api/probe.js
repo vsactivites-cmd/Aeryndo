@@ -42,5 +42,14 @@ module.exports = async (req, res) => {
     const body = await resp.text();
     out["flight_search v1 POST"] = { status: resp.status, body: body.slice(0, 300) };
   } catch (e) { out["flight_search v1 POST"] = { error: String(e) }; }
+  // Appels internes des handlers (avec query) — vérification de bout en bout
+  const call = async (h, query) => { const o = { status: 0, body: "" }; const r = { setHeader() {}, status(c) { o.status = c; return r; }, end(b) { o.body = b; } }; await h({ query, headers: {} }, r); return { status: o.status, body: JSON.parse(o.body) }; };
+  const search = require("./search.js"), catalog = require("./catalog.js");
+  const s1 = await call(search, { from: "CDG", to: "JFK", oneway: "0", month: "2026-11" });
+  out["search CDG-JFK RT"] = { status: s1.status, count: s1.body.count, months: s1.body.months, first3: (s1.body.offers || []).slice(0, 3), normal: s1.body.normal, error: s1.body.error };
+  const s2 = await call(search, { from: "CDG", to: "SIN", oneway: "1", month: "2026-10" });
+  out["search CDG-SIN OW"] = { status: s2.status, count: s2.body.count, first2: (s2.body.offers || []).slice(0, 2), error: s2.body.error };
+  const c1 = await call(catalog, { q: "tok", locale: "fr" });
+  out["catalog q=tok"] = { status: c1.status, results: (c1.body.results || []).slice(0, 4), error: c1.body.error };
   D.sendJson(res, 200, out);
 };
