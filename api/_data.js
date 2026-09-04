@@ -54,8 +54,11 @@ async function tpFetch(path, params, token) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), 8000);
   try {
-    const resp = await fetch(url, { headers: { "X-Access-Token": token, "Accept-Encoding": "gzip" }, signal: ctrl.signal });
-    if (!resp.ok) return { ok: false, status: resp.status, data: null };
+    const resp = await fetch(url, { headers: { "X-Access-Token": token, "Accept": "application/json" }, signal: ctrl.signal });
+    if (!resp.ok) {
+      const body = await resp.text().catch(() => "");
+      return { ok: false, status: resp.status, error: "HTTP " + resp.status + " " + body.slice(0, 200), data: null };
+    }
     const json = await resp.json();
     return { ok: true, status: 200, data: json };
   } catch (e) {
@@ -101,7 +104,7 @@ async function fetchLatest(token, from, to, oneWay, extra) {
     page: 1, limit: 1000, sorting: "price", show_to_affiliates: "true"
   }, extra || {});
   const r = await tpFetch("/v2/prices/latest", params, token);
-  if (!r.ok) return { ok: false, status: r.status, offers: [] };
+  if (!r.ok) return { ok: false, status: r.status, error: r.error, offers: [] };
   const today = todayISO();
   const offers = ((r.data && r.data.data) || []).map(x => normalizeOffer(x, today)).filter(Boolean);
   return { ok: true, offers };

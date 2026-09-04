@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
   ]);
 
   if (!year.ok && !focus.ok) {
-    return D.sendJson(res, 502, { ok: false, error: "Partenaire injoignable (HTTP " + (year.status || focus.status) + ")", from, to, oneWay, offers: [], airlines: D.airlinesFor(from, to) });
+    return D.sendJson(res, 502, { ok: false, error: "Partenaire injoignable : " + (year.error || focus.error || "?"), from, to, oneWay, offers: [], airlines: D.airlinesFor(from, to) });
   }
 
   const offers = D.mergeOffers([year.offers, focus.offers])

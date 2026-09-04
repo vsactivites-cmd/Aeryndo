@@ -11,14 +11,14 @@ async function scan(token) {
   const results = await Promise.all(D.ROUTES.map(async r => {
     try {
       const res = await D.fetchLatest(token, r.o, r.d, false, { limit: 100 });
-      return { route: r, ok: res.ok, offers: res.offers.filter(o => o.ret) };
-    } catch (e) { return { route: r, ok: false, offers: [] }; }
+      return { route: r, ok: res.ok, error: res.ok ? null : res.error, offers: res.offers.filter(o => o.ret) };
+    } catch (e) { return { route: r, ok: false, error: String(e && e.message || e), offers: [] }; }
   }));
   return results.map(x => {
     const best = x.offers.length ? x.offers.reduce((a, b) => (a.price <= b.price ? a : b)) : null;
     return {
       from: x.route.o, to: x.route.d, city: x.route.city, country: x.route.country,
-      normal: x.route.normal, ok: x.ok, count: x.offers.length,
+      normal: x.route.normal, ok: x.ok, count: x.offers.length, error: x.error || undefined,
       best: best ? Object.assign({}, best, {
         pct: Math.round((1 - best.price / x.route.normal) * 100),
         link: D.aviasalesLink({ from: x.route.o, to: x.route.d, dep: best.dep, ret: best.ret, pax: 1, sub: D.SUB.radar })
