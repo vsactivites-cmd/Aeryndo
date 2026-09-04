@@ -70,12 +70,14 @@ async function tpFetch(path, params, token) {
 // Retourne null si la ligne est inutilisable ou n'est pas de la classe Business.
 function normalizeOffer(x, today) {
   if (!x || !x.value || !x.depart_date) return null;
-  if (x.depart_date <= today) return null;
-  if (typeof x.trip_class === "number" && x.trip_class !== 1) return null; // garde-fou : Business uniquement
+  const dep = String(x.depart_date).slice(0, 10);           // v3 renvoie parfois date + heure
+  const ret = x.return_date ? String(x.return_date).slice(0, 10) : null;
+  if (dep <= today) return null;
+  if (x.trip_class !== 1) return null; // garde-fou : Business uniquement (certains endpoints ignorent trip_class)
   return {
     price: Math.round(x.value),
-    dep: x.depart_date,
-    ret: x.return_date || null,
+    dep,
+    ret,
     changes: typeof x.number_of_changes === "number" ? x.number_of_changes : null,
     duration: x.duration || null,          // minutes (quand fourni)
     gate: x.gate || null,                  // agence / source du tarif
@@ -96,14 +98,30 @@ function mergeOffers(lists) {
   return [...map.values()];
 }
 
-// Toutes les offres Business connues sur une route (année glissante), via /v2/prices/latest.
+// Toutes les offres Business connues sur une route (année glissante).
+// Source : /aviasales/v3/get_latest_prices — le seul endpoint « latest » qui accepte encore
+// trip_class=1 (/v2/prices/latest répond « Only economy trip class is supported »).
 async function fetchLatest(token, from, to, oneWay, extra) {
   const params = Object.assign({
     currency: CURRENCY, origin: from, destination: to,
     trip_class: 1, period_type: "year", one_way: oneWay ? "true" : "false",
-    page: 1, limit: 1000, sorting: "price", show_to_affiliates: "true"
+    page: 1, limit: 1000, sorting: "price", show_to_affiliates: "true", token
   }, extra || {});
-  const r = await tpFetch("/v2/prices/latest", params, token);
+  const r = await tpFetch("/aviasales/v3/get_latest_prices", params, token);
+  if (!r.ok) return { ok: false, status: r.status, error: r.error, offers: [] };
+  const today = todayISO();
+  const offers = ((r.data && r.data.data) || []).map(x => normalizeOffer(x, today)).filter(Boolean);
+  return { ok: true, offers };
+}
+
+// Densification d'un mois : /v2/prices/month-matrix accepte trip_class=1 et renvoie
+// les tarifs Business jour par jour (les lignes non-Business sont écartées par normalizeOffer).
+async function fetchMonthMatrix(token, from, to, oneWay, month) {
+  const params = {
+    currency: CURRENCY, origin: from, destination: to, month: month + "-01",
+    trip_class: 1, one_way: oneWay ? "true" : "false", show_to_affiliates: "true"
+  };
+  const r = await tpFetch("/v2/prices/month-matrix", params, token);
   if (!r.ok) return { ok: false, status: r.status, error: r.error, offers: [] };
   const today = todayISO();
   const offers = ((r.data && r.data.data) || []).map(x => normalizeOffer(x, today)).filter(Boolean);
@@ -248,6 +266,6 @@ function sendJson(res, status, body, cacheSeconds) {
 module.exports = {
   MARKER, SUB, PARTNER_HOST, CURRENCY, ROUTES, THRESHOLD,
   todayISO, ddmm, isISODate, isMonth, isIATA,
-  aviasalesLink, tpFetch, normalizeOffer, mergeOffers, fetchLatest, sendJson,
+  aviasalesLink, tpFetch, normalizeOffer, mergeOffers, fetchLatest, fetchMonthMatrix, sendJson,
   AIRLINES, airlinesFor
 };

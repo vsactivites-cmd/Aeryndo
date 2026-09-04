@@ -10,8 +10,14 @@ const D = require("./_data.js");
 async function scan(token) {
   const results = await Promise.all(D.ROUTES.map(async r => {
     try {
-      const res = await D.fetchLatest(token, r.o, r.d, false, { limit: 100 });
-      return { route: r, ok: res.ok, error: res.ok ? null : res.error, offers: res.offers.filter(o => o.ret) };
+      // Aller-retour d'abord ; si le cache Business n'a que des allers simples, on les montre (le front l'indique).
+      let res = await D.fetchLatest(token, r.o, r.d, false, { limit: 100 });
+      let offers = res.ok ? res.offers.filter(o => o.ret) : [];
+      if (res.ok && !offers.length) {
+        const ow = await D.fetchLatest(token, r.o, r.d, true, { limit: 100 });
+        if (ow.ok) offers = ow.offers.filter(o => !o.ret);
+      }
+      return { route: r, ok: res.ok, error: res.ok ? null : res.error, offers };
     } catch (e) { return { route: r, ok: false, error: String(e && e.message || e), offers: [] }; }
   }));
   return results.map(x => {

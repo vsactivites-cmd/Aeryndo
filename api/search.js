@@ -24,10 +24,10 @@ module.exports = async (req, res) => {
     return D.sendJson(res, 503, { ok: false, error: "TP_API_TOKEN manquant dans Vercel", from, to, oneWay, offers: [], airlines: D.airlinesFor(from, to) });
   }
 
-  // 1) année glissante (jusqu'à 1000 tarifs) · 2) mois demandé (densification)
+  // 1) année glissante (jusqu'à 1000 tarifs) · 2) mois demandé, jour par jour (densification)
   const [year, focus] = await Promise.all([
     D.fetchLatest(token, from, to, oneWay),
-    D.fetchLatest(token, from, to, oneWay, { period_type: "month", beginning_of_period: month + "-01" })
+    D.fetchMonthMatrix(token, from, to, oneWay, month)
   ]);
 
   if (!year.ok && !focus.ok) {
