@@ -2,6 +2,10 @@
   "crons": [
     { "path": "/api/radar", "schedule": "0 5 * * *" }
   ],
+  "functions": {
+    "api/search.js": { "maxDuration": 15 },
+    "api/radar.js": { "maxDuration": 25 }
+  },
   "headers": [
     {
       "source": "/api/(.*)",
