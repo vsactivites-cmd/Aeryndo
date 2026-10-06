@@ -1,5 +1,7 @@
 // ============================================================
-// AERYNDO — vérification en temps réel via Amadeus Self-Service
+// AERYNDO — vérification en temps réel via Amadeus (clients Enterprise)
+// NB : le portail Self-Service gratuit a fermé le 17 juillet 2026 ; ce module ne
+// sert que si un contrat Enterprise fournit des clés. Sinon, voir _google.js.
 //
 // Un candidat trouvé dans le cache Travelpayouts n'est publié que si
 // Amadeus confirme, à l'instant, un tarif Business aller-retour au plus
@@ -7,7 +9,7 @@
 // les escales : c'est ce qui permet de dire en clair « lit à plat » ou non.
 //
 // Variables Vercel :
-//   AMADEUS_CLIENT_ID, AMADEUS_CLIENT_SECRET   (developers.amadeus.com, gratuit)
+//   AMADEUS_CLIENT_ID, AMADEUS_CLIENT_SECRET   (portail Enterprise Amadeus)
 //   AMADEUS_ENV = test | production            (test par défaut)
 // Zéro dépendance npm : fetch natif.
 // ============================================================

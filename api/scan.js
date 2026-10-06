@@ -5,11 +5,12 @@
 // Chaque passage, borné à ~45 s :
 //   1. RADAR : rafraîchit les routes surveillées (instantané pour la première page).
 //   2. RE-VÉRIFICATION : les deals affichés dont la preuve a plus de REVERIFY_HOURS
-//      sont re-demandés à Amadeus ; prix mis à jour, deal retiré s'il n'existe plus.
+//      sont re-vérifiés en direct ; prix mis à jour, deal retiré s'il n'existe plus.
 //   3. DÉCOUVERTE : avance d'un cran dans le panier mondial (round-robin), lit le
 //      cache Travelpayouts (marché fr), note les candidats selon la charte.
 //   4. VÉRIFICATION : les meilleurs candidats sont confirmés en temps réel par
-//      Amadeus (prix ≤ +10 %, cabine Business, lit à plat sur le long-courrier).
+//      Google Flights (SerpApi) ou Amadeus — voir _verify.js — (prix ≤ +10 %,
+//      cabine Business, lit à plat sur le long-courrier).
 //      Seuls les deals vérifiés sont écrits en mémoire, donc affichés.
 //   5. TRAJETS SUIVIS : chaque route qu'un visiteur a cherchée puis suivie par
 //      email est relue ; si son meilleur tarif baisse d'au moins DROP_PCT, la
@@ -20,14 +21,14 @@
 // ============================================================
 const D = require("./_data.js");
 const C = require("./_charte.js");
-const A = require("./_amadeus.js");
+const V = require("./_verify.js");
 const S = require("./_store.js");
 const radar = require("./radar.js");
 const M = require("./_mail.js");
 
 const ROUTES_PER_RUN = Number(process.env.SCAN_ROUTES_PER_RUN || 40);
-const DAILY_CAP = Number(process.env.AMADEUS_DAILY_CAP || 60);     // appels Amadeus / jour (offre test ≈ 2 000 / mois)
-const VERIFY_PER_RUN = Number(process.env.AMADEUS_PER_RUN || 4);   // nouveaux candidats vérifiés par passage
+const DAILY_CAP = Number(process.env.VERIFY_DAILY_CAP || process.env.AMADEUS_DAILY_CAP || V.DEFAULT_DAILY_CAP); // appels de vérification / jour (SerpApi gratuit : 250/mois → 8/jour)
+const VERIFY_PER_RUN = Number(process.env.VERIFY_PER_RUN || process.env.AMADEUS_PER_RUN || (V.NAME === "google" ? 2 : 4)); // nouveaux candidats vérifiés par passage
 const REVERIFY_HOURS = Number(process.env.SCAN_REVERIFY_HOURS || 8); // au-delà, un deal affiché est re-contrôlé
 const DEAL_TTL_HOURS = 24;       // sans re-contrôle réussi, il disparaît
 const MAX_DEALS = 12;
@@ -68,9 +69,9 @@ module.exports = async (req, res) => {
     } catch (e) { log.errors.push("radar: " + (e.message || e)); }
 
     const day = D.todayISO();
-    const budgetKey = "amadeus:used:" + day;
+    const budgetKey = "verify:used:" + day;
     let used = Number(await S.get(budgetKey)) || 0;
-    const canVerify = () => A.ENABLED && used < DAILY_CAP && Date.now() < deadline;
+    const canVerify = () => V.ENABLED && used < DAILY_CAP && Date.now() < deadline;
     const spend = async () => { used += 1; await S.set(budgetKey, used, 48 * 3600); };
 
     let deals = (await S.get("deals:list")) || [];
@@ -84,9 +85,9 @@ module.exports = async (req, res) => {
       if (hoursSince(d.verifiedAt) < REVERIFY_HOURS) continue;
       if (!canVerify()) break;
       await spend();
-      const r = await A.search(d.from, d.to, d.dep, d.ret);
+      const r = await V.search(d.from, d.to, d.dep, d.ret);
       log.reverified += 1;
-      if (!r.ok) { log.errors.push("amadeus " + d.id + ": " + r.error); continue; }
+      if (!r.ok) { log.errors.push(V.NAME + " " + d.id + ": " + r.error); continue; }
       const verdict = judge(d, r);
       if (verdict.ok) {
         if (r.price !== d.price) { d.prevPrice = d.price; d.changedAt = nowISO(); }
@@ -134,13 +135,13 @@ module.exports = async (req, res) => {
       if (verifiedThisRun >= VERIFY_PER_RUN || !canVerify()) break;
       await spend();
       verifiedThisRun += 1;
-      const r = await A.search(c.from, c.to, c.dep, c.ret);
+      const r = await V.search(c.from, c.to, c.dep, c.ret);
       const id = c.from + "-" + c.to;
-      if (!r.ok) { log.errors.push("amadeus " + id + ": " + r.error); continue; }
+      if (!r.ok) { log.errors.push(V.NAME + " " + id + ": " + r.error); continue; }
       const verdict = judge(c, r);
       if (!verdict.ok) {
         log.rejected.push(id + " : " + verdict.reason);
-        cooled[id] = Date.now() + 12 * 3600 * 1000; // pas de nouvel appel Amadeus sur cette route avant 12 h
+        cooled[id] = Date.now() + 12 * 3600 * 1000; // pas de nouvelle vérification sur cette route avant 12 h
         continue;
       }
       const deal = Object.assign({
@@ -161,9 +162,9 @@ module.exports = async (req, res) => {
     deals.sort((a, b) => scoreOf(b) - scoreOf(a));
     deals = deals.slice(0, MAX_DEALS);
     await S.set("deals:list", deals, 7 * 24 * 3600);
-    await S.set("scan:last", { at: nowISO(), ms: Date.now() - started, log, amadeusUsed: used, cap: DAILY_CAP, persistent: S.PERSISTENT, amadeus: A.ENABLED }, 7 * 24 * 3600);
+    await S.set("scan:last", { at: nowISO(), ms: Date.now() - started, log, verifier: V.NAME, verifyUsed: used, cap: DAILY_CAP, persistent: S.PERSISTENT }, 7 * 24 * 3600);
 
-    return D.sendJson(res, 200, { ok: true, ms: Date.now() - started, deals: deals.length, basket: basket.length, cursor, amadeus: { enabled: A.ENABLED, usedToday: used, cap: DAILY_CAP }, store: S.PERSISTENT ? "upstash" : "mémoire", log });
+    return D.sendJson(res, 200, { ok: true, ms: Date.now() - started, deals: deals.length, basket: basket.length, cursor, verifier: { name: V.NAME, enabled: V.ENABLED, usedToday: used, cap: DAILY_CAP }, store: S.PERSISTENT ? "upstash" : "mémoire", log });
   } catch (e) {
     return D.sendJson(res, 500, { ok: false, error: String(e && e.message || e), log });
   } finally {
@@ -171,7 +172,7 @@ module.exports = async (req, res) => {
   }
 };
 
-// Le verdict de la charte sur une réponse Amadeus. c = candidat ou deal existant.
+// Le verdict de la charte sur une réponse du vérificateur (Google Flights ou Amadeus). c = candidat ou deal existant.
 function judge(c, r) {
   if (!r.price) return { ok: false, reason: "aucun tarif Business trouvé en direct" };
   if (!r.allBusiness) return { ok: false, reason: "cabine mixte (un tronçon hors Business)" };
@@ -181,7 +182,7 @@ function judge(c, r) {
   const byKm = perKm !== null && c.distance >= C.LONG_HAUL_KM && perKm < C.SEUIL_PAR_KM;
   const discount = c.median ? 1 - r.price / c.median : null;
   const byMedian = discount !== null && discount >= C.DECOTE_MIN;
-  if (r.price > ref * A.TOLERANCE && !byKm && !byMedian) return { ok: false, reason: `prix en direct ${r.price} € au lieu de ${ref} €` };
+  if (r.price > ref * V.TOLERANCE && !byKm && !byMedian) return { ok: false, reason: `prix en direct ${r.price} € au lieu de ${ref} €` };
   if (!byKm && !byMedian) return { ok: false, reason: `prix en direct ${r.price} € : hors charte` };
   const seat = C.itinerarySeat(r.segments);
   const longHaul = (c.distance || 0) >= C.LONG_HAUL_KM;

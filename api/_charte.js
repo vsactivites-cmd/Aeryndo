@@ -6,7 +6,7 @@
 //   - au moins DECOTE_MIN sous la médiane des tarifs de sa route ;
 // et s'il respecte les garde-fous :
 //   - aller-retour, au moins MIN_DATES dates proches du meilleur prix,
-//   - lit à plat sur le long-courrier (jugé après vérification Amadeus,
+//   - lit à plat sur le long-courrier (jugé après vérification en direct,
 //     à partir de l'appareil et de la compagnie).
 // ============================================================
 
@@ -49,7 +49,7 @@ function basket() {
 const FLAT_AIRCRAFT = new Set([
   "77W", "77L", "773", "772", "779", "788", "789", "781", "787",
   "351", "359", "350", "388", "380", "338", "339", "332", "333", "343", "346", "330",
-  "744", "748", "747", "764", "763"
+  "744", "748", "747", "764", "763", "777"
 ]);
 // Monocouloirs où certaines compagnies installent un vrai lit.
 const FLAT_NARROWBODY = {

@@ -1,7 +1,7 @@
 // ============================================================
 // /api/deals — les deals affichés sur le site
 //
-// Uniquement ce que le robot (/api/scan) a VÉRIFIÉ en temps réel chez Amadeus :
+// Uniquement ce que le robot (/api/scan) a VÉRIFIÉ en temps réel (Google Flights ou Amadeus) :
 // prix confirmé, compagnie, appareil, lit à plat ou non. Rien d'écrit à la main.
 // Un deal dont la preuve date de plus de 24 h ou dont le départ est passé
 // n'est pas servi. Section vide côté site quand la liste est vide.
@@ -10,7 +10,7 @@
 // ============================================================
 const D = require("./_data.js");
 const S = require("./_store.js");
-const A = require("./_amadeus.js");
+const V = require("./_verify.js");
 
 const MAX_AGE_HOURS = 24;
 
@@ -37,9 +37,9 @@ module.exports = async (req, res) => {
   D.sendJson(res, 200, {
     ok: true,
     updated: new Date().toISOString(),
-    verifier: A.ENABLED ? "amadeus" : "absent",
+    verifier: V.NAME,
     store: S.PERSISTENT ? "upstash" : "mémoire",
-    scan: last ? { at: last.at, amadeusUsed: last.amadeusUsed, cap: last.cap } : null,
+    scan: last ? { at: last.at, verifyUsed: last.verifyUsed, cap: last.cap } : null,
     count: deals.length,
     deals,
     marker: D.MARKER
