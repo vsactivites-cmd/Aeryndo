@@ -1,0 +1,16 @@
+# Balayage continu Aeryndo : appelle le robot toutes les 30 minutes.
+# Gratuit sur un dépôt public. Secret à créer dans GitHub → Settings → Secrets → Actions :
+#   CRON_SECRET = la même valeur que la variable CRON_SECRET de Vercel.
+name: scan
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Appel du robot
+        run: |
+          curl -sS --max-time 120 "https://aeryndo.co/api/scan?key=${{ secrets.CRON_SECRET }}" | head -c 2000

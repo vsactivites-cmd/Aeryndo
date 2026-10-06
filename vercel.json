@@ -1,15 +1,40 @@
 {
   "crons": [
-    { "path": "/api/radar", "schedule": "0 5 * * *" }
+    {
+      "path": "/api/scan",
+      "schedule": "30 4 * * *"
+    },
+    {
+      "path": "/api/radar",
+      "schedule": "0 5 * * *"
+    }
   ],
   "functions": {
-    "api/search.js": { "maxDuration": 15 },
-    "api/radar.js": { "maxDuration": 25 }
+    "api/search.js": {
+      "maxDuration": 15
+    },
+    "api/radar.js": {
+      "maxDuration": 25
+    },
+    "api/scan.js": {
+      "maxDuration": 60
+    },
+    "api/deals.js": {
+      "maxDuration": 10
+    },
+    "api/subscribe.js": {
+      "maxDuration": 15
+    }
   },
   "headers": [
     {
       "source": "/api/(.*)",
-      "headers": [{ "key": "X-Content-Type-Options", "value": "nosniff" }]
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
     }
   ]
 }

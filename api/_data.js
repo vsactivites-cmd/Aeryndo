@@ -11,22 +11,50 @@ const SUB = { radar: "radar", search: "site-search", deal: "site-deal", deck: "s
 
 const PARTNER_HOST = "aviasales.fr";
 const CURRENCY = "eur";
+// Marché des données Travelpayouts. Sans ce paramètre l'API sert le marché russe
+// (défaut « ru ») : prix vus sur aviasales.ru, en roubles, chez des agences qui ne
+// vendent pas en France — d'où l'écart au clic. « fr » aligne le cache et le lien.
+const MARKET = "fr";
 const TP_API = "https://api.travelpayouts.com";
 
 // Routes surveillées par le Radar (bloc vivant de la première page + alerte nocturne).
 // "normal" = tarif Business habituel constaté sur la route, sert à calculer la remise.
+// Codes de VILLE (PAR, NYC, TYO…) : le cache Aviasales est indexé par ville, un code
+// d'aéroport seul (CDG, JFK, HND) ampute les résultats. "normal" ne sert plus qu'en
+// dernier recours quand le cache n'a pas assez d'échantillons pour une médiane.
 const ROUTES = [
-  { o: "CDG", d: "JFK", city: "New York",  country: "États-Unis",        normal: 2600 },
-  { o: "CDG", d: "DXB", city: "Dubaï",     country: "Émirats arabes unis", normal: 2400 },
-  { o: "CDG", d: "HND", city: "Tokyo",     country: "Japon",             normal: 3200 },
-  { o: "CDG", d: "NRT", city: "Tokyo Narita", country: "Japon",          normal: 3200 },
-  { o: "CDG", d: "BKK", city: "Bangkok",   country: "Thaïlande",         normal: 2800 },
-  { o: "CDG", d: "SIN", city: "Singapour", country: "Singapour",         normal: 3000 },
-  { o: "CDG", d: "MLE", city: "Maldives",  country: "Maldives",          normal: 3400 },
-  { o: "CDG", d: "HKG", city: "Hong Kong", country: "Hong Kong",         normal: 3100 },
-  { o: "CDG", d: "LAX", city: "Los Angeles", country: "États-Unis",      normal: 3000 },
-  { o: "NCE", d: "JFK", city: "New York",  country: "États-Unis (dép. Nice)", normal: 2800 }
+  { o: "PAR", d: "NYC", city: "New York",  country: "États-Unis",        normal: 2600 },
+  { o: "PAR", d: "DXB", city: "Dubaï",     country: "Émirats arabes unis", normal: 2400 },
+  { o: "PAR", d: "TYO", city: "Tokyo",     country: "Japon",             normal: 3200 },
+  { o: "PAR", d: "BKK", city: "Bangkok",   country: "Thaïlande",         normal: 2800 },
+  { o: "PAR", d: "SIN", city: "Singapour", country: "Singapour",         normal: 3000 },
+  { o: "PAR", d: "MLE", city: "Maldives",  country: "Maldives",          normal: 3400 },
+  { o: "PAR", d: "HKG", city: "Hong Kong", country: "Hong Kong",         normal: 3100 },
+  { o: "PAR", d: "LAX", city: "Los Angeles", country: "États-Unis",      normal: 3000 },
+  { o: "PAR", d: "DEL", city: "New Delhi", country: "Inde",              normal: 2600 },
+  { o: "NCE", d: "NYC", city: "New York",  country: "États-Unis (dép. Nice)", normal: 2800 }
 ];
+
+// Nombre minimal de tarifs en cache pour qu'une médiane (et donc une remise) soit affichée.
+const MIN_SAMPLES = 10;
+
+function median(nums) {
+  if (!nums || !nums.length) return null;
+  const s = nums.slice().sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2);
+}
+
+// Aéroport → code de ville Aviasales, pour les métropoles multi-aéroports.
+const CITY_OF = {
+  CDG: "PAR", ORY: "PAR", BVA: "PAR", LHR: "LON", LGW: "LON", LCY: "LON", STN: "LON", LTN: "LON",
+  JFK: "NYC", EWR: "NYC", LGA: "NYC", HND: "TYO", NRT: "TYO", KIX: "OSA", ITM: "OSA",
+  MXP: "MIL", LIN: "MIL", BGY: "MIL", FCO: "ROM", CIA: "ROM", ICN: "SEL", GMP: "SEL",
+  PVG: "SHA", PEK: "BJS", PKX: "BJS", GRU: "SAO", CGH: "SAO", GIG: "RIO", SDU: "RIO",
+  EZE: "BUE", AEP: "BUE", ARN: "STO", BMA: "STO", YYZ: "YTO", ORD: "CHI", MDW: "CHI",
+  IAD: "WAS", DCA: "WAS", DMK: "BKK", SVO: "MOW", DME: "MOW", VKO: "MOW"
+};
+function cityCode(code) { const c = String(code || "").toUpperCase(); return CITY_OF[c] || c; }
 
 // Seuil d'alerte email : prix <= 65 % de la normale de la route
 const THRESHOLD = 0.65;
@@ -74,6 +102,7 @@ function normalizeOffer(x, today) {
   const ret = x.return_date ? String(x.return_date).slice(0, 10) : null;
   if (dep <= today) return null;
   if (x.trip_class !== 1) return null; // garde-fou : Business uniquement (certains endpoints ignorent trip_class)
+  if (x.actual === false) return null; // tarif signalé périmé par Travelpayouts : on ne l'affiche pas
   return {
     price: Math.round(x.value),
     dep,
@@ -82,6 +111,7 @@ function normalizeOffer(x, today) {
     duration: x.duration || null,          // minutes (quand fourni)
     gate: x.gate || null,                  // agence / source du tarif
     found: x.found_at || null,             // horodatage de la découverte
+    distance: typeof x.distance === "number" && x.distance > 0 ? x.distance : null, // km (charte : prix/km)
     actual: x.actual !== false
   };
 }
@@ -104,7 +134,7 @@ function mergeOffers(lists) {
 async function fetchLatest(token, from, to, oneWay, extra) {
   const params = Object.assign({
     currency: CURRENCY, origin: from, destination: to,
-    trip_class: 1, period_type: "year", one_way: oneWay ? "true" : "false",
+    trip_class: 1, period_type: "year", one_way: oneWay ? "true" : "false", market: MARKET,
     page: 1, limit: 1000, sorting: "price", show_to_affiliates: "true", token
   }, extra || {});
   const r = await tpFetch("/aviasales/v3/get_latest_prices", params, token);
@@ -256,7 +286,8 @@ function sendJson(res, status, body, cacheSeconds) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   if (cacheSeconds && status === 200) {
     // Cache CDN Vercel : réponses partagées entre visiteurs, revalidation en arrière-plan.
-    res.setHeader("Cache-Control", `public, s-maxage=${cacheSeconds}, stale-while-revalidate=${cacheSeconds * 12}`);
+    // Servi périmé au plus 4× la durée (radar : 30 min de cache, 2 h de tolérance), le temps de recalculer en arrière-plan.
+    res.setHeader("Cache-Control", `public, s-maxage=${cacheSeconds}, stale-while-revalidate=${cacheSeconds * 4}`);
   } else {
     res.setHeader("Cache-Control", "no-store");
   }
@@ -264,8 +295,8 @@ function sendJson(res, status, body, cacheSeconds) {
 }
 
 module.exports = {
-  MARKER, SUB, PARTNER_HOST, CURRENCY, ROUTES, THRESHOLD,
-  todayISO, ddmm, isISODate, isMonth, isIATA,
+  MARKER, SUB, PARTNER_HOST, CURRENCY, MARKET, ROUTES, THRESHOLD, MIN_SAMPLES,
+  todayISO, ddmm, isISODate, isMonth, isIATA, median, cityCode,
   aviasalesLink, tpFetch, normalizeOffer, mergeOffers, fetchLatest, fetchMonthMatrix, sendJson,
   AIRLINES, airlinesFor
 };

@@ -6,12 +6,17 @@
 // user-agent "vercel-cron" : il déclenche automatiquement le mode alerte.
 // ============================================================
 const D = require("./_data.js");
+const S = require("./_store.js");
+
+// Instantané écrit par /api/scan (toutes les ~30 min). Servi tel quel tant qu'il a moins de SNAPSHOT_MAX_AGE.
+const SNAPSHOT_MAX_AGE_MS = 2 * 3600 * 1000;
 
 async function scan(token) {
   const results = await Promise.all(D.ROUTES.map(async r => {
     try {
       // Aller-retour d'abord ; si le cache Business n'a que des allers simples, on les montre (le front l'indique).
-      let res = await D.fetchLatest(token, r.o, r.d, false, { limit: 100 });
+      // 1000 lignes (et non 100) : la médiane de la route se calcule sur tout le cache, pas sur les 100 moins chers.
+      let res = await D.fetchLatest(token, r.o, r.d, false, { limit: 1000 });
       let offers = res.ok ? res.offers.filter(o => o.ret) : [];
       if (res.ok && !offers.length) {
         const ow = await D.fetchLatest(token, r.o, r.d, true, { limit: 100 });
@@ -22,11 +27,15 @@ async function scan(token) {
   }));
   return results.map(x => {
     const best = x.offers.length ? x.offers.reduce((a, b) => (a.price <= b.price ? a : b)) : null;
+    // Remise mesurée contre la médiane des tarifs de la route elle-même (cache Travelpayouts),
+    // jamais contre un chiffre écrit en dur. Pas assez d'échantillons → pas de remise affichée.
+    const med = x.offers.length >= D.MIN_SAMPLES ? D.median(x.offers.map(o => o.price)) : null;
+    const pct = best && best.ret && med ? Math.round((1 - best.price / med) * 100) : null;
     return {
       from: x.route.o, to: x.route.d, city: x.route.city, country: x.route.country,
-      normal: x.route.normal, ok: x.ok, count: x.offers.length, error: x.error || undefined,
+      normal: x.route.normal, median: med, ok: x.ok, count: x.offers.length, error: x.error || undefined,
       best: best ? Object.assign({}, best, {
-        pct: best.ret ? Math.round((1 - best.price / x.route.normal) * 100) : null, // pas de remise sur un aller simple
+        pct: pct !== null && pct > 0 ? pct : null,
         link: D.aviasalesLink({ from: x.route.o, to: x.route.d, dep: best.dep, ret: best.ret, pax: 1, sub: D.SUB.radar })
       }) : null,
       airlines: D.airlinesFor(x.route.o, x.route.d)
@@ -48,7 +57,7 @@ function buildEmail(hits) {
         </td>
         <td style="padding:14px 16px;border-bottom:1px solid #2a2a2e;text-align:right;">
           <div style="font-size:20px;color:#FF6B57;">${euros(h.best.price)}</div>
-          <div style="font-size:12px;color:#b8b3aa;">−${h.best.pct}% vs normale (${euros(h.normal)})</div>
+          <div style="font-size:12px;color:#b8b3aa;">${h.best.pct ? "−" + h.best.pct + "% vs médiane (" + euros(h.median || h.normal) + ")" : "référence : " + euros(h.median || h.normal)}</div>
           <a href="${link}" style="font-size:12px;color:#F3F0E9;">Vérifier →</a>
         </td>
       </tr>`;
@@ -88,8 +97,14 @@ module.exports = async (req, res) => {
   const token = process.env.TP_API_TOKEN;
   const q = req.query || {};
   const ua = String((req.headers && req.headers["user-agent"]) || "");
-  const alertMode = q.alert === "1" || /vercel-cron/i.test(ua);
-  const isTest = q.test === "1";
+  // Mode alerte (envoi d'email) réservé au cron Vercel ou à un appel porteur du secret.
+  // Avant : n'importe qui pouvait déclencher un email avec ?alert=1.
+  const secret = process.env.CRON_SECRET || "";
+  const auth = String((req.headers && req.headers.authorization) || "");
+  const fromCron = /vercel-cron/i.test(ua) && (!secret || auth === "Bearer " + secret);
+  const withKey = secret && q.key === secret;
+  const alertMode = fromCron || withKey;
+  const isTest = q.test === "1" && alertMode;
 
   if (!token) {
     // Pas de token : on renvoie quand même les routes pour que le bloc reste lisible.
@@ -99,19 +114,28 @@ module.exports = async (req, res) => {
     });
   }
 
-  const routes = await scan(token);
+  let routes = null, snapshotAt = null;
+  if (!alertMode) {
+    const snap = await S.get("radar:snapshot").catch(() => null);
+    if (snap && snap.routes && Date.now() - Date.parse(snap.at) < SNAPSHOT_MAX_AGE_MS) { routes = snap.routes; snapshotAt = snap.at; }
+  }
+  if (!routes) {
+    routes = await scan(token);
+    await S.set("radar:snapshot", { at: new Date().toISOString(), routes }, 6 * 3600).catch(() => {});
+  }
 
   if (alertMode) {
     const brevo = process.env.BREVO_API_KEY;
     if (!brevo) return D.sendJson(res, 500, { ok: false, error: "BREVO_API_KEY manquant dans Vercel" });
-    const hits = routes.filter(r => r.best && r.best.price <= r.normal * D.THRESHOLD);
+    // Seuil : 65 % de la médiane de la route (ou du « normal » de secours si le cache est trop mince).
+    const hits = routes.filter(r => r.best && r.best.ret && r.best.price <= (r.median || r.normal) * D.THRESHOLD);
     let emailed = false;
     if (hits.length) emailed = await sendEmail(brevo, buildEmail(hits), `✈ Radar Aeryndo — ${hits.length} tarif(s) sous le seuil`);
     else if (isTest) emailed = await sendEmail(brevo, buildEmail([]), "✈ Radar Aeryndo — test OK, radar opérationnel");
     return D.sendJson(res, 200, {
       ok: true, mode: "alert", scanned: routes.length,
       routesAvecDonnees: routes.filter(r => r.count).length,
-      alertes: hits.map(h => ({ route: h.from + "-" + h.to, prix: h.best.price, normale: h.normal })),
+      alertes: hits.map(h => ({ route: h.from + "-" + h.to, prix: h.best.price, mediane: h.median, normale: h.normal })),
       emailEnvoye: emailed
     });
   }
@@ -121,6 +145,7 @@ module.exports = async (req, res) => {
   const score = r => (r.best && typeof r.best.pct === "number") ? r.best.pct : (r.best ? -1 : -999);
   routes.sort((a, b) => score(b) - score(a));
   D.sendJson(res, 200, {
-    ok: true, updated: new Date().toISOString(), threshold: D.THRESHOLD, marker: D.MARKER, routes
-  }, 3600);
+    ok: true, updated: snapshotAt || new Date().toISOString(), source: snapshotAt ? "scan" : "live", threshold: D.THRESHOLD, market: D.MARKET, marker: D.MARKER, routes
+  }, 1800);
 };
+module.exports.scan = scan;

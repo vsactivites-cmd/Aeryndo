@@ -7,10 +7,10 @@
 // Source : Travelpayouts Data API (tarifs vus par les partenaires, cache 48 h).
 // Le site affiche tout ; Aviasales n'est ouvert qu'au clic « Réserver ».
 //
-// Horizon : douze mois d'avance, interrogés MOIS PAR MOIS avec deux sources
-// chacun (get_latest_prices en période « month » + month-matrix), en plus des
-// deux balayages annuels. Un balayage annuel seul rend trop peu de dates en
-// Business ; mois par mois, le bandeau des mois se remplit.
+// Horizon : douze mois d'avance, interrogés MOIS PAR MOIS (get_latest_prices en
+// période « month », marché fr), en plus des deux balayages annuels. Un balayage
+// annuel seul rend trop peu de dates en Business ; mois par mois, le bandeau des
+// mois se remplit.
 // ============================================================
 const D = require("./_data.js");
 
@@ -28,8 +28,9 @@ function monthKeys(count) {
 
 module.exports = async (req, res) => {
   const q = req.query || {};
-  const from = String(q.from || "").trim().toUpperCase();
-  const to = String(q.to || "").trim().toUpperCase();
+  // Aéroport → ville : le cache est indexé par ville (CDG devient PAR, HND devient TYO).
+  const from = D.cityCode(String(q.from || "").trim());
+  const to = D.cityCode(String(q.to || "").trim());
   const oneWay = q.oneway === "1" || q.oneway === "true";
   const month = D.isMonth(q.month) ? q.month : D.todayISO().slice(0, 7);
 
@@ -52,9 +53,10 @@ module.exports = async (req, res) => {
     D.fetchLatest(token, from, to, oneWay, { beginning_of_period: today }),
     D.fetchLatest(token, from, to, oneWay, { beginning_of_period: plusYear })
   ];
+  // Une seule source par mois : get_latest_prices v3, la seule qui accepte le paramètre
+  // market. /v2/prices/month-matrix ne le connaît pas et servirait le marché russe.
   for (const mk of sweep) {
     calls.push(D.fetchLatest(token, from, to, oneWay, { period_type: "month", beginning_of_period: mk + "-01" }));
-    calls.push(D.fetchMonthMatrix(token, from, to, oneWay, mk));
   }
   const settled = await Promise.all(calls.map(p => p.catch(e => ({ ok: false, error: String(e && e.message || e), offers: [] }))));
 
@@ -75,6 +77,10 @@ module.exports = async (req, res) => {
     if (!months[m] || o.price < months[m]) months[m] = o.price;
   }
 
+  // Médiane des tarifs de la route : la seule référence honnête pour parler de remise.
+  // En dessous de MIN_SAMPLES échantillons, pas de médiane, donc pas de « −X % ».
+  const median = offers.length >= D.MIN_SAMPLES ? D.median(offers.map(o => o.price)) : null;
+
   D.sendJson(res, 200, {
     ok: true,
     from, to, oneWay, month,
@@ -85,7 +91,10 @@ module.exports = async (req, res) => {
     offers,
     months,
     airlines: D.airlinesFor(from, to),
+    median,
+    samples: offers.length,
+    market: D.MARKET,
     normal: (D.ROUTES.find(r => r.o === from && r.d === to) || {}).normal || null,
     marker: D.MARKER
-  }, 1800);
+  }, 900);
 };
