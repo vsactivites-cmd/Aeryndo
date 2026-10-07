@@ -121,6 +121,24 @@ function evaluate(route, offers) {
   };
 }
 
+// Route « prometteuse » : le meilleur prix passe un seuil de la charte mais le cache
+// ne montre pas encore MIN_DATES dates proches. Le robot va alors chercher le
+// calendrier du mois (densification) avant de trancher. Retourne la meilleure offre ou null.
+function promising(route, offers) {
+  const rt = (offers || []).filter(o => o.ret && o.price > 0);
+  if (!rt.length) return null;
+  const prices = rt.map(o => o.price);
+  const min = Math.min.apply(null, prices);
+  const near = rt.filter(o => o.price <= min * 1.10).length;
+  if (near >= MIN_DATES) return null; // pas besoin : evaluate() a déjà tranché
+  const median = rt.length >= MIN_SAMPLES ? med(prices) : null;
+  const distance = (rt.find(o => o.distance) || {}).distance || null;
+  const byKm = distance && distance >= LONG_HAUL_KM && min / distance < SEUIL_PAR_KM;
+  const byMedian = median && 1 - min / median >= DECOTE_MIN;
+  if (!byKm && !byMedian) return null;
+  return rt.filter(o => o.price === min).sort((a, b) => a.dep.localeCompare(b.dep))[0];
+}
+
 // Diagnostic : résumé d'une route (nombre d'offres AR, min, médiane, distance, min €/km)
 function stats(offers) {
   const rt = (offers || []).filter(o => o.ret && o.price > 0);
@@ -135,4 +153,4 @@ function med(nums) {
   return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2);
 }
 
-module.exports = { SEUIL_PAR_KM, DECOTE_MIN, LONG_HAUL_KM, MIN_DATES, MIN_SAMPLES, ORIGINS, DESTINATIONS, basket, segmentSeat, itinerarySeat, evaluate, stats, isoMinutes };
+module.exports = { SEUIL_PAR_KM, DECOTE_MIN, LONG_HAUL_KM, MIN_DATES, MIN_SAMPLES, ORIGINS, DESTINATIONS, basket, segmentSeat, itinerarySeat, evaluate, promising, stats, isoMinutes };

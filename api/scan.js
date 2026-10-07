@@ -39,26 +39,44 @@ const DROP_PCT = 0.08;            // baisse minimale pour alerter (8 %)
 const ALERT_GAP_HOURS = 12;       // pas plus d'une alerte par trajet et par personne sur cette durée
 
 const nowISO = () => new Date().toISOString();
+// Mois (AAAA-MM) à partir de la date donnée : "2027-01-20", 2 → ["2027-01", "2027-02"]
+function monthsFrom(iso, count) {
+  const out = [];
+  let y = Number(String(iso).slice(0, 4)), m = Number(String(iso).slice(5, 7));
+  for (let i = 0; i < count; i++) {
+    out.push(y + "-" + String(m).padStart(2, "0"));
+    m += 1; if (m > 12) { m = 1; y += 1; }
+  }
+  return out;
+}
 const hoursSince = iso => (Date.now() - Date.parse(iso || 0)) / 3600000;
 
 module.exports = async (req, res) => {
   const q = req.query || {};
   const ua = String((req.headers && req.headers["user-agent"]) || "");
   const secret = (process.env.CRON_SECRET || "").trim();
-  const auth = String((req.headers && req.headers.authorization) || "");
+  const auth = String((req.headers && req.headers.authorization) || "").trim();
   const fromCron = /vercel-cron/i.test(ua) && (!secret || auth === "Bearer " + secret);
   const allowed = fromCron || !secret || String(q.key || "").trim() === secret;
-  if (!allowed) return D.sendJson(res, 401, { ok: false, error: "clé requise", hint: { keyLength: String(q.key || "").length, secretLength: secret.length } });
+  if (!allowed) return D.sendJson(res, 401, { ok: false, error: "clé requise" });
 
   const token = process.env.TP_API_TOKEN;
   if (!token) return D.sendJson(res, 503, { ok: false, error: "TP_API_TOKEN manquant dans Vercel" });
 
-  if (!(await S.lock("scan:lock", LOCK_SECONDS))) {
-    return D.sendJson(res, 200, { ok: true, skipped: "un balayage est déjà en cours" });
+  // La mémoire (Upstash) doit accepter l'écriture : sinon on explique au lieu de planter.
+  let locked;
+  try { locked = await S.lock("scan:lock", LOCK_SECONDS); }
+  catch (e) {
+    const msg = String(e && e.message || e);
+    const hint = /403/.test(msg) ? "Upstash refuse l'écriture : le jeton Vercel UPSTASH_REDIS_REST_TOKEN est sans doute le jeton « Read-Only » ; remplacez-le par le jeton complet."
+      : /401/.test(msg) ? "Upstash refuse le jeton : vérifiez UPSTASH_REDIS_REST_TOKEN dans Vercel."
+      : "Mémoire Upstash injoignable : vérifiez UPSTASH_REDIS_REST_URL et UPSTASH_REDIS_REST_TOKEN dans Vercel.";
+    return D.sendJson(res, 503, { ok: false, error: "mémoire indisponible (" + msg + ")", hint });
   }
+  if (!locked) return D.sendJson(res, 200, { ok: true, skipped: "un balayage est déjà en cours" });
   const started = Date.now();
   const deadline = started + RUN_BUDGET_MS;
-  const log = { radar: null, reverified: 0, discovered: 0, candidates: 0, verified: 0, rejected: [], errors: [] };
+  const log = { radar: null, reverified: 0, discovered: 0, densified: 0, candidates: 0, verified: 0, rejected: [], errors: [] };
 
   try {
     // ---------- 1. radar ----------
@@ -113,12 +131,25 @@ module.exports = async (req, res) => {
       try {
         const r = await D.fetchLatest(token, o, d, false, { limit: 1000 });
         if (!r.ok) return { route: [o, d], error: r.error };
-        const cand = C.evaluate([o, d], r.offers);
-        return { route: [o, d], candidate: cand, n: r.offers.length, stats: diag ? C.stats(r.offers) : null };
+        let offers = r.offers;
+        let cand = C.evaluate([o, d], offers);
+        let densified = false;
+        // Prix dans la charte mais trop peu de dates en cache : on va chercher le
+        // calendrier du mois (et du suivant) chez Travelpayouts avant d'écarter la route.
+        const best = !cand && Date.now() < deadline ? C.promising([o, d], offers) : null;
+        if (best) {
+          const months = monthsFrom(best.dep, 2);
+          const extra = await Promise.all(months.map(m => D.fetchMonthMatrix(token, o, d, false, m)));
+          offers = D.mergeOffers([offers].concat(extra.filter(x => x.ok).map(x => x.offers)));
+          cand = C.evaluate([o, d], offers);
+          densified = true;
+        }
+        return { route: [o, d], candidate: cand, n: offers.length, densified, stats: diag ? C.stats(offers) : null };
       } catch (e) { return { route: [o, d], error: String(e.message || e) }; }
     }));
     log.discovered = results.filter(r => !r.error).length;
-    if (diag) log.diag = results.map(r => r.route.join("-") + ":" + (r.error ? "ERR " + r.error.slice(0, 40) : r.candidate ? "CANDIDAT " + r.candidate.price + "€ " + r.candidate.dates + "d " + (r.candidate.discount || "?") + "% " + (r.candidate.perKm || "?") + "€/km" : "non " + JSON.stringify(r.stats)));
+    log.densified = results.filter(r => r.densified).length;
+    if (diag) log.diag = results.map(r => r.route.join("-") + ":" + (r.densified ? "+mois " : "") + (r.error ? "ERR " + r.error.slice(0, 40) : r.candidate ? "CANDIDAT " + r.candidate.price + "€ " + r.candidate.dates + "d " + (r.candidate.discount || "?") + "% " + (r.candidate.perKm || "?") + "€/km" : "non " + JSON.stringify(r.stats)));
     let candidates = results.map(r => r.candidate).filter(Boolean);
     // On ne ré-examine pas un deal déjà affiché et frais, ni une route refusée récemment.
     const shown = new Set(deals.map(d => d.id));
