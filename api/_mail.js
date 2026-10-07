@@ -37,7 +37,7 @@ function fmtDate(iso, l) {
 
 // Lien de désinscription signé (pas de base de comptes, pas de mot de passe).
 function sig(email) {
-  const secret = process.env.CRON_SECRET || "aeryndo";
+  const secret = (process.env.CRON_SECRET || "aeryndo").trim();
   return crypto.createHmac("sha256", secret).update(String(email).toLowerCase()).digest("hex").slice(0, 24);
 }
 function unsubLink(email, routeId) {

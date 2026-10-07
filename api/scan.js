@@ -44,11 +44,11 @@ const hoursSince = iso => (Date.now() - Date.parse(iso || 0)) / 3600000;
 module.exports = async (req, res) => {
   const q = req.query || {};
   const ua = String((req.headers && req.headers["user-agent"]) || "");
-  const secret = process.env.CRON_SECRET || "";
+  const secret = (process.env.CRON_SECRET || "").trim();
   const auth = String((req.headers && req.headers.authorization) || "");
   const fromCron = /vercel-cron/i.test(ua) && (!secret || auth === "Bearer " + secret);
-  const allowed = fromCron || !secret || q.key === secret;
-  if (!allowed) return D.sendJson(res, 401, { ok: false, error: "clé requise" });
+  const allowed = fromCron || !secret || String(q.key || "").trim() === secret;
+  if (!allowed) return D.sendJson(res, 401, { ok: false, error: "clé requise", hint: { keyLength: String(q.key || "").length, secretLength: secret.length } });
 
   const token = process.env.TP_API_TOKEN;
   if (!token) return D.sendJson(res, 503, { ok: false, error: "TP_API_TOKEN manquant dans Vercel" });

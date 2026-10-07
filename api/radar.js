@@ -99,10 +99,10 @@ module.exports = async (req, res) => {
   const ua = String((req.headers && req.headers["user-agent"]) || "");
   // Mode alerte (envoi d'email) réservé au cron Vercel ou à un appel porteur du secret.
   // Avant : n'importe qui pouvait déclencher un email avec ?alert=1.
-  const secret = process.env.CRON_SECRET || "";
+  const secret = (process.env.CRON_SECRET || "").trim();
   const auth = String((req.headers && req.headers.authorization) || "");
   const fromCron = /vercel-cron/i.test(ua) && (!secret || auth === "Bearer " + secret);
-  const withKey = secret && q.key === secret;
+  const withKey = secret && String(q.key || "").trim() === secret;
   const alertMode = fromCron || withKey;
   const isTest = q.test === "1" && alertMode;
 
