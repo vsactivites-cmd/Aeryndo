@@ -1,0 +1,86 @@
+[
+  {
+    "id": "piege-escale-nuit",
+    "title": { "fr": "L’escale de 14 heures", "en": "The 14-hour layover" },
+    "hook": { "fr": "Paris → Dubaï en Business à 1 190 €. Le piège ?", "en": "Paris → Dubai in Business for €1,190. The catch?" },
+    "price": "1 190 €",
+    "route": "CDG → DXB",
+    "detail": { "fr": "14 heures d’escale à Mascate, de nuit, sans hôtel inclus.", "en": "A 14-hour overnight layover in Muscat, no hotel included." },
+    "body": {
+      "fr": "Le prix est réel, le lit à plat aussi. Mais l’aller passe par Mascate avec 14 heures d’attente, de 23 h à 13 h. Sans salon correct ni hôtel, la nuit se passe dans l’aérogare : votre Business vous aura reposé… jusqu’à l’escale.",
+      "en": "The price is real, so is the flat bed. But the outbound routes through Muscat with a 14-hour wait, from 11 pm to 1 pm. With no proper lounge or hotel, you spend the night in the terminal: your Business cabin rests you… until the layover."
+    },
+    "lesson": { "fr": "Regardez toujours la durée de l’escale avant le prix. Aeryndo l’affiche sur chaque deal.", "en": "Always read the layover length before the price. Aeryndo shows it on every deal." },
+    "city": "DXB"
+  },
+  {
+    "id": "piege-737",
+    "title": { "fr": "« Business » sur un 737", "en": "“Business” on a 737" },
+    "hook": { "fr": "Rome → Mascate en Business à 1 314 €, direct. Le piège ?", "en": "Rome → Muscat in Business for €1,314, nonstop. The catch?" },
+    "price": "1 314 €",
+    "route": "FCO → MCT",
+    "detail": { "fr": "Boeing 737 : siège inclinable, pas de lit. 6 h 30 de vol.", "en": "Boeing 737: recliner seat, no bed. A 6½-hour flight." },
+    "body": {
+      "fr": "Même compagnie, même tarif Business, deux cabines différentes : depuis Milan ou Paris, c’est un Boeing 787 avec de vrais lits ; depuis Rome ou Munich, un Boeing 737 avec un fauteuil inclinable. Le mot « Business » ne dit rien du siège.",
+      "en": "Same airline, same Business fare, two different cabins: from Milan or Paris it is a Boeing 787 with real beds; from Rome or Munich, a Boeing 737 with a reclining chair. The word “Business” says nothing about the seat."
+    },
+    "lesson": { "fr": "Avant de réserver, vérifiez l’appareil. Aeryndo déduit le siège de l’avion et de la compagnie, tronçon par tronçon.", "en": "Check the aircraft before booking. Aeryndo infers the seat from the aircraft and airline, leg by leg." },
+    "city": "MCT"
+  },
+  {
+    "id": "piege-tarif-erreur",
+    "title": { "fr": "Le tarif erreur, mode d’emploi", "en": "Error fares, the rules" },
+    "hook": { "fr": "New York en Business à 650 €. Vrai tarif, ou piège ?", "en": "New York in Business for €650. Real fare, or trap?" },
+    "price": "650 €",
+    "route": "PAR → NYC",
+    "detail": { "fr": "Un tarif erreur peut être annulé par la compagnie dans les 72 h.", "en": "An error fare can be cancelled by the airline within 72 hours." },
+    "body": {
+      "fr": "Les tarifs erreur existent : une virgule qui saute, une classe mal codée. Ils partent en quelques heures. Le piège, c’est de réserver l’hôtel et les activités le soir même : si la compagnie annule le billet, tout le reste est perdu.",
+      "en": "Error fares are real: a misplaced decimal, a mis-coded cabin. They vanish within hours. The trap is booking the hotel and activities the same evening: if the airline cancels the ticket, everything else is lost."
+    },
+    "lesson": { "fr": "On réserve le vol, rien d’autre, et on attend 72 h. Aeryndo signale chaque tarif erreur comme tel.", "en": "Book the flight, nothing else, and wait 72 hours. Aeryndo flags every error fare as such." },
+    "city": "NYC"
+  },
+  {
+    "id": "piege-premium-eco",
+    "title": { "fr": "Premium Economy n’est pas Business", "en": "Premium Economy is not Business" },
+    "hook": { "fr": "Tokyo « en classe supérieure » à 1 100 €. Le piège ?", "en": "Tokyo “in a premium cabin” for €1,100. The catch?" },
+    "price": "1 100 €",
+    "route": "PAR → TYO",
+    "detail": { "fr": "C’est de la Premium Economy : un fauteuil plus large, pas un lit.", "en": "It is Premium Economy: a wider chair, not a bed." },
+    "body": {
+      "fr": "Les comparateurs mélangent volontiers « premium » et « affaires ». La Premium Economy, c’est 10 cm de plus pour les jambes et un repas amélioré. La Business, c’est un lit de 1,90 m. Sur 12 heures de vol, la différence se mesure au réveil.",
+      "en": "Comparison sites happily blur “premium” and “business”. Premium Economy is 10 cm more legroom and a better meal. Business is a 1.9 m bed. On a 12-hour flight, the difference shows when you wake up."
+    },
+    "lesson": { "fr": "Aeryndo ne publie que de la vraie Business, cabine vérifiée. Jamais de Premium Economy déguisée.", "en": "Aeryndo only publishes real Business, cabin verified. Never Premium Economy in disguise." },
+    "city": "TYO"
+  },
+  {
+    "id": "piege-prix-adulte",
+    "title": { "fr": "Le prix est par personne", "en": "The price is per person" },
+    "hook": { "fr": "Maldives en Business à 1 488 €. Pour deux ?", "en": "Maldives in Business for €1,488. For two?" },
+    "price": "1 488 €",
+    "route": "CDG → MLE",
+    "detail": { "fr": "Par adulte, aller-retour. À deux, c’est 2 976 €.", "en": "Per adult, round trip. For two, that is €2,976." },
+    "body": {
+      "fr": "Tous les tarifs affichés par les compagnies et les comparateurs sont par adulte. Le piège n’est pas le prix, c’est la lecture trop rapide : on se projette à deux et on découvre le double au paiement.",
+      "en": "Every fare shown by airlines and comparison sites is per adult. The trap is not the price, it is the quick read: you picture a trip for two and discover double at checkout."
+    },
+    "lesson": { "fr": "Aeryndo écrit « par adulte » sur chaque deal, et le lien ouvre la recherche au bon nombre de voyageurs.", "en": "Aeryndo writes “per adult” on every deal, and the link opens the search with the right passenger count." },
+    "city": "MLE"
+  },
+  {
+    "id": "piege-tronçon-court",
+    "title": { "fr": "Le lit s’arrête à l’escale", "en": "The bed stops at the layover" },
+    "hook": { "fr": "Paris → Maurice en Business à 2 493 €. Le piège ?", "en": "Paris → Mauritius in Business for €2,493. The catch?" },
+    "price": "2 493 €",
+    "route": "CDG → MRU",
+    "detail": { "fr": "Lit à plat sur les vols de nuit ; siège inclinable sur le saut de 4 h en journée.", "en": "Flat bed on the night flights; recliner on the 4-hour daytime hop." },
+    "body": {
+      "fr": "Ce n’est pas un mauvais deal — nous l’avons publié. Mais il faut le savoir : via Nairobi, le long-courrier de nuit est en 787 avec un vrai lit, et le tronçon de jour vers Maurice se fait en fauteuil. Honnête, c’est acceptable. Caché, c’est un piège.",
+      "en": "This is not a bad deal — we published it. But you should know: via Nairobi, the overnight long-haul is a 787 with a real bed, and the daytime hop to Mauritius is a recliner. Stated plainly, it is fine. Hidden, it is a trap."
+    },
+    "lesson": { "fr": "Aeryndo décrit le siège sur chaque tronçon, pas seulement sur le plus long.", "en": "Aeryndo describes the seat on every leg, not just the longest one." },
+    "city": "MRU"
+  }
+]

@@ -1,0 +1,21 @@
+[
+  {
+    "id": "fr",
+    "name": "France",
+    "tz": "Europe/Paris",
+    "origins": ["PAR", "NCE", "LYS", "MRS", "BRU", "GVA"],
+    "capital": "PAR",
+    "langs": ["fr", "en"],
+    "igUserId": "17841440565507238",
+    "tokenEnv": "IG_ACCESS_TOKEN",
+    "site": "https://www.aeryndo.co",
+    "slots": [
+      { "id": "piege", "kind": "carousel", "day": 2, "hour": 18, "minute": 30 },
+      { "id": "deal", "kind": "carousel", "day": 5, "hour": 12, "minute": 30 },
+      { "id": "reel", "kind": "reel", "day": 0, "hour": 10, "minute": 30 },
+      { "id": "story-piege", "kind": "story", "day": 2, "hour": 20, "minute": 30, "after": "piege" },
+      { "id": "story-deal", "kind": "story", "day": 5, "hour": 14, "minute": 30, "after": "deal" },
+      { "id": "story-reel", "kind": "story", "day": 0, "hour": 12, "minute": 30, "after": "reel" }
+    ]
+  }
+]

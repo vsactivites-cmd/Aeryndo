@@ -1,0 +1,76 @@
+name: Robot Instagram
+
+# Toutes les heures à :30 (UTC). Le script regarde l'heure LOCALE de chaque marché
+# (content/markets.json) et ne publie que dans un créneau prévu — été/hiver et tous fuseaux gérés.
+on:
+  schedule:
+    - cron: "30 * * * *"
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "Créneau à forcer (piege, deal, reel, story-piege, story-deal, story-reel) — vide = créneaux dus maintenant"
+        required: false
+        default: ""
+      market:
+        description: "Marché (fr)"
+        required: false
+        default: "fr"
+      dry:
+        description: "Brouillon : préparer sans publier (1 = oui)"
+        required: false
+        default: "1"
+
+concurrency:
+  group: instagram
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Branche media (médias publics + état du robot)
+        run: |
+          git fetch origin media:media 2>/dev/null || git branch media $(git commit-tree -m "Médias Instagram" $(git hash-object -t tree /dev/null))
+          git worktree add ig-media media
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Dépendances
+        working-directory: instagram
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y -qq ffmpeg >/dev/null
+
+      - name: Publier
+        working-directory: instagram
+        env:
+          IG_DRY_RUN: ${{ vars.IG_DRY_RUN || '1' }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_APP_ID: ${{ secrets.IG_APP_ID }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          MEDIA_BASE: https://raw.githubusercontent.com/${{ github.repository }}/media
+        run: |
+          if [ -n "${{ github.event.inputs.slot }}" ]; then
+            FLAGS="--slot ${{ github.event.inputs.slot }} --market ${{ github.event.inputs.market || 'fr' }}"
+          fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.dry }}" = "1" ]; then export IG_DRY_RUN=1; fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.dry }}" = "0" ]; then export IG_DRY_RUN=0; fi
+          node run.js $FLAGS
+
+      - name: Visuels produits (brouillon)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visuels-${{ github.run_id }}
+          path: ig-media/posts/**
+          if-no-files-found: ignore
+          retention-days: 14
