@@ -36,19 +36,25 @@ jobs:
 
       - name: Branche media (médias publics + état du robot)
         run: |
-          git fetch origin media:media 2>/dev/null || git branch media $(git commit-tree -m "Médias Instagram" $(git hash-object -t tree /dev/null))
+          if git fetch origin media:media 2>/dev/null; then
+            echo "branche media existante"
+          else
+            EMPTY=$(git hash-object -t tree /dev/null)
+            ROOT=$(git -c user.name=aeryndo-robot -c user.email=robot@aeryndo.co commit-tree "$EMPTY" -m "Médias Instagram")
+            git branch media "$ROOT"
+          fi
           git worktree add ig-media media
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Dépendances
         working-directory: instagram
         run: |
           npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
-          sudo apt-get install -y -qq ffmpeg >/dev/null
+          which ffmpeg >/dev/null || sudo apt-get install -y -qq ffmpeg >/dev/null
 
       - name: Publier
         working-directory: instagram

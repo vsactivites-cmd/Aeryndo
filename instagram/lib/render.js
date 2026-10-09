@@ -9,16 +9,28 @@ const { execFileSync } = require("child_process");
 const { fmtEUR, fmtDay, fmtDate } = require("./content.js");
 
 const INK = "#0E0E0F", IVORY = "#F3F0E9", STONE = "#b8b3aa", CORAL = "#FF6B57";
+// Les polices sont lues dans node_modules/@fontsource et intégrées en base64 : la page est rendue via
+// setContent (origine about:blank), qui refuse de charger des fichiers locaux par URL file://.
+const FONT_FILES = [
+  ["Playfair Display", 500, "normal", "playfair-display/files/playfair-display-latin-500-normal.woff2"],
+  ["Playfair Display", 400, "italic", "playfair-display/files/playfair-display-latin-400-italic.woff2"],
+  ["Jost", 300, "normal", "jost/files/jost-latin-300-normal.woff2"],
+  ["Jost", 400, "normal", "jost/files/jost-latin-400-normal.woff2"],
+  ["Geist Mono", 400, "normal", "geist-mono/files/geist-mono-latin-400-normal.woff2"],
+  ["Geist Mono", 500, "normal", "geist-mono/files/geist-mono-latin-500-normal.woff2"]
+];
+let FONT_CSS = null;
 function fontFace() {
+  if (FONT_CSS != null) return FONT_CSS;
   const base = path.join(__dirname, "..", "node_modules", "@fontsource");
-  const f = p => "file://" + path.join(base, p);
-  return `
-@font-face{font-family:'Playfair Display';font-weight:500;src:url(${f("playfair-display/files/playfair-display-latin-500-normal.woff2")})}
-@font-face{font-family:'Playfair Display';font-weight:400;font-style:italic;src:url(${f("playfair-display/files/playfair-display-latin-400-italic.woff2")})}
-@font-face{font-family:'Jost';font-weight:300;src:url(${f("jost/files/jost-latin-300-normal.woff2")})}
-@font-face{font-family:'Jost';font-weight:400;src:url(${f("jost/files/jost-latin-400-normal.woff2")})}
-@font-face{font-family:'Geist Mono';font-weight:400;src:url(${f("geist-mono/files/geist-mono-latin-400-normal.woff2")})}
-@font-face{font-family:'Geist Mono';font-weight:500;src:url(${f("geist-mono/files/geist-mono-latin-500-normal.woff2")})}`;
+  const out = [];
+  for (const [family, weight, style, file] of FONT_FILES) {
+    const f = path.join(base, file);
+    if (!fs.existsSync(f)) { console.warn("police absente :", file); continue; }
+    const b64 = fs.readFileSync(f).toString("base64");
+    out.push(`@font-face{font-family:'${family}';font-weight:${weight};font-style:${style};src:url(data:font/woff2;base64,${b64}) format('woff2')}`);
+  }
+  return (FONT_CSS = out.join("\n"));
 }
 
 const CSS = `
