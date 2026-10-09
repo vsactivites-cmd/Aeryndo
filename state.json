@@ -1,0 +1,47 @@
+{
+  "posted": [
+    {
+      "kind": "palmares",
+      "id": "pal-kenya-cdg-mru-2026-09",
+      "live": false,
+      "from": "CDG",
+      "to": "MRU",
+      "city": {
+        "fr": "Île Maurice",
+        "en": "Mauritius"
+      },
+      "cityCode": "MRU",
+      "price": 2493,
+      "was": 3580,
+      "discount": 30,
+      "carrier": "Kenya Airways",
+      "aircraft": "787-8",
+      "stops": {
+        "fr": "1 escale",
+        "en": "1 stop"
+      },
+      "seat": {
+        "fr": "Lit à plat (787) sur les vols de nuit ; siège inclinable sur le saut de 4 h en journée via Nairobi.",
+        "en": "Flat bed (787) on the night flights; recliner on the 4-hour daytime hop via Nairobi."
+      },
+      "dep": "2026-10-19",
+      "ret": "2026-10-27",
+      "foundAt": "2026-09-01",
+      "photo": "https://www.aeryndo.co/api/photo?city=MRU",
+      "kicker": {
+        "fr": "Déniché le 1 sept. 2026",
+        "en": "Found on 1 Sept 2026"
+      },
+      "slot": "deal",
+      "market": "fr",
+      "date": "2026-10-09",
+      "contentId": "pal-kenya-cdg-mru-2026-09",
+      "at": "2026-10-09T14:19:50.666Z",
+      "igId": null,
+      "permalink": null,
+      "dry": true,
+      "dir": "posts/20261009-fr-deal"
+    }
+  ],
+  "runs": []
+}
