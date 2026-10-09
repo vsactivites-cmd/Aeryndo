@@ -26,7 +26,10 @@ async function scan(token) {
     } catch (e) { return { route: r, ok: false, error: String(e && e.message || e), offers: [] }; }
   }));
   return results.map(x => {
-    const best = x.offers.length ? x.offers.reduce((a, b) => (a.price <= b.price ? a : b)) : null;
+    // Au plus une escale quand le cache le permet : un tarif à 3 escales n'est pas une vitrine Business.
+    const pool = x.offers.filter(o => o.changes === null || o.changes <= 1);
+    const shown = pool.length ? pool : x.offers;
+    const best = shown.length ? shown.reduce((a, b) => (a.price <= b.price ? a : b)) : null;
     // Remise mesurée contre la médiane des tarifs de la route elle-même (cache Travelpayouts),
     // jamais contre un chiffre écrit en dur. Pas assez d'échantillons → pas de remise affichée.
     const med = x.offers.length >= D.MIN_SAMPLES ? D.median(x.offers.map(o => o.price)) : null;

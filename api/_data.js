@@ -144,6 +144,25 @@ async function fetchLatest(token, from, to, oneWay, extra) {
   return { ok: true, offers };
 }
 
+// « Où partir en Business depuis X ? » : toutes les destinations connues du cache pour une origine,
+// une ligne par direction (la moins chère), sur le marché demandé (fr, de, gb, es, it, tr, ae…).
+// Sert à la découverte large : les destinations hors panier deviennent des candidats.
+async function fetchAnywhere(token, from, market) {
+  const params = {
+    currency: CURRENCY, origin: from, trip_class: 1, period_type: "year", one_way: "false", market: market || MARKET,
+    group_by: "directions", page: 1, limit: 1000, sorting: "price", show_to_affiliates: "true", token
+  };
+  const r = await tpFetch("/aviasales/v3/get_latest_prices", params, token);
+  if (!r.ok) return { ok: false, status: r.status, error: r.error, rows: [] };
+  const today = todayISO();
+  const rows = [];
+  for (const x of ((r.data && r.data.data) || [])) {
+    const o = normalizeOffer(x, today); if (!o) continue;
+    rows.push(Object.assign({ to: cityCode(x.destination), from: cityCode(x.origin) }, o));
+  }
+  return { ok: true, rows };
+}
+
 // Densification d'un mois : /v2/prices/month-matrix accepte trip_class=1 et renvoie
 // les tarifs Business jour par jour (les lignes non-Business sont écartées par normalizeOffer).
 async function fetchMonthMatrix(token, from, to, oneWay, month) {
@@ -297,6 +316,6 @@ function sendJson(res, status, body, cacheSeconds) {
 module.exports = {
   MARKER, SUB, PARTNER_HOST, CURRENCY, MARKET, ROUTES, THRESHOLD, MIN_SAMPLES,
   todayISO, ddmm, isISODate, isMonth, isIATA, median, cityCode,
-  aviasalesLink, tpFetch, normalizeOffer, mergeOffers, fetchLatest, fetchMonthMatrix, sendJson,
+  aviasalesLink, tpFetch, normalizeOffer, mergeOffers, fetchLatest, fetchMonthMatrix, fetchAnywhere, sendJson,
   AIRLINES, airlinesFor
 };

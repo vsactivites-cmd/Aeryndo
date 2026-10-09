@@ -5,12 +5,15 @@
 // prix confirmé, compagnie, appareil, lit à plat ou non. Rien d'écrit à la main.
 // Un deal dont la preuve date de plus de 24 h ou dont le départ est passé
 // n'est pas servi. Section vide côté site quand la liste est vide.
-// GET /api/deals            → { ok, deals:[…], scan:{at,…}, verifier }
+// GET /api/deals            → { ok, deals:[…], palmares:[…], scan:{at,…}, verifier }
+// Chaque deal porte « photo » : /api/photo?city=XXX (photo de destination, Pixabay, servie par nous).
+// « palmares » : les deals passés réellement dénichés (api/_palmares.js), pour la section « Dénichés par Aeryndo ».
 // GET /api/deals?history=1  → ajoute l'historique de prix de chaque deal
 // ============================================================
 const D = require("./_data.js");
 const S = require("./_store.js");
 const V = require("./_verify.js");
+const P = require("./_palmares.js");
 
 const MAX_AGE_HOURS = 24;
 
@@ -27,7 +30,8 @@ module.exports = async (req, res) => {
     median: d.median, discount: d.discount, distance: d.distance, perKm: d.perKm, dates: d.dates,
     carrier: d.carrier, carrierName: d.carrierName, carriers: d.carriers, aircraft: d.aircraft, stops: d.stops,
     seat: d.seat, seats: d.seats, reasons: d.reasons,
-    foundAt: d.foundAt, verifiedAt: d.verifiedAt, link: d.link, airlines: D.airlinesFor(d.from, d.to)
+    foundAt: d.foundAt, verifiedAt: d.verifiedAt, link: d.link, airlines: D.airlinesFor(d.from, d.to),
+    photo: "/api/photo?city=" + D.cityCode(d.to)
   }));
 
   if (q.history === "1") {
@@ -42,6 +46,7 @@ module.exports = async (req, res) => {
     scan: last ? { at: last.at, verifyUsed: last.verifyUsed, cap: last.cap } : null,
     count: deals.length,
     deals,
+    palmares: P.list(),
     marker: D.MARKER
   }, 300);
 };

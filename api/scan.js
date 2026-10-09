@@ -22,14 +22,20 @@
 const D = require("./_data.js");
 const C = require("./_charte.js");
 const V = require("./_verify.js");
+const VE = require("./_veille.js");
 const S = require("./_store.js");
 const radar = require("./radar.js");
 const M = require("./_mail.js");
 
 const ROUTES_PER_RUN = Number(process.env.SCAN_ROUTES_PER_RUN || 40);
 const DAILY_CAP = Number(process.env.VERIFY_DAILY_CAP || process.env.AMADEUS_DAILY_CAP || V.DEFAULT_DAILY_CAP); // appels de vérification / jour (SerpApi gratuit : 250/mois → 8/jour)
+const EXPLORE_ORIGINS = ["PAR", "NCE", "LYS", "LON", "AMS", "BRU", "FRA", "MUC", "ZRH", "GVA", "MIL", "ROM", "MAD", "BCN", "LIS", "CPH", "STO", "DUB", "VIE", "IST"];
+const EXPLORE_MARKETS = (process.env.EXPLORE_MARKETS || "fr,de,gb,es,it,tr,ae").split(",").map(x => x.trim()).filter(Boolean);
+const VEILLE_PER_RUN = Number(process.env.VEILLE_PER_RUN || 2);   // annonces des sites de deals vérifiées par passage (prioritaires)
 const VERIFY_PER_RUN = Number(process.env.VERIFY_PER_RUN || process.env.AMADEUS_PER_RUN || (V.NAME === "google" ? 2 : 4)); // nouveaux candidats vérifiés par passage
-const REVERIFY_HOURS = Number(process.env.SCAN_REVERIFY_HOURS || 8); // au-delà, un deal affiché est re-contrôlé
+// Au-delà, un deal affiché est re-contrôlé. Avec Google Flights (8 vérifications/jour), une fois par
+// jour suffit : chaque re-contrôle consomme le même budget que la découverte d'un nouveau deal.
+const REVERIFY_HOURS = Number(process.env.SCAN_REVERIFY_HOURS || (V.NAME === "google" ? 20 : 8));
 const DEAL_TTL_HOURS = 24;       // sans re-contrôle réussi, il disparaît
 const MAX_DEALS = 12;
 const RUN_BUDGET_MS = 45000;
@@ -76,7 +82,7 @@ module.exports = async (req, res) => {
   if (!locked) return D.sendJson(res, 200, { ok: true, skipped: "un balayage est déjà en cours" });
   const started = Date.now();
   const deadline = started + RUN_BUDGET_MS;
-  const log = { radar: null, reverified: 0, discovered: 0, densified: 0, candidates: 0, verified: 0, rejected: [], errors: [] };
+  const log = { radar: null, reverified: 0, veille: null, discovered: 0, densified: 0, candidates: 0, verified: 0, rejected: [], errors: [] };
 
   try {
     // ---------- 1. radar ----------
@@ -118,6 +124,56 @@ module.exports = async (req, res) => {
     }
     deals = deals.filter(d => !d._drop);
 
+    // ---------- 2b. veille : les annonces des sites de deals, vérifiées en priorité ----------
+    // Chaque annonce (Travel-Dealz, Premium Flights, Fly4free, Dealabs…) devient un candidat avec le prix
+    // annoncé ; on choisit une date (celle du cache Travelpayouts si la route y figure, sinon le début de la
+    // période annoncée) et on demande à Google Flights. Même charte, même verdict que pour le cache.
+    try {
+      const veille = await VE.refresh(q.veille === "1");
+      const done = (await S.get("veille:done")) || {};
+      const shownIds = new Set(deals.map(d => d.id));
+      const vlog = { sources: veille.sources, candidates: veille.candidates.length, tried: 0, verified: 0, rejected: [] };
+      const queue = [];
+      for (const c of veille.candidates) for (const o of c.origins.slice(0, c.generic ? 3 : 1)) {
+        const id = o + "-" + c.to, key = id + "|" + c.price;
+        if (o === c.to || shownIds.has(id) || (done[key] && done[key] > Date.now())) continue;
+        queue.push({ id, key, from: o, to: c.to, announced: c.price, c });
+      }
+      queue.sort((a, b) => a.announced - b.announced);
+      for (const v of queue) {
+        if (vlog.tried >= VEILLE_PER_RUN || !canVerify()) break;
+        // dates : cache TP sur la route (dans la période si connue), sinon période annoncée, sinon +45 j
+        let dep = null, ret = null, distance = null, median = null;
+        try {
+          const r = await D.fetchLatest(token, v.from, v.to, false, { limit: 1000 });
+          const rt = (r.ok ? r.offers : []).filter(o => o.ret && o.price > 0 && (!v.c.period || (o.dep >= v.c.period.start && o.dep <= v.c.period.end)));
+          const st = C.stats(r.ok ? r.offers : []); distance = st.km || null; median = st.med || null;
+          if (rt.length) { const best = rt.reduce((a, b) => (a.price <= b.price ? a : b)); dep = best.dep; ret = best.ret; }
+        } catch (e) { /* sans cache */ }
+        if (!distance) distance = await VE.distanceKm(v.from, v.to);
+        if (!dep) {
+          const base = v.c.period && v.c.period.start > D.todayISO() ? Date.parse(v.c.period.start) + 12 * 86400000 : Date.now() + 45 * 86400000;
+          dep = new Date(base).toISOString().slice(0, 10); ret = new Date(base + 8 * 86400000).toISOString().slice(0, 10);
+        }
+        vlog.tried += 1; await spend();
+        const r = await V.search(v.from, v.to, dep, ret);
+        if (!r.ok) { log.errors.push(V.NAME + " veille " + v.id + ": " + r.error); done[v.key] = Date.now() + 24 * 3600 * 1000; continue; }
+        const cand = { from: v.from, to: v.to, price: v.announced, median, distance, dates: 1, dep, ret, reasons: ["veille"] };
+        const verdict = judge(cand, r);
+        if (!verdict.ok) { vlog.rejected.push(v.id + " (" + v.c.srcName + ", annoncé " + v.announced + " €) : " + verdict.reason); done[v.key] = Date.now() + 3 * 24 * 3600 * 1000; continue; }
+        const deal = Object.assign({
+          id: v.id, from: v.from, to: v.to, dep, ret, median, distance, dates: 1, reasons: ["veille"],
+          source: { name: v.c.srcName, link: v.c.link, announced: v.announced, deadline: v.c.deadline || null },
+          foundAt: nowISO(), price: r.price, cachePrice: v.announced, verifiedAt: nowISO(), prevPrice: null, changedAt: null
+        }, verdict.fields);
+        deals.push(deal); shownIds.add(v.id); await pushHistory(v.id, r.price);
+        vlog.verified += 1; log.verified += 1; done[v.key] = Date.now() + 7 * 24 * 3600 * 1000;
+      }
+      for (const k of Object.keys(done)) if (done[k] < Date.now()) delete done[k];
+      await S.set("veille:done", done, 14 * 24 * 3600);
+      log.veille = vlog;
+    } catch (e) { log.errors.push("veille: " + (e && e.message || e)); }
+
     // ---------- 3. découverte (round-robin mondial) ----------
     const basket = C.basket();
     const diag = q.diag === "1";
@@ -149,6 +205,31 @@ module.exports = async (req, res) => {
     }));
     log.discovered = results.filter(r => !r.error).length;
     log.densified = results.filter(r => r.densified).length;
+
+    // ---------- 3c. exploration : « où partir en Business ? » depuis une origine, sur un marché tournant ----------
+    // Le cache Travelpayouts est interrogé sans destination (toutes les directions connues), tour à tour sur les
+    // marchés fr, de, gb, es, it, tr, ae : chaque marché voit des recherches différentes. Les destinations hors panier
+    // qui passent la charte deviennent des candidats comme les autres (vérification Google Flights ensuite).
+    try {
+      const expo = (await S.get("scan:explore")) || { i: 0 };
+      const origin = EXPLORE_ORIGINS[expo.i % EXPLORE_ORIGINS.length];
+      const market = EXPLORE_MARKETS[Math.floor(expo.i / EXPLORE_ORIGINS.length) % EXPLORE_MARKETS.length];
+      await S.set("scan:explore", { i: expo.i + 1, origin, market, at: nowISO() }, 7 * 24 * 3600);
+      const ex = await D.fetchAnywhere(token, origin, market);
+      const xlog = { origin, market, rows: ex.ok ? ex.rows.length : 0, error: ex.ok ? null : ex.error, promising: [] };
+      if (ex.ok) {
+        const seen = new Set(results.map(r => r.route.join("-")));
+        const prom = ex.rows.filter(o => o.ret && o.distance >= C.LONG_HAUL_KM && o.price / o.distance < C.SEUIL_PAR_KM && o.to && o.to !== origin && !seen.has(origin + "-" + o.to))
+          .sort((a, b) => a.price / a.distance - b.price / b.distance).slice(0, 6);
+        for (const o of prom) {
+          const r = await D.fetchLatest(token, origin, o.to, false, { limit: 1000 });
+          const cand = r.ok ? C.evaluate([origin, o.to], r.offers) : null;
+          xlog.promising.push(origin + "-" + o.to + " " + o.price + "€ " + Math.round(o.price / o.distance * 1000) / 1000 + "€/km" + (cand ? " CANDIDAT" : ""));
+          if (cand) results.push({ route: [origin, o.to], candidate: Object.assign(cand, { reasons: cand.reasons.concat(["exploration " + market]) }), n: r.offers.length, explored: true });
+        }
+      }
+      log.explore = xlog;
+    } catch (e) { log.errors.push("exploration: " + (e && e.message || e)); }
     if (diag) log.diag = results.map(r => r.route.join("-") + ":" + (r.densified ? "+mois " : "") + (r.error ? "ERR " + r.error.slice(0, 40) : r.candidate ? "CANDIDAT " + r.candidate.price + "€ " + r.candidate.dates + "d " + (r.candidate.discount || "?") + "% " + (r.candidate.perKm || "?") + "€/km" : "non " + JSON.stringify(r.stats)));
     let candidates = results.map(r => r.candidate).filter(Boolean);
     // On ne ré-examine pas un deal déjà affiché et frais, ni une route refusée récemment.

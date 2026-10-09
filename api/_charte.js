@@ -5,7 +5,8 @@
 //   - moins de SEUIL_PAR_KM euros par kilomètre (long-courrier), ou
 //   - au moins DECOTE_MIN sous la médiane des tarifs de sa route ;
 // et s'il respecte les garde-fous :
-//   - aller-retour, au moins MIN_DATES dates proches du meilleur prix,
+//   - aller-retour ; une seule date suffit : la preuve, c'est la vérification
+//     en direct (Google Flights) du prix, pas la largeur du cache (choix du 8 oct. 2026),
 //   - lit à plat sur le long-courrier (jugé après vérification en direct,
 //     à partir de l'appareil et de la compagnie).
 // ============================================================
@@ -13,7 +14,7 @@
 const SEUIL_PAR_KM = 0.22;   // €/km
 const DECOTE_MIN = 0.30;     // 30 % sous la médiane de la route
 const LONG_HAUL_KM = 3500;   // au-delà : lit à plat exigé
-const MIN_DATES = 3;         // dates disponibles à +10 % du meilleur prix
+const MIN_DATES = 1;         // dates à +10 % du meilleur prix exigées avant vérification (était 3 ; le nombre reste affiché)
 const MIN_SAMPLES = 10;      // échantillons pour qu'une médiane vaille quelque chose
 
 // ---------- panier mondial ----------
