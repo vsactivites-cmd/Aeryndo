@@ -54,11 +54,21 @@ function isoDuration(minutes) {
 // Interroge Google Flights pour une paire de dates. Même forme de réponse que _amadeus.js :
 //   { ok:true, price, carrier, carriers, segments:[{from,to,carrier,flight,aircraft,duration,dep,arr}], stops, allBusiness, offers }
 //   { ok:false, error, status }
+// Google Flights veut des codes d'AÉROPORT (ou plusieurs, séparés par des virgules) : un code de ville
+// Aviasales comme PAR, LON ou BJS ne lui dit rien et il répond « no results ». On traduit donc les
+// villes multi-aéroports du cache en liste d'aéroports ; les autres codes passent tels quels.
+const AIRPORTS_OF = {
+  PAR: "CDG,ORY", LON: "LHR,LGW,LCY,STN", NYC: "JFK,EWR", TYO: "HND,NRT", OSA: "KIX,ITM", MIL: "MXP,LIN", ROM: "FCO",
+  SEL: "ICN", SHA: "PVG,SHA", BJS: "PEK,PKX", SAO: "GRU", RIO: "GIG", BUE: "EZE", STO: "ARN", YTO: "YYZ", CHI: "ORD",
+  WAS: "IAD,DCA", BKK: "BKK,DMK", MOW: "SVO,DME", JKT: "CGK", IST: "IST,SAW", MEX: "MEX", DXB: "DXB,DWC", TPE: "TPE", BER: "BER"
+};
+function airports(code) { const c = String(code || "").toUpperCase(); return AIRPORTS_OF[c] || c; }
+
 async function search(from, to, dep, ret, opts) {
   const o = opts || {};
   const params = new URLSearchParams({
     engine: "google_flights", api_key: KEY,
-    departure_id: from, arrival_id: to, outbound_date: dep,
+    departure_id: airports(from), arrival_id: airports(to), outbound_date: dep,
     type: ret ? "1" : "2", travel_class: "3", adults: "1",
     currency: "EUR", hl: "fr", gl: "fr"
   });
@@ -104,4 +114,4 @@ function parseOffer(x) {
   };
 }
 
-module.exports = { ENABLED, TOLERANCE, search, aircraftCode };
+module.exports = { ENABLED, TOLERANCE, search, aircraftCode, airports, AIRPORTS_OF };

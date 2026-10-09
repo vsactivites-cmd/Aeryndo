@@ -90,7 +90,7 @@ async function readSource(src) {
 
 // ---------- interprétation d'une annonce ----------
 const CLASS_RE = /\b(business|first)\b|classe\s+affaires|affaires|erste\s+klasse|premi[èe]re\s+classe/i;
-const EXCLUDE_RE = /premium\s*(economy|eco|class)|prem\.?\s*eco|award|avios|\bmiles?\b|meilen|points?\b|punkte|promo\s*code|gutschein|coupon|cashback|hotel|credit\s*card|kreditkarte|\bexpired\b|abgelaufen|expir[ée]/i;
+const EXCLUDE_RE = /one-?ways?\b|\boneway\b|aller\s+simple|\beinfache?r?\b|premium\s*(economy|eco|class)|prem\.?\s*eco|award|avios|\bmiles?\b|meilen|points?\b|punkte|promo\s*code|gutschein|coupon|cashback|hotel|credit\s*card|kreditkarte|\bexpired\b|abgelaufen|expir[ée]/i;
 const NUM = "(\\d{1,3}(?:[.,\\s]\\d{3})+(?:[.,]\\d{2})?|\\d{3,5}(?:[.,]\\d{2})?)";
 const PRICE_RE = new RegExp("(?:(€|eur|£|gbp|\\$|usd)\\s?" + NUM + "|" + NUM + "\\s?(€|eur|£|gbp))", "i");
 const RATES = { "€": 1, EUR: 1, "£": 1.15, GBP: 1.15, "$": 0.92, USD: 0.92 };
@@ -122,9 +122,9 @@ function parseRoute(title) {
   if ((m = /^(.+?)\s*(?:→|->|⇄|<=>|↔| – | - )\s*(.+?)\s+(?:business|first|in\s+business|en\s+classe|classe)/i.exec(t)) && !/\d/.test(m[1])) return r(m[1], m[2]);
   if ((m = /\bfrom\s+(.+?)\s+to\s+(?:the\s+)?(.+?)(?:\s+(?:from|for|at|starting|ab|in\s+business|business|round|return|€|£|\$|\d)|$)/i.exec(t)) && !/^(?:€|£|\$)?\s?\d/.test(m[1])) return r(m[1], m[2]);
   if ((m = /(?:business|first)\s+class\s+(?:flights?\s+)?to\s+(?:the\s+)?(.+?)\s+(?:starting\s+at|from|for|at|ab)\s+(?:€|£|\$)?\s?\d[\d.,]*\s*(?:€|£|\$)?(?:\s+(?:from|ab|von)\s+(.+?))?(?:\s*\(|$)/i.exec(t))) return r(m[2] || null, m[1]);
-  if ((m = /^(.+?):\s*(?:€|£|\$)?\s?\d[\d.,]*\s*(?:€|£|\$)?\s+.*?(?:business|first)\s+class\s+(?:from|von|ab)\s+(.+?)(?:\s*\(|$)/i.exec(t))) return r(m[2], m[1]);
-  if ((m = /^(.+?):\s*.*?(?:business|first)\s+class\s+(?:von|from)\s+(.+?)\s+(?:ab|from)\s+/i.exec(t))) return r(m[2], m[1]);
-  if ((m = /^(.+?):\s*.*?(?:business|first)\s+class\s+(?:ab|from)\s+\S+\s+(?:von|from)\s+(.+?)(?:\s*\(|$)/i.exec(t))) return r(m[2], m[1]);
+  if ((m = /^(.+?):\s*(?:€|£|\$)?\s?\d[\d.,]*\s*(?:€|£|\$)?\s+.*?(?:business|first)\s+class\s+(?:flights?\s+)?(?:from|von|ab)\s+(.+?)(?:\s*[(&,]|$)/i.exec(t))) return r(m[2], m[1]);
+  if ((m = /^(.+?):\s*.*?(?:business|first)\s+class\s+(?:flights?\s+)?(?:von|from)\s+(.+?)(?:,|\s+(?:ab|from|starting|für|for)\b|\s*[(&]|$)/i.exec(t)) && !/^(?:€|£|\$)?\s?\d/.test(m[2])) return r(m[2], m[1]);
+  if ((m = /^(.+?):\s*.*?(?:business|first)\s+class\s+(?:flights?\s+)?(?:for|ab|from|starting\s+at)\s+(?:€|£|\$)?\s?\d[\d.,]*\s*(?:€|£|\$)?\s+(?:r\/t\s+|round\s+trip\s+)?(?:von|from)\s+(.+?)(?:\s*[(&,]|$)/i.exec(t))) return r(m[2], m[1]);
   if ((m = /^(.+?)\s+(?:ab|from)\s+(?:€|£)?\s?\d[\d.,]*\s*€?\s+in\s+der\s+.*?business\s+class\s+von\s+(.+?)(?:\s*\(|$)/i.exec(t))) return r(m[2], m[1]);
   if ((m = /(?:nach|to)\s+(?:the\s+)?(.+?)\s+(?:von|from)\s+(.+?)(?:\s+(?:ab|from|für|for)\s|$)/i.exec(t)) && !/^(?:€|£|\$)?\s?\d/.test(m[2])) return r(m[2], m[1]);
   if ((m = /(?:business|first)\s+class\s+(?:(?:flights?|nonstop|non-stop|direct)\s+)*(?:to|nach)\s+(?:the\s+)?(.+?)(?:\s+(?:from|ab|für|for)\s+(?:€|£|\$)?\s?\d|$)/i.exec(t))) return r(null, m[1]);

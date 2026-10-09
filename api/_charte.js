@@ -60,7 +60,7 @@ const FLAT_NARROWBODY = {
   "32B": ["B0", "B6", "AZ"],
   "32A": ["B0"]
 };
-const ALL_BUSINESS_CARRIERS = new Set(["B0", "BE"]); // La Compagnie, Beond : cabine 100 % Business à plat
+const ALL_BUSINESS_CARRIERS = new Set(["B0", "B4"]); // La Compagnie (B0), Beond (B4) : cabine 100 % Business à plat
 
 function segmentSeat(aircraft, carrier) {
   const a = String(aircraft || "").toUpperCase(), c = String(carrier || "").toUpperCase();
