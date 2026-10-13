@@ -26,7 +26,7 @@ function fontFace() {
   const out = [];
   for (const [family, weight, style, file] of FONT_FILES) {
     const f = path.join(base, file);
-    if (!fs.existsSync(f)) { console.warn("police absente :", file); continue; }
+    if (!fs.existsSync(f)) { if (process.env.ALLOW_MISSING_FONTS === "1") { console.warn("police absente :", file); continue; } throw new Error("police absente : " + file + " (npm install incomplet)"); }
     const b64 = fs.readFileSync(f).toString("base64");
     out.push(`@font-face{font-family:'${family}';font-weight:${weight};font-style:${style};src:url(data:font/woff2;base64,${b64}) format('woff2')}`);
   }
@@ -65,6 +65,7 @@ html,body{background:${INK};color:${IVORY};font-family:'Jost',system-ui,sans-ser
 `;
 const DIAMOND = `<svg class="d" viewBox="0 0 48 48"><path d="M24 2 L31 18 L46 24 L31 30 L24 46 L17 30 L2 24 L17 18 Z" fill="${CORAL}"/></svg>`;
 // échappement HTML + espace insécable fine avant ? ! : ; (typographie française : pas de « ? » orphelin en fin de ligne)
+const dot = s => String(s == null ? "" : s).replace(/\.$/, "") + ".";
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])).replace(/ ([?!:;»])/g, "\u202f$1").replace(/« /g, "«\u202f");
 
 function shell(body, h, extra) {
@@ -84,14 +85,15 @@ function dealSlides(c, lang) {
     <div class="kicker">${esc(c.kicker[L])}</div><div class="city">${esc(c.city[L])}</div><div class="route">${c.from} → ${c.to}</div>
     <div class="price"><span class="amt">${fmtEUR(c.price)}</span>${c.was ? `<span class="was">${fmtEUR(c.was)}</span>` : ""}</div>
     <div class="det">${det.map(d => `<div>${esc(d)}</div>`).join("")}</div></div>`, c.photo, "1 / 3");
-  const seatTitle = L === "fr" ? (c.seat.fr.startsWith("Lit entièrement") ? "Un vrai lit, <em>du décollage à l’arrivée.</em>" : "Le siège, <em>tronçon par tronçon.</em>") : (c.seat.en.startsWith("Fully flat") ? "A real bed, <em>from take-off to landing.</em>" : "The seat, <em>leg by leg.</em>");
+  const flat = c.seatKind ? c.seatKind === "flat" : /^(Lit entièrement|Fully flat)/.test(c.seat[L]);
+  const seatTitle = L === "fr" ? (flat ? "Un vrai lit, <em>du décollage à l’arrivée.</em>" : "Le siège, <em>tronçon par tronçon.</em>") : (flat ? "A real bed, <em>from take-off to landing.</em>" : "The seat, <em>leg by leg.</em>");
   const s2 = frame("p", `<div class="block" style="top:300px"><div class="kicker">${L === "fr" ? "La cabine" : "The cabin"}</div><div class="title">${seatTitle}</div>
     <div class="body">${esc(c.seat[L])}<br><br>${L === "fr" ? "C’est ce que nous vérifions avant de publier : l’appareil et la compagnie sur chaque tronçon. Un fauteuil inclinable n’est pas un lit, et nous le disons." : "That is what we check before publishing: the aircraft and airline on every leg. A recliner is not a bed, and we say so."}</div></div>`, null, "2 / 3");
   const proof = c.live
-    ? (L === "fr" ? `Prix total par adulte, taxes comprises, vérifié sur Google Flights le ${fmtDay(c.verifiedAt.slice(0, 10), "fr")}${c.was ? " — " + c.discount + " % sous le tarif habituel de la route" : ""}.` : `Total price per adult, taxes included, verified on Google Flights on ${fmtDay(c.verifiedAt.slice(0, 10), "en")}${c.was ? " — " + c.discount + "% below the route’s usual fare" : ""}.`)
+    ? (L === "fr" ? `Prix total par adulte, taxes comprises, vérifié sur Google Flights le ${fmtDay(c.verifiedAt.slice(0, 10), "fr")}${c.was ? " — " + c.discount + " % sous le tarif habituel de la route" : ""}` : `Total price per adult, taxes included, verified on Google Flights on ${fmtDay(c.verifiedAt.slice(0, 10), "en")}${c.was ? " — " + c.discount + "% below the route’s usual fare" : ""}`)
     : (L === "fr" ? `Prix total par adulte, taxes comprises, vu à l’écran de paiement le ${fmtDate(c.foundAt, "fr")} — ${c.discount} % sous le tarif habituel de la route. Ce tarif a disparu depuis.` : `Total price per adult, taxes included, seen on the payment screen on ${fmtDate(c.foundAt, "en")} — ${c.discount}% below the route’s usual fare. That fare is gone now.`);
   const s3 = frame("p", `<div class="block" style="top:300px"><div class="kicker">${L === "fr" ? "La preuve" : "The proof"}</div>
-    <div class="title">${fmtEUR(c.price)} ${L === "fr" ? "vus à l’écran" : "seen on the"} <em>${L === "fr" ? "de paiement." : "payment screen."}</em></div><div class="body">${esc(proof)}</div></div>
+    <div class="title">${fmtEUR(c.price)} ${L === "fr" ? "vus à l’écran" : "seen on the"} <em>${L === "fr" ? "de paiement." : "payment screen."}</em></div><div class="body">${esc(dot(proof))}</div></div>
     <div class="cta"><div class="k">${c.live ? (L === "fr" ? "Avant qu’il ne parte" : "Before it goes") : (L === "fr" ? "Le prochain, avant tout le monde" : "The next one, before everyone else")}</div>
     <div class="t">${L === "fr" ? `Suivez ${esc(c.city.fr)} sur aeryndo.co : les tarifs du moment par email, puis l’alerte à chaque baisse. Lien en bio.` : `Track ${esc(c.city.en)} on aeryndo.co: today’s fares by email, then an alert at every drop. Link in bio.`}</div></div>`, null, "3 / 3");
   return [s1, s2, s3];
@@ -104,7 +106,7 @@ function piegeSlides(c, lang) {
     <div class="city" style="font-size:72px">${esc(c.title[L])}</div><div class="hook" style="margin-top:40px">${esc(c.hook[L])}</div>
     <div class="price"><span class="amt">${esc(c.price)}</span></div><div class="route">${esc(c.route)}</div></div>`, c.photo, "1 / 3");
   const s2 = frame("p", `<div class="block" style="top:300px"><div class="kicker">${L === "fr" ? "Le piège" : "The trap"}</div><div class="title">${esc(c.detail[L])}</div><div class="body">${esc(c.body[L])}</div></div>`, null, "2 / 3");
-  const s3 = frame("p", `<div class="block" style="top:300px"><div class="kicker">${L === "fr" ? "La règle" : "The rule"}</div><div class="title">${esc(c.lesson[L].split(". ")[0])}.</div><div class="body">${esc(c.lesson[L].split(". ").slice(1).join(". "))}</div></div>
+  const s3 = frame("p", `<div class="block" style="top:300px"><div class="kicker">${L === "fr" ? "La règle" : "The rule"}</div><div class="title">${esc(dot(c.lesson[L].split(". ")[0]))}</div><div class="body">${esc(c.lesson[L].split(". ").slice(1).join(". "))}</div></div>
     <div class="cta"><div class="k">${L === "fr" ? "Deals Business vérifiés" : "Verified Business deals"}</div><div class="t">${L === "fr" ? "Chaque deal publié sur aeryndo.co est vérifié en direct : prix, compagnie, appareil, siège. Lien en bio." : "Every deal on aeryndo.co is verified live: price, airline, aircraft, seat. Link in bio."}</div></div>`, null, "3 / 3");
   return [s1, s2, s3];
 }
@@ -137,6 +139,26 @@ body.hold .a1,body.hold .a2,body.hold .a3,body.hold .a4,body.hold .a5{opacity:0}
 
 async function browser() { const { chromium } = require("playwright"); return chromium.launch(); }
 
+// La photo de fond est chargée ici, en Node, et embarquée en data-URI : si elle manque, on échoue au lieu de
+// publier un visuel noir. (Le site la sert via /api/photo, cache 30 j.)
+async function inlinePhoto(url) {
+  if (!url || url.startsWith("data:")) return url;
+  let last = null;
+  for (let i = 0; i < 3; i++) {
+    try {
+      const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 25000);
+      const r = await fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
+      const ct = r.headers.get("content-type") || "";
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      if (!ct.startsWith("image/")) throw new Error("type " + ct);
+      const buf = Buffer.from(await r.arrayBuffer());
+      if (buf.length < 10000) throw new Error("image trop petite (" + buf.length + " o)");
+      return `data:${ct};base64,${buf.toString("base64")}`;
+    } catch (e) { last = e; await new Promise(ok => setTimeout(ok, 4000)); }
+  }
+  throw new Error("photo de destination indisponible : " + url + " — " + (last && last.message));
+}
+
 // Attend les polices ET la photo de fond (background-image n'est pas couverte par l'événement load)
 async function settle(p) {
   await p.evaluate(() => document.fonts.ready);
@@ -166,9 +188,9 @@ async function renderReel(html, outDir, name) {
   const b = await browser(); const vdir = path.join(outDir, "video-tmp"); fs.mkdirSync(vdir, { recursive: true });
   let webm, skip = 0.6;
   try {
-    const t0 = Date.now();
     const ctx = await b.newContext({ viewport: { width: 1080, height: 1920 }, recordVideo: { dir: vdir, size: { width: 1080, height: 1920 } } });
     const p = await ctx.newPage();
+    const t0 = Date.now();
     // la page est chargée sans animation (classe .hold), puis on la lance une fois la photo prête
     await p.setContent(html.replace("<body>", "<body class=\"hold\">"), { waitUntil: "load" }); await settle(p);
     await p.evaluate(() => document.body.classList.remove("hold"));
@@ -178,13 +200,14 @@ async function renderReel(html, outDir, name) {
   } finally { await b.close(); }
   const mp4 = path.join(outDir, name + ".mp4");
   // MP4 H.264 + piste audio silencieuse AAC (exigée par Instagram), 30 i/s, 14 s
-  execFileSync("ffmpeg", ["-y", "-i", webm, "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo", "-ss", skip.toFixed(2), "-t", "14", "-r", "30", "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "64k", "-shortest", "-movflags", "+faststart", mp4], { stdio: "ignore" });
+  execFileSync("ffmpeg", ["-y", "-i", webm, "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo", "-ss", skip.toFixed(2), "-t", "14", "-r", "30", "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "64k", "-shortest", "-use_editlist", "0", "-movflags", "+faststart", mp4], { stdio: ["ignore", "ignore", "pipe"] });
   fs.rmSync(vdir, { recursive: true, force: true });
   return mp4;
 }
 
 async function render(slot, c, outDir) {
   fs.mkdirSync(outDir, { recursive: true });
+  c = Object.assign({}, c, { photo: await inlinePhoto(c.photo) });
   if (slot.kind === "carousel") {
     const slides = slot.id === "piege" ? piegeSlides(c, "fr") : dealSlides(c, "fr");
     const en = slot.id === "piege" ? piegeSlides(c, "en") : dealSlides(c, "en");

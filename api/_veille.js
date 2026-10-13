@@ -144,7 +144,7 @@ async function placeCode(name) {
   let code = null;
   for (const locale of ["en", "fr", "de"]) {
     try {
-      const resp = await fetch("https://autocomplete.travelpayouts.com/places2?locale=" + locale + "&types[]=city&types[]=airport&term=" + encodeURIComponent(key), { headers: { "User-Agent": UA } });
+      const resp = await fetchTimeout("https://autocomplete.travelpayouts.com/places2?locale=" + locale + "&types[]=city&types[]=airport&term=" + encodeURIComponent(key), 6000);
       if (!resp.ok) continue;
       const arr = await resp.json();
       const hit = (Array.isArray(arr) ? arr : []).find(p => p.type === "city") || (Array.isArray(arr) ? arr[0] : null);
@@ -183,7 +183,13 @@ function parsePeriod(text, pub) {
   const ly = last.y || (last.mo < first.mo ? fy + 1 : fy);
   return { start: iso(fy, first.mo, 1), end: iso(ly, last.mo, 28) };
 }
-function iso(y, m, d) { return y + "-" + String(m).padStart(2, "0") + "-" + String(Math.min(28, Math.max(1, d))).padStart(2, "0"); }
+// Date ISO sûre : le jour est borné au vrai dernier jour du mois (« book by 31 October » reste le 31)
+function iso(y, m, d) { const last = new Date(Date.UTC(y, m, 0)).getUTCDate(); return y + "-" + String(m).padStart(2, "0") + "-" + String(Math.min(last, Math.max(1, d))).padStart(2, "0"); }
+// fetch avec délai maximal (les appels sans délai peuvent faire tuer la fonction Vercel à 60 s)
+async function fetchTimeout(url, ms) {
+  const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), ms);
+  try { return await fetch(url, { headers: { "User-Agent": UA }, signal: ctrl.signal }); } finally { clearTimeout(timer); }
+}
 
 async function interpret(item) {
   const text = item.title + " " + (item.cats || []).join(" ");
@@ -245,7 +251,7 @@ async function coords(code) {
   const k = "coord:" + code; const c = await S.get(k); if (c) return c === "-" ? null : c;
   let out = null;
   try {
-    const resp = await fetch("https://autocomplete.travelpayouts.com/places2?locale=en&types[]=city&types[]=airport&term=" + encodeURIComponent(code), { headers: { "User-Agent": UA } });
+    const resp = await fetchTimeout("https://autocomplete.travelpayouts.com/places2?locale=en&types[]=city&types[]=airport&term=" + encodeURIComponent(code), 6000);
     if (resp.ok) { const arr = await resp.json(); const hit = (Array.isArray(arr) ? arr : []).find(p => p.code === code) || (Array.isArray(arr) ? arr[0] : null); if (hit && hit.coordinates) out = { lat: hit.coordinates.lat, lon: hit.coordinates.lon }; }
   } catch (e) { out = null; }
   await S.set(k, out || "-", 180 * 24 * 3600);

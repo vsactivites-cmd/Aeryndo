@@ -24,6 +24,12 @@
     },
     "api/subscribe.js": {
       "maxDuration": 15
+    },
+    "api/photo.js": {
+      "maxDuration": 20
+    },
+    "api/igtrigger.js": {
+      "maxDuration": 15
     }
   },
   "headers": [
@@ -36,5 +42,10 @@
         }
       ]
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "media": false
+    }
+  }
 }

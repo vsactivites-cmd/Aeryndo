@@ -97,12 +97,17 @@ function dropEmail(route, offers, price, prev, median, email, l) {
 async function send(to, { subject, html }) {
   const key = process.env.BREVO_API_KEY;
   if (!key) return { ok: false, error: "BREVO_API_KEY manquant" };
-  const resp = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "api-key": key },
-    body: JSON.stringify({ sender: FROM, to: [{ email: to }], subject, htmlContent: html })
-  });
-  return { ok: resp.ok, status: resp.status };
+  const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    const resp = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "api-key": key },
+      body: JSON.stringify({ sender: FROM, to: [{ email: to }], subject, htmlContent: html }), signal: ctrl.signal
+    });
+    if (!resp.ok) console.error("Brevo email HTTP " + resp.status + " pour " + to.replace(/(.).+(@.*)/, "$1…$2"));
+    return { ok: resp.ok, status: resp.status };
+  } catch (e) { console.error("Brevo email : " + (e && e.message || e)); return { ok: false, error: String(e && e.message || e) }; }
+  finally { clearTimeout(timer); }
 }
 
 module.exports = { routeEmail, dropEmail, send, sig, unsubLink, lang };

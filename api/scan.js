@@ -36,10 +36,14 @@ const VERIFY_PER_RUN = Number(process.env.VERIFY_PER_RUN || process.env.AMADEUS_
 // Au-delà, un deal affiché est re-contrôlé. Avec Google Flights (8 vérifications/jour), une fois par
 // jour suffit : chaque re-contrôle consomme le même budget que la découverte d'un nouveau deal.
 const REVERIFY_HOURS = Number(process.env.SCAN_REVERIFY_HOURS || (V.NAME === "google" ? 20 : 8));
-const DEAL_TTL_HOURS = 24;       // sans re-contrôle réussi, il disparaît
+const DEAL_TTL_HOURS = 36;       // sans re-contrôle réussi, il disparaît (16 h de grâce après REVERIFY_HOURS : le budget du jour peut être épuisé)
+// Budget réservé : les NOUVELLES vérifications (veille + découverte) ne peuvent pas consommer tout le budget du
+// jour ; le reste sert à re-contrôler les deals affichés, qui sinon expireraient faute d'appels (v7).
+const NEW_DAILY_CAP = Number(process.env.VERIFY_NEW_DAILY_CAP || Math.max(2, DAILY_CAP - 5));
+const RETRY_AFTER_ERROR_MS = 3 * 3600 * 1000; // erreur du vérificateur : on réessaie dans 3 h, pas au passage suivant
 const MAX_DEALS = 12;
 const RUN_BUDGET_MS = 45000;
-const LOCK_SECONDS = 240;
+const LOCK_SECONDS = 90;          // la fonction Vercel meurt à 60 s : un verrou plus long bloquerait le passage suivant
 const WATCH_ROUTES_PER_RUN = 30;  // routes suivies relues par passage
 const DROP_PCT = 0.08;            // baisse minimale pour alerter (8 %)
 const ALERT_GAP_HOURS = 12;       // pas plus d'une alerte par trajet et par personne sur cette durée
@@ -63,7 +67,7 @@ module.exports = async (req, res) => {
   const secret = (process.env.CRON_SECRET || "").trim();
   const auth = String((req.headers && req.headers.authorization) || "").trim();
   const fromCron = /vercel-cron/i.test(ua) && (!secret || auth === "Bearer " + secret);
-  const allowed = fromCron || !secret || String(q.key || "").trim() === secret;
+  const allowed = fromCron || !secret || String(q.key || "").trim() === secret || (secret && auth === "Bearer " + secret);
   if (!allowed) return D.sendJson(res, 401, { ok: false, error: "clé requise" });
 
   const token = process.env.TP_API_TOKEN;
@@ -95,41 +99,57 @@ module.exports = async (req, res) => {
     const day = D.todayISO();
     const budgetKey = "verify:used:" + day;
     let used = Number(await S.get(budgetKey)) || 0;
-    const canVerify = () => V.ENABLED && used < DAILY_CAP && Date.now() < deadline;
+    // Un appel SerpApi peut durer jusqu'à 20 s : on n'en lance pas un à moins de 20 s de la fin du budget-temps.
+    const canVerify = () => V.ENABLED && used < DAILY_CAP && Date.now() < deadline - 20000;
     const spend = async () => { used += 1; await S.set(budgetKey, used, 48 * 3600); };
+    const newKey = "verify:new:" + day;
+    let usedNew = Number(await S.get(newKey)) || 0;
+    const canVerifyNew = () => canVerify() && usedNew < NEW_DAILY_CAP;
+    const spendNew = async () => { usedNew += 1; await S.set(newKey, usedNew, 48 * 3600); await spend(); };
 
     let deals = (await S.get("deals:list")) || [];
     const today = D.todayISO();
-    // ménage : départ passé ou preuve trop ancienne
-    deals = deals.filter(d => d.dep > today && hoursSince(d.verifiedAt) < DEAL_TTL_HOURS);
+    const soon = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10);
+    // ménage : départ passé ou trop proche (le site cache déjà les départs à moins de 3 jours : inutile de les re-payer)
+    deals = deals.filter(d => d.dep > soon);
 
     // ---------- 2. re-vérification des deals affichés ----------
     deals.sort((a, b) => Date.parse(a.verifiedAt) - Date.parse(b.verifiedAt));
     for (const d of deals) {
       if (hoursSince(d.verifiedAt) < REVERIFY_HOURS) continue;
+      if (d.retryAfter && d.retryAfter > Date.now()) continue;
       if (!canVerify()) break;
       await spend();
       const r = await V.search(d.from, d.to, d.dep, d.ret);
       log.reverified += 1;
-      if (!r.ok) { log.errors.push(V.NAME + " " + d.id + ": " + r.error); continue; }
+      if (!r.ok) { d.retryAfter = Date.now() + RETRY_AFTER_ERROR_MS; log.errors.push(V.NAME + " " + d.id + ": " + r.error); continue; }
+      delete d.retryAfter;
       const verdict = judge(d, r);
       if (verdict.ok) {
+        d.misses = 0;
         if (r.price !== d.price) { d.prevPrice = d.price; d.changedAt = nowISO(); }
         Object.assign(d, verdict.fields, { price: r.price, verifiedAt: nowISO() });
         await pushHistory(d.id, r.price);
+      } else if (!r.price && (d.misses || 0) < 1) {
+        // Google Flights rend parfois une réponse vide de façon passagère : un seul avertissement avant retrait.
+        d.misses = (d.misses || 0) + 1; d.verifiedAt = nowISO();
+        log.rejected.push(d.id + " : aucun tarif en direct (1er avertissement, re-contrôle au prochain cycle)");
       } else {
         d._drop = verdict.reason;
         log.rejected.push(d.id + " (re-contrôle) : " + verdict.reason);
       }
     }
-    deals = deals.filter(d => !d._drop);
+    // le retrait sur l'âge ne vient qu'APRÈS avoir eu la chance de re-contrôler
+    deals = deals.filter(d => !d._drop && hoursSince(d.verifiedAt) < DEAL_TTL_HOURS);
+    // on persiste tout de suite : si la fonction est tuée plus loin, le travail (et le budget dépensé) n'est pas perdu
+    await S.set("deals:list", deals, 7 * 24 * 3600);
 
     // ---------- 2b. veille : les annonces des sites de deals, vérifiées en priorité ----------
     // Chaque annonce (Travel-Dealz, Premium Flights, Fly4free, Dealabs…) devient un candidat avec le prix
     // annoncé ; on choisit une date (celle du cache Travelpayouts si la route y figure, sinon le début de la
     // période annoncée) et on demande à Google Flights. Même charte, même verdict que pour le cache.
     try {
-      const veille = await VE.refresh(q.veille === "1");
+      const veille = Date.now() < deadline - 20000 ? await VE.refresh(q.veille === "1") : ((await S.get("veille:last")) || { sources: {}, candidates: [] });
       const done = (await S.get("veille:done")) || {};
       const shownIds = new Set(deals.map(d => d.id));
       const vlog = { sources: veille.sources, candidates: veille.candidates.length, tried: 0, verified: 0, rejected: [] };
@@ -141,7 +161,7 @@ module.exports = async (req, res) => {
       }
       queue.sort((a, b) => a.announced - b.announced);
       for (const v of queue) {
-        if (vlog.tried >= VEILLE_PER_RUN || !canVerify()) break;
+        if (vlog.tried >= VEILLE_PER_RUN || !canVerifyNew()) break;
         // dates : cache TP sur la route (dans la période si connue), sinon période annoncée, sinon +45 j
         let dep = null, ret = null, distance = null, median = null;
         try {
@@ -155,7 +175,7 @@ module.exports = async (req, res) => {
           const base = v.c.period && v.c.period.start > D.todayISO() ? Date.parse(v.c.period.start) + 12 * 86400000 : Date.now() + 45 * 86400000;
           dep = new Date(base).toISOString().slice(0, 10); ret = new Date(base + 8 * 86400000).toISOString().slice(0, 10);
         }
-        vlog.tried += 1; await spend();
+        vlog.tried += 1; await spendNew();
         const r = await V.search(v.from, v.to, dep, ret);
         if (!r.ok) { log.errors.push(V.NAME + " veille " + v.id + ": " + r.error); done[v.key] = Date.now() + 24 * 3600 * 1000; continue; }
         const cand = { from: v.from, to: v.to, price: v.announced, median, distance, dates: 1, dep, ret, reasons: ["veille"] };
@@ -167,6 +187,7 @@ module.exports = async (req, res) => {
           foundAt: nowISO(), price: r.price, cachePrice: v.announced, verifiedAt: nowISO(), prevPrice: null, changedAt: null
         }, verdict.fields);
         deals.push(deal); shownIds.add(v.id); await pushHistory(v.id, r.price);
+        await S.set("deals:list", deals, 7 * 24 * 3600);
         vlog.verified += 1; log.verified += 1; done[v.key] = Date.now() + 7 * 24 * 3600 * 1000;
       }
       for (const k of Object.keys(done)) if (done[k] < Date.now()) delete done[k];
@@ -222,6 +243,7 @@ module.exports = async (req, res) => {
         const prom = ex.rows.filter(o => o.ret && o.distance >= C.LONG_HAUL_KM && o.price / o.distance < C.SEUIL_PAR_KM && o.to && o.to !== origin && !seen.has(origin + "-" + o.to))
           .sort((a, b) => a.price / a.distance - b.price / b.distance).slice(0, 6);
         for (const o of prom) {
+          if (Date.now() > deadline - 15000) { xlog.promising.push("(budget-temps épuisé)"); break; }
           const r = await D.fetchLatest(token, origin, o.to, false, { limit: 1000 });
           const cand = r.ok ? C.evaluate([origin, o.to], r.offers) : null;
           xlog.promising.push(origin + "-" + o.to + " " + o.price + "€ " + Math.round(o.price / o.distance * 1000) / 1000 + "€/km" + (cand ? " CANDIDAT" : ""));
@@ -235,6 +257,7 @@ module.exports = async (req, res) => {
     // On ne ré-examine pas un deal déjà affiché et frais, ni une route refusée récemment.
     const shown = new Set(deals.map(d => d.id));
     const cooled = (await S.get("scan:cooldown")) || {};
+    for (const k of Object.keys(cooled)) if (cooled[k] < Date.now()) delete cooled[k];
     candidates = candidates.filter(c => !shown.has(c.from + "-" + c.to) && !(cooled[c.from + "-" + c.to] > Date.now()));
     candidates.sort((a, b) => b.score - a.score);
     log.candidates = candidates.length;
@@ -244,12 +267,12 @@ module.exports = async (req, res) => {
     // ---------- 4. vérification Amadeus des meilleurs candidats ----------
     let verifiedThisRun = 0;
     for (const c of candidates) {
-      if (verifiedThisRun >= VERIFY_PER_RUN || !canVerify()) break;
-      await spend();
+      if (verifiedThisRun >= VERIFY_PER_RUN || !canVerifyNew()) break;
+      await spendNew();
       verifiedThisRun += 1;
       const r = await V.search(c.from, c.to, c.dep, c.ret);
       const id = c.from + "-" + c.to;
-      if (!r.ok) { log.errors.push(V.NAME + " " + id + ": " + r.error); continue; }
+      if (!r.ok) { cooled[id] = Date.now() + RETRY_AFTER_ERROR_MS; log.errors.push(V.NAME + " " + id + ": " + r.error); continue; }
       const verdict = judge(c, r);
       if (!verdict.ok) {
         log.rejected.push(id + " : " + verdict.reason);
@@ -263,6 +286,7 @@ module.exports = async (req, res) => {
       }, verdict.fields);
       deals.push(deal);
       await pushHistory(id, r.price);
+      await S.set("deals:list", deals, 7 * 24 * 3600);
       log.verified += 1;
     }
     await S.set("scan:cooldown", cooled, 24 * 3600);
@@ -274,9 +298,9 @@ module.exports = async (req, res) => {
     deals.sort((a, b) => scoreOf(b) - scoreOf(a));
     deals = deals.slice(0, MAX_DEALS);
     await S.set("deals:list", deals, 7 * 24 * 3600);
-    await S.set("scan:last", { at: nowISO(), ms: Date.now() - started, log, verifier: V.NAME, verifyUsed: used, cap: DAILY_CAP, persistent: S.PERSISTENT }, 7 * 24 * 3600);
+    await S.set("scan:last", { at: nowISO(), ms: Date.now() - started, log, verifier: V.NAME, verifyUsed: used, usedNew, cap: DAILY_CAP, newCap: NEW_DAILY_CAP, persistent: S.PERSISTENT }, 7 * 24 * 3600);
 
-    return D.sendJson(res, 200, { ok: true, ms: Date.now() - started, deals: deals.length, basket: basket.length, cursor, verifier: { name: V.NAME, enabled: V.ENABLED, usedToday: used, cap: DAILY_CAP }, store: S.PERSISTENT ? "upstash" : "mémoire", log });
+    return D.sendJson(res, 200, { ok: true, ms: Date.now() - started, deals: deals.length, basket: basket.length, cursor, verifier: { name: V.NAME, enabled: V.ENABLED, usedToday: used, usedNew, cap: DAILY_CAP, newCap: NEW_DAILY_CAP }, store: S.PERSISTENT ? "upstash" : "mémoire", log });
   } catch (e) {
     return D.sendJson(res, 500, { ok: false, error: String(e && e.message || e), log });
   } finally {
@@ -294,7 +318,11 @@ function judge(c, r) {
   const byKm = perKm !== null && c.distance >= C.LONG_HAUL_KM && perKm < C.SEUIL_PAR_KM;
   const discount = c.median ? 1 - r.price / c.median : null;
   const byMedian = discount !== null && discount >= C.DECOTE_MIN;
-  if (r.price > ref * V.TOLERANCE && !byKm && !byMedian) return { ok: false, reason: `prix en direct ${r.price} € au lieu de ${ref} €` };
+  // Nouveau candidat : le prix de référence est celui du partenaire (cache Aviasales) ou du site de deals ; si Google
+  // affiche nettement plus cher, le visiteur ne retrouvera pas ce prix en cliquant → on n'affiche pas.
+  // Deal déjà affiché : la référence est notre dernier prix vérifié ; une hausse reste acceptable tant que la charte tient.
+  const isNew = !c.verifiedAt;
+  if (isNew && r.price > ref * V.TOLERANCE) return { ok: false, reason: `prix en direct ${r.price} € vs ${ref} € annoncé (> +${Math.round((V.TOLERANCE - 1) * 100)} %)` };
   if (!byKm && !byMedian) return { ok: false, reason: `prix en direct ${r.price} € : hors charte` };
   const seat = C.itinerarySeat(r.segments);
   const longHaul = (c.distance || 0) >= C.LONG_HAUL_KM;
@@ -320,7 +348,10 @@ async function watchRoutes(token, deadline) {
   const index = (await S.get("watch:index")) || [];
   if (!index.length) return { emails: 0, routes: 0, alerts: 0 };
   const watchers = [];
-  for (const email of index) { const w = await S.get("watch:" + email); if (w && w.routes && w.routes.length) watchers.push(w); }
+  for (let i = 0; i < index.length; i += 20) {
+    const batch = await Promise.all(index.slice(i, i + 20).map(email => S.get("watch:" + email).catch(() => null)));
+    for (const w of batch) if (w && w.routes && w.routes.length) watchers.push(w);
+  }
   const byRoute = new Map();
   for (const w of watchers) for (const r of w.routes) {
     const k = r.id + (r.oneway ? ":ow" : ":rt");

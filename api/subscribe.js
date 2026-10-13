@@ -99,7 +99,7 @@ module.exports = async (req, res) => {
 
   // Origine : le formulaire vit sur aeryndo.co (et ses previews Vercel).
   const origin = String(req.headers.origin || req.headers.referer || "");
-  if (origin && !/^https:\/\/([a-z0-9-]+\.)*(aeryndo\.co|vercel\.app)(\/|$)/i.test(origin)) {
+  if (origin && !/^https:\/\/(([a-z0-9-]+\.)*aeryndo\.co|aeryndo(-[a-z0-9-]+)?\.vercel\.app)(\/|$)/i.test(origin)) {
     return json(res, 403, { error: "Origine non autorisée" });
   }
 

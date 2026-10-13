@@ -1,7 +1,9 @@
 name: Robot Instagram
 
-# Toutes les heures à :30 (UTC). Le script regarde l'heure LOCALE de chaque marché
-# (content/markets.json) et ne publie que dans un créneau prévu — été/hiver et tous fuseaux gérés.
+# Déclenché à l'heure exacte par cron-job.org → https://www.aeryndo.co/api/igtrigger?slot=… (créneau forcé).
+# Le cron GitHub ci-dessous n'est qu'un filet de sécurité : GitHub l'exécute quand il veut (4 à 7 fois par
+# jour constaté), le script regarde alors l'heure LOCALE de chaque marché (content/markets.json) et ne fait
+# quelque chose que dans une fenêtre de publication. Jamais deux fois le même créneau le même jour.
 on:
   schedule:
     - cron: "30 * * * *"
@@ -16,9 +18,9 @@ on:
         required: false
         default: "fr"
       dry:
-        description: "Brouillon : préparer sans publier (1 = oui)"
+        description: "Brouillon : 1 = préparer sans publier, 0 = publier, vide = suivre la variable IG_DRY_RUN"
         required: false
-        default: "1"
+        default: ""
 
 concurrency:
   group: instagram
@@ -34,9 +36,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Date du jour
+        run: echo "TODAY=$(date -u +%Y%m%d)" >> "$GITHUB_ENV"
+
       - name: Branche media (médias publics + état du robot)
         run: |
-          if git fetch origin media:media 2>/dev/null; then
+          if git ls-remote --exit-code --heads origin media >/dev/null; then
+            git fetch --depth=1 origin media:media
             echo "branche media existante"
           else
             EMPTY=$(git hash-object -t tree /dev/null)
@@ -54,29 +60,33 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
-          which ffmpeg >/dev/null || sudo apt-get install -y -qq ffmpeg >/dev/null
+          which ffmpeg >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null)
 
       - name: Publier
         working-directory: instagram
         env:
-          IG_DRY_RUN: ${{ vars.IG_DRY_RUN || '1' }}
+          # publication réelle uniquement si la variable de dépôt IG_DRY_RUN vaut exactement 0
+          IG_DRY_RUN: ${{ vars.IG_DRY_RUN == '0' && '0' || '1' }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
-          IG_APP_ID: ${{ secrets.IG_APP_ID }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
           MEDIA_BASE: https://raw.githubusercontent.com/${{ github.repository }}/media
+          IN_SLOT: ${{ github.event.inputs.slot }}
+          IN_MARKET: ${{ github.event.inputs.market }}
+          IN_DRY: ${{ github.event.inputs.dry }}
+        shell: bash
         run: |
-          if [ -n "${{ github.event.inputs.slot }}" ]; then
-            FLAGS="--slot ${{ github.event.inputs.slot }} --market ${{ github.event.inputs.market || 'fr' }}"
-          fi
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.dry }}" = "1" ]; then export IG_DRY_RUN=1; fi
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.dry }}" = "0" ]; then export IG_DRY_RUN=0; fi
-          node run.js $FLAGS
+          # les entrées du formulaire passent par des variables (jamais interpolées dans le script)
+          FLAGS=()
+          if [ -n "$IN_SLOT" ]; then FLAGS=(--slot "$IN_SLOT" --market "${IN_MARKET:-fr}"); fi
+          if [ "$IN_DRY" = "1" ]; then export IG_DRY_RUN=1; fi
+          if [ "$IN_DRY" = "0" ]; then export IG_DRY_RUN=0; fi
+          node run.js "${FLAGS[@]}"
 
-      - name: Visuels produits (brouillon)
+      - name: Visuels du jour
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: visuels-${{ github.run_id }}
-          path: ig-media/posts/**
+          path: ig-media/posts/${{ env.TODAY }}-*/**
           if-no-files-found: ignore
           retention-days: 14

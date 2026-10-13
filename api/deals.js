@@ -15,7 +15,7 @@ const S = require("./_store.js");
 const V = require("./_verify.js");
 const P = require("./_palmares.js");
 
-const MAX_AGE_HOURS = 24;
+const MAX_AGE_HOURS = 36;   // aligné sur DEAL_TTL_HOURS du robot : le site affiche « vérifié le … » en toute honnêteté
 
 module.exports = async (req, res) => {
   const q = req.query || {};
@@ -48,5 +48,5 @@ module.exports = async (req, res) => {
     deals,
     palmares: P.list(),
     marker: D.MARKER
-  }, 300);
+  }, 120);
 };

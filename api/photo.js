@@ -69,7 +69,8 @@ module.exports = async (req, res) => {
   if (!chosen) { res.statusCode = 302; res.setHeader("Location", FALLBACK); res.setHeader("Cache-Control", "public, s-maxage=3600"); return res.end(); }
 
   try {
-    const img = await fetch(chosen.url);
+    const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 8000);
+    const img = await fetch(chosen.url, { signal: ctrl.signal }).finally(() => clearTimeout(timer));
     if (!img.ok) throw new Error("pixabay HTTP " + img.status);
     const buf = Buffer.from(await img.arrayBuffer());
     res.statusCode = 200;

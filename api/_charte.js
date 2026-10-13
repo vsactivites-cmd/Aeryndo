@@ -54,7 +54,7 @@ const FLAT_AIRCRAFT = new Set([
 ]);
 // Monocouloirs où certaines compagnies installent un vrai lit.
 const FLAT_NARROWBODY = {
-  "32Q": ["B0", "AZ", "EI", "TP", "SK", "B6", "JL", "TS", "TK", "AC"],
+  "32Q": ["B0", "AZ", "EI", "TP", "SK", "B6", "JL", "TS", "TK", "AC", "QR", "EY"],
   "32N": ["B0", "AZ", "EI", "TP", "SK", "B6", "JL", "AC"],
   "321": ["B0", "B6", "EI", "TP", "AZ", "SK", "AC"],
   "32B": ["B0", "B6", "AZ"],

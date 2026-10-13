@@ -19,11 +19,17 @@ const PREFIX = "aeryndo:";
 const mem = new Map();
 
 async function redis(cmd) {
-  const resp = await fetch(URL, {
-    method: "POST",
-    headers: { Authorization: "Bearer " + TOKEN, "Content-Type": "application/json" },
-    body: JSON.stringify(cmd)
-  });
+  // 5 s maximum : une mémoire qui ne répond pas ne doit pas faire tuer la fonction à 60 s (verrou laissé posé)
+  const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 5000);
+  let resp;
+  try {
+    resp = await fetch(URL, {
+      method: "POST",
+      headers: { Authorization: "Bearer " + TOKEN, "Content-Type": "application/json" },
+      body: JSON.stringify(cmd), signal: ctrl.signal
+    });
+  } catch (e) { throw new Error("store injoignable : " + (e && e.name === "AbortError" ? "délai dépassé (5 s)" : (e && e.message || e))); }
+  finally { clearTimeout(timer); }
   if (!resp.ok) throw new Error("store HTTP " + resp.status);
   const json = await resp.json();
   if (json && json.error) throw new Error("store: " + json.error);
