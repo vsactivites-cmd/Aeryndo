@@ -7,6 +7,13 @@
       "slot": "deal",
       "dry": false,
       "error": "Instagram 400 API access blocked. (code 200)"
+    },
+    {
+      "at": "2026-10-13T12:33:15.144Z",
+      "market": "fr",
+      "slot": "deal",
+      "dry": false,
+      "error": "le jeton appartient au compte aeryndo.co (28359905427012491), pas à 17841440565507238"
     }
   ],
   "drafts": [
