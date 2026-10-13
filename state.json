@@ -1,6 +1,14 @@
 {
   "posted": [],
-  "runs": [],
+  "runs": [
+    {
+      "at": "2026-10-13T12:22:18.923Z",
+      "market": "fr",
+      "slot": "deal",
+      "dry": false,
+      "error": "Instagram 400 API access blocked. (code 200)"
+    }
+  ],
   "drafts": [
     {
       "kind": "palmares",
