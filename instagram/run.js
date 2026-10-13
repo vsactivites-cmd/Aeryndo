@@ -62,12 +62,14 @@ async function runOne(m, slot, state) {
   if (state.posted.some(p => p.market === m.id && p.slot === slot.id && p.date === slot.date)) { log(tag, "déjà publié aujourd'hui, rien à faire"); return; }
 
   // 0. pré-vol : jeton et compte, AVANT de passer 2 minutes à rendre des visuels
-  let tk = null;
+  let tk = null, igTarget = String(m.igUserId);
   if (!DRY) {
     tk = await P.refreshIfNeeded(m, await P.loadToken(m), (...a) => log(tag, ...a));
     const me = await P.me(tk.token);
-    if (String(me.id) !== String(m.igUserId)) throw new Error(`le jeton appartient au compte ${me.username || "?"} (${me.id}), pas à ${m.igUserId}`);
-    log(tag, "compte vérifié : @" + me.username + " (jeton " + tk.from + (tk.expiresAt ? ", valable jusqu'au " + tk.expiresAt.slice(0, 10) : "") + ")");
+    const expected = String(m.igUserId);
+    if (me.id !== expected && me.userId !== expected && me.username !== (m.igUsername || "")) throw new Error(`le jeton appartient au compte @${me.username || "?"} (${me.userId || me.id}), pas au compte attendu ${expected}`);
+    igTarget = me.target;
+    log(tag, "compte vérifié : @" + me.username + " (" + igTarget + ", jeton " + tk.from + (tk.expiresAt ? ", valable jusqu'au " + tk.expiresAt.slice(0, 10) : "") + ")");
   }
 
   // 1. contenu
@@ -91,9 +93,9 @@ async function runOne(m, slot, state) {
   // 4. publication
   let result = { dry: DRY };
   if (!DRY) {
-    if (slot.kind === "carousel") result = await P.publishCarousel(m.igUserId, tk.token, urls, caption);
-    else if (slot.kind === "reel") result = await P.publishReel(m.igUserId, tk.token, urls.video, urls.cover, caption);
-    else if (slot.kind === "story") result = await P.publishStory(m.igUserId, tk.token, urls[0]);
+    if (slot.kind === "carousel") result = await P.publishCarousel(igTarget, tk.token, urls, caption);
+    else if (slot.kind === "reel") result = await P.publishReel(igTarget, tk.token, urls.video, urls.cover, caption);
+    else if (slot.kind === "story") result = await P.publishStory(igTarget, tk.token, urls[0]);
     result.permalink = await P.permalink(result.id, tk.token);
     log(tag, "PUBLIÉ :", result.permalink || result.id);
   } else log(tag, "MODE BROUILLON — rien n'a été publié sur Instagram (IG_DRY_RUN=" + JSON.stringify(process.env.IG_DRY_RUN || "") + ")");

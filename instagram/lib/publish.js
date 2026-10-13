@@ -54,7 +54,12 @@ async function publishStory(ig, token, imageUrl) {
   return call("POST", `${G}/${ig}/media_publish`, { creation_id: c.id, access_token: token });
 }
 async function permalink(mediaId, token) { try { const j = await call("GET", `${G}/${mediaId}?${q({ fields: "permalink", access_token: token })}`); return j.permalink; } catch { return null; } }
-async function me(token) { return call("GET", `${G}/me?${q({ fields: "id,username,media_count", access_token: token })}`); }
+// Avec la connexion Instagram, /me renvoie deux identifiants : `id` (identifiant « côté app ») et `user_id`
+// (identifiant du compte professionnel, 1784…). Les appels de publication se font sur l'identifiant renvoyé ici.
+async function me(token) {
+  const j = await call("GET", `${G}/me?${q({ fields: "id,user_id,username", access_token: token })}`);
+  return { id: String(j.id || ""), userId: String(j.user_id || ""), username: j.username || "", target: String(j.user_id || j.id) };
+}
 
 // ---------- jeton : lecture (Vercel d'abord, secret GitHub sinon) et rafraîchissement ----------
 async function loadToken(m) {
