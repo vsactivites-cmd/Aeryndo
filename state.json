@@ -1,5 +1,51 @@
 {
-  "posted": [],
+  "posted": [
+    {
+      "kind": "deal",
+      "id": "deal-PAR-DPS-2285",
+      "live": true,
+      "from": "PAR",
+      "to": "DPS",
+      "city": {
+        "fr": "Bali",
+        "en": "Bali"
+      },
+      "cityCode": "DPS",
+      "price": 2285,
+      "was": null,
+      "discount": null,
+      "carrier": "Air India",
+      "aircraft": "777 · A321",
+      "stops": {
+        "fr": "1 escale",
+        "en": "1 stop"
+      },
+      "seat": {
+        "fr": "Lit à plat sur CDG → DEL (777) ; siège classique sur le tronçon court",
+        "en": "Flat bed on the long-haul leg (CDG → DEL), standard seat on the short hop"
+      },
+      "seatKind": "partial",
+      "dep": "2027-01-07",
+      "ret": "2027-01-16",
+      "verifiedAt": "2026-10-13T01:07:49.329Z",
+      "link": "https://www.aviasales.fr/search/PAR0701DPS1601c1?marker=745122.site-deal&currency=eur&locale=fr",
+      "photo": "https://www.aeryndo.co/api/photo?city=DPS",
+      "kicker": {
+        "fr": "Deal vérifié · 13 oct.",
+        "en": "Verified deal · 13 Oct"
+      },
+      "source": null,
+      "slot": "deal",
+      "market": "fr",
+      "date": "2026-10-13",
+      "contentId": "deal-PAR-DPS-2285",
+      "at": "2026-10-13T12:46:29.810Z",
+      "igId": "18111751433172286",
+      "permalink": "https://www.instagram.com/p/Deb1yt7lLnm/",
+      "dry": false,
+      "dir": "posts/20261013-fr-deal"
+    }
+  ],
   "runs": [
     {
       "at": "2026-10-13T12:22:18.923Z",
