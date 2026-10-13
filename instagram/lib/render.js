@@ -120,20 +120,27 @@ function storyPage(c, lang, slotId) {
 }
 
 // ---------- reel 1080×1920 : animation 14 s (photo en mouvement lent, prix révélé, CTA) ----------
-function reelPage(c, lang) {
-  const L = lang;
+// Reel : format de découverte (vu par des inconnus, souvent sans lire la légende) → texte à l'écran en ANGLAIS,
+// doublé d'une ligne française plus petite. La légende reste bilingue (caption.js). Décision du 13 oct. 2026.
+function reelPage(c) {
   const extra = `
 @keyframes kb{from{transform:scale(1.12) translate(0,0)}to{transform:scale(1.0) translate(0,-20px)}}
 @keyframes up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 .photo{animation:kb 14s linear forwards}
 .a1{animation:up .9s ease-out .6s both}.a2{animation:up .9s ease-out 2.2s both}.a3{animation:up .9s ease-out 4.6s both}.a4{animation:up .9s ease-out 7.2s both}.a5{animation:up .9s ease-out 9.8s both}
 body.hold .photo,body.hold .a1,body.hold .a2,body.hold .a3,body.hold .a4,body.hold .a5{animation-play-state:paused}
-body.hold .a1,body.hold .a2,body.hold .a3,body.hold .a4,body.hold .a5{opacity:0}`;
-  const inner = `<div class="block" style="top:520px">
-    <div class="kicker a1">${esc(c.kicker[L])}</div><div class="city a2" style="font-size:96px">${esc(c.city[L])}</div><div class="route a2">${c.from} → ${c.to}</div>
+body.hold .a1,body.hold .a2,body.hold .a3,body.hold .a4,body.hold .a5{opacity:0}
+.sub{font-size:22px;letter-spacing:4px;text-transform:uppercase;color:${STONE};margin-top:8px}
+.det .fr{color:rgba(184,179,170,.75);font-size:28px}
+.cta .t2{font-size:26px;color:${STONE};margin-top:8px}`;
+  const city = c.city.en === c.city.fr ? esc(c.city.en) : `${esc(c.city.en)} <span style="font-size:48px;color:${STONE}">· ${esc(c.city.fr)}</span>`;
+  const inner = `<div class="block" style="top:500px">
+    <div class="kicker a1">${esc(c.kicker.en)}<div class="sub">${esc(c.kicker.fr)}</div></div>
+    <div class="city a2" style="font-size:96px">${city}</div><div class="route a2">${c.from} → ${c.to}</div>
     <div class="price a3"><span class="amt" style="font-size:150px">${fmtEUR(c.price)}</span>${c.was ? `<span class="was">${fmtEUR(c.was)}</span>` : ""}</div>
-    <div class="det a4"><div>${esc(c.carrier)}${c.aircraft ? " · " + esc(c.aircraft) : ""} · ${esc(c.stops[L])}</div><div>${esc(c.seat[L])}</div></div></div>
-    <div class="cta a5" style="bottom:240px"><div class="k">${c.live ? (L === "fr" ? "Avant qu’il ne parte" : "Before it goes") : (L === "fr" ? "Le prochain, avant tout le monde" : "The next one, before everyone else")}</div><div class="t">${L === "fr" ? "Deals Business vérifiés · lien en bio" : "Verified Business deals · link in bio"}</div></div>`;
+    <div class="det a4"><div>${esc(c.carrier)}${c.aircraft ? " · " + esc(c.aircraft) : ""} · ${esc(c.stops.en)}</div><div>${esc(c.seat.en)}</div><div class="fr">${esc(c.seat.fr)}</div></div></div>
+    <div class="cta a5" style="bottom:220px"><div class="k">${c.live ? "Before it goes" : "The next one, before everyone else"} · <span style="color:${STONE}">${c.live ? "Avant qu’il ne parte" : "Le prochain, avant tout le monde"}</span></div>
+    <div class="t">Verified Business deals · link in bio</div><div class="t2">Deals Business vérifiés · lien en bio</div></div>`;
   return shell(frame("s", inner, c.photo, ""), 1920, extra);
 }
 
@@ -220,8 +227,8 @@ async function render(slot, c, outDir) {
     return { images: files };
   }
   if (slot.kind === "reel") {
-    const video = await renderReel(reelPage(c, "fr"), outDir, "reel");
-    const cover = await renderImages([frame("s", `<div class="block" style="top:520px"><div class="kicker">${esc(c.kicker.fr)}</div><div class="city" style="font-size:96px">${esc(c.city.fr)}</div><div class="price"><span class="amt" style="font-size:150px">${fmtEUR(c.price)}</span></div></div>`, c.photo, "")], outDir, "cover", 1080, 1920);
+    const video = await renderReel(reelPage(c), outDir, "reel");
+    const cover = await renderImages([frame("s", `<div class="block" style="top:520px"><div class="kicker">${esc(c.kicker.en)}</div><div class="city" style="font-size:96px">${esc(c.city.en)}</div><div class="price"><span class="amt" style="font-size:150px">${fmtEUR(c.price)}</span></div></div>`, c.photo, "")], outDir, "cover", 1080, 1920);
     return { video, cover: cover[0] };
   }
   throw new Error("créneau inconnu " + slot.kind);
