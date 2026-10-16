@@ -98,6 +98,13 @@
       "slot": "deal",
       "dry": false,
       "error": "le jeton appartient au compte aeryndo.co (28359905427012491), pas à 17841440565507238"
+    },
+    {
+      "at": "2026-10-16T10:31:31.411Z",
+      "market": "fr",
+      "slot": "deal",
+      "dry": false,
+      "error": "photo de destination indisponible : https://www.aeryndo.co/api/photo?city=DPS — HTTP 400"
     }
   ],
   "drafts": [
