@@ -105,6 +105,13 @@
       "slot": "deal",
       "dry": false,
       "error": "photo de destination indisponible : https://www.aeryndo.co/api/photo?city=DPS — HTTP 400"
+    },
+    {
+      "at": "2026-10-18T08:31:26.024Z",
+      "market": "fr",
+      "slot": "reel",
+      "dry": false,
+      "error": "photo de destination indisponible : https://www.aeryndo.co/api/photo?city=HKG — HTTP 400"
     }
   ],
   "drafts": [
