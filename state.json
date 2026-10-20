@@ -120,6 +120,44 @@
       "permalink": "https://www.instagram.com/p/DeuRK-ImiVc/",
       "dry": false,
       "dir": "posts/20261020-fr-piege"
+    },
+    {
+      "kind": "piege",
+      "photo": "https://www.aeryndo.co/api/photo?city=MCT",
+      "cityCode": "MCT",
+      "id": "piege-737",
+      "title": {
+        "fr": "« Business » sur un 737",
+        "en": "“Business” on a 737"
+      },
+      "hook": {
+        "fr": "Rome → Mascate en Business à 1 314 €, direct. Le piège ?",
+        "en": "Rome → Muscat in Business for €1,314, nonstop. The catch?"
+      },
+      "price": "1 314 €",
+      "route": "FCO → MCT",
+      "detail": {
+        "fr": "Boeing 737 : siège inclinable, pas de lit. 6 h 30 de vol.",
+        "en": "Boeing 737: recliner seat, no bed. A 6½-hour flight."
+      },
+      "body": {
+        "fr": "Même compagnie, même tarif Business, deux cabines différentes : depuis Milan ou Paris, c’est un Boeing 787 avec de vrais lits ; depuis Rome ou Munich, un Boeing 737 avec un fauteuil inclinable. Le mot « Business » ne dit rien du siège.",
+        "en": "Same airline, same Business fare, two different cabins: from Milan or Paris it is a Boeing 787 with real beds; from Rome or Munich, a Boeing 737 with a reclining chair. The word “Business” says nothing about the seat."
+      },
+      "lesson": {
+        "fr": "Avant de réserver, vérifiez l’appareil. Aeryndo déduit le siège de l’avion et de la compagnie, tronçon par tronçon.",
+        "en": "Check the aircraft before booking. Aeryndo infers the seat from the aircraft and airline, leg by leg."
+      },
+      "city": "MCT",
+      "slot": "story-piege",
+      "market": "fr",
+      "date": "2026-10-20",
+      "contentId": "piege-737",
+      "at": "2026-10-20T18:38:10.178Z",
+      "igId": "18182377972441733",
+      "permalink": "https://www.instagram.com/stories/aeryndo.co/4012283302296723790",
+      "dry": false,
+      "dir": "posts/20261020-fr-story-piege"
     }
   ],
   "runs": [
