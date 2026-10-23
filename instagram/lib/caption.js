@@ -6,7 +6,10 @@ const TAGS = {
   fr: ["#classeaffaires", "#businessclass", "#voldeluxe", "#voyagedeluxe", "#litaplat", "#aeryndo"],
   en: ["#businessclassdeals", "#luxurytravel", "#flightdeals", "#lieflat"]
 };
-function tags(c) { const city = (c.city && c.city.en || c.cityCode || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, ""); const extra = city ? ["#" + city] : []; return TAGS.fr.concat(extra, TAGS.en).join(" "); }
+// Mention légale (loi du 9 juin 2023 sur l'influence commerciale) : nos liens de réservation sont des liens
+// partenaires rémunérés → chaque légende se termine par #publicité (choix de Valentyna, 23 oct. 2026) et #ad pour l'anglais.
+const LEGAL = "#publicité #ad";
+function tags(c) { const city = (c.city && c.city.en || c.cityCode || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, ""); const extra = city ? ["#" + city] : []; return TAGS.fr.concat(extra, TAGS.en).join(" ") + " " + LEGAL; }
 // « 16 oct. » + « . » → une seule ponctuation finale
 const dot = s => String(s).replace(/\.$/, "") + ".";
 

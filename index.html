@@ -345,15 +345,17 @@ footer{padding:54px 0 36px;color:var(--stone)}
 @media(max-width:820px){.res-tools .exact-btn{width:100%}.flight .leg{display:none}}
 
 </style>
-<!-- Travelpayouts Drive -->
-<script nowprocket data-noptimize="1" data-cfasync="false" data-wpfc-render="false" seraph-accel-crit="1" data-no-defer="1" data-cmp-ab="2">
- (function () {
+<!-- Travelpayouts Drive : chargé seulement après consentement aux cookies (CNIL) — voir loadDrive() -->
+<script>
+ function loadDrive(){
+    if (window.__driveLoaded) return; window.__driveLoaded = true;
     var script = document.createElement("script");
     script.async = 1;
     script.setAttribute("data-cmp-ab","2");
     script.src = 'https://tpembars.com/NTQ1Mjc4.js?t=545278';
     document.head.appendChild(script);
- })();
+ }
+ try { if (localStorage.getItem("aeryndo-cookies") === "1") loadDrive(); } catch (e) {}
 </script>
 </head>
 <body>
@@ -539,7 +541,7 @@ footer{padding:54px 0 36px;color:var(--stone)}
 <div class="toast" id="toast"></div>
 <div class="cookie" id="cookie">
   <p data-i18n-html="cookieText">Cookies.</p>
-  <div style="display:flex;gap:8px"><button class="refuse" data-i18n="cookieRefuse" onclick="closeCookie()">Refuser</button><button class="accept" data-i18n="cookieAccept" onclick="closeCookie()">Accepter</button></div>
+  <div style="display:flex;gap:8px"><button class="refuse" data-i18n="cookieRefuse" onclick="cookieChoice(0)">Refuser</button><button class="accept" data-i18n="cookieAccept" onclick="cookieChoice(1)">Accepter</button></div>
 </div>
 
 <script>
@@ -723,6 +725,9 @@ function scrollTo2(id){document.getElementById(id).scrollIntoView({behavior:"smo
 function scrollToAlert(){document.getElementById("alert").scrollIntoView({behavior:"smooth"});}
 let toastT;function toast(msg){const el=document.getElementById("toast");el.innerHTML=msg;el.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("show"),4200);}
 function closeCookie(){document.getElementById("cookie").style.display="none";}
+// Consentement cookies : le choix est mémorisé 6 mois ; les cookies tiers (Travelpayouts Drive) ne sont posés qu'après « Accepter ».
+function cookieChoice(ok){try{localStorage.setItem("aeryndo-cookies",ok?"1":"0");localStorage.setItem("aeryndo-cookies-at",String(Date.now()));}catch(e){}closeCookie();if(ok)loadDrive();}
+(function(){try{var v=localStorage.getItem("aeryndo-cookies"),at=Number(localStorage.getItem("aeryndo-cookies-at")||0);if(v!==null&&Date.now()-at<183*86400000)closeCookie();}catch(e){}})();
 function toggleMenu(e){if(e)e.stopPropagation();document.getElementById("mnav").classList.toggle("show");}
 function closeMenu(){const m=document.getElementById("mnav");if(m)m.classList.remove("show");}
 function mgo(id){closeMenu();document.getElementById(id).scrollIntoView({behavior:"smooth"});}
