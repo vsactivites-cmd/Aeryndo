@@ -150,6 +150,7 @@ async function browser() { const { chromium } = require("playwright"); return ch
 // publier un visuel noir. (Le site la sert via /api/photo, cache 30 j.)
 async function inlinePhoto(url) {
   if (!url || url.startsWith("data:")) return url;
+  if (/\/api\/photo\?/.test(url) && !/fresh=1/.test(url)) url += "&fresh=1"; // adresse Pixabay redemandée à l'instant (elles expirent)
   let last = null;
   for (let i = 0; i < 3; i++) {
     try {
