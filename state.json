@@ -201,6 +201,49 @@
       "permalink": "https://www.instagram.com/reel/De1N3Kek2Du/",
       "dry": false,
       "dir": "posts/20261023-fr-reel"
+    },
+    {
+      "kind": "palmares",
+      "id": "pal-lacompagnie-ory-ewr-2026-08",
+      "live": false,
+      "from": "ORY",
+      "to": "EWR",
+      "city": {
+        "fr": "New York",
+        "en": "New York"
+      },
+      "cityCode": "NYC",
+      "price": 2012,
+      "was": 2422,
+      "discount": 17,
+      "carrier": "La Compagnie",
+      "aircraft": "A321neo",
+      "stops": {
+        "fr": "direct",
+        "en": "nonstop"
+      },
+      "seat": {
+        "fr": "Lit entièrement à plat, cabine 100 % Business (A321neo).",
+        "en": "Fully flat bed, all-Business cabin (A321neo)."
+      },
+      "seatKind": "flat",
+      "dep": "2026-09-25",
+      "ret": "2026-10-11",
+      "foundAt": "2026-08-21",
+      "photo": "https://www.aeryndo.co/api/photo?city=NYC",
+      "kicker": {
+        "fr": "Déniché le 21 août 2026",
+        "en": "Found on 21 Aug 2026"
+      },
+      "slot": "deal",
+      "market": "fr",
+      "date": "2026-10-23",
+      "contentId": "pal-lacompagnie-ory-ewr-2026-08",
+      "at": "2026-10-23T10:32:24.153Z",
+      "igId": "17890613823468919",
+      "permalink": "https://www.instagram.com/p/De1WZIMlfjd/",
+      "dry": false,
+      "dir": "posts/20261023-fr-deal"
     }
   ],
   "runs": [
