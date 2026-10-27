@@ -373,6 +373,44 @@
       "permalink": "https://www.instagram.com/stories/aeryndo.co/4015692711919175653",
       "dry": false,
       "dir": "posts/20261025-fr-story-reel"
+    },
+    {
+      "kind": "piege",
+      "photo": "https://www.aeryndo.co/api/photo?city=NYC",
+      "cityCode": "NYC",
+      "id": "piege-tarif-erreur",
+      "title": {
+        "fr": "Le tarif erreur, mode d’emploi",
+        "en": "Error fares, the rules"
+      },
+      "hook": {
+        "fr": "New York en Business à 650 €. Vrai tarif, ou piège ?",
+        "en": "New York in Business for €650. Real fare, or trap?"
+      },
+      "price": "650 €",
+      "route": "PAR → NYC",
+      "detail": {
+        "fr": "Un tarif erreur peut être annulé par la compagnie dans les 72 h.",
+        "en": "An error fare can be cancelled by the airline within 72 hours."
+      },
+      "body": {
+        "fr": "Les tarifs erreur existent : une virgule qui saute, une classe mal codée. Ils partent en quelques heures. Le piège, c’est de réserver l’hôtel et les activités le soir même : si la compagnie annule le billet, tout le reste est perdu.",
+        "en": "Error fares are real: a misplaced decimal, a mis-coded cabin. They vanish within hours. The trap is booking the hotel and activities the same evening: if the airline cancels the ticket, everything else is lost."
+      },
+      "lesson": {
+        "fr": "On réserve le vol, rien d’autre, et on attend 72 h. Aeryndo signale chaque tarif erreur comme tel.",
+        "en": "Book the flight, nothing else, and wait 72 hours. Aeryndo flags every error fare as such."
+      },
+      "city": "NYC",
+      "slot": "piege",
+      "market": "fr",
+      "date": "2026-10-27",
+      "contentId": "piege-tarif-erreur",
+      "at": "2026-10-27T17:34:36.091Z",
+      "igId": "17876962140581952",
+      "permalink": "https://www.instagram.com/p/DfAZ49_nYPj/",
+      "dry": false,
+      "dir": "posts/20261027-fr-piege"
     }
   ],
   "runs": [
