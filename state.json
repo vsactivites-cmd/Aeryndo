@@ -613,6 +613,44 @@
       "permalink": null,
       "dry": true,
       "dir": "posts/20261013-fr-reel"
+    },
+    {
+      "kind": "piege",
+      "photo": "https://www.aeryndo.co/api/photo?city=TYO",
+      "cityCode": "TYO",
+      "id": "piege-premium-eco",
+      "title": {
+        "fr": "Premium Economy n’est pas Business",
+        "en": "Premium Economy is not Business"
+      },
+      "hook": {
+        "fr": "Tokyo « en classe supérieure » à 1 100 €. Le piège ?",
+        "en": "Tokyo “in a premium cabin” for €1,100. The catch?"
+      },
+      "price": "1 100 €",
+      "route": "PAR → TYO",
+      "detail": {
+        "fr": "C’est de la Premium Economy : un fauteuil plus large, pas un lit.",
+        "en": "It is Premium Economy: a wider chair, not a bed."
+      },
+      "body": {
+        "fr": "Les comparateurs mélangent volontiers « premium » et « affaires ». La Premium Economy, c’est 10 cm de plus pour les jambes et un repas amélioré. La Business, c’est un lit de 1,90 m. Sur 12 heures de vol, la différence se mesure au réveil.",
+        "en": "Comparison sites happily blur “premium” and “business”. Premium Economy is 10 cm more legroom and a better meal. Business is a 1.9 m bed. On a 12-hour flight, the difference shows when you wake up."
+      },
+      "lesson": {
+        "fr": "Aeryndo ne publie que de la vraie Business, cabine vérifiée. Jamais de Premium Economy déguisée.",
+        "en": "Aeryndo only publishes real Business, cabin verified. Never Premium Economy in disguise."
+      },
+      "city": "TYO",
+      "slot": "piege",
+      "market": "fr",
+      "date": "2026-10-29",
+      "contentId": "piege-premium-eco",
+      "at": "2026-10-29T09:07:42.870Z",
+      "igId": null,
+      "permalink": null,
+      "dry": true,
+      "dir": "posts/20261029-fr-piege"
     }
   ]
 }
