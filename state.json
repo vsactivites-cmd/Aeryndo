@@ -411,6 +411,49 @@
       "permalink": "https://www.instagram.com/p/DfAZ49_nYPj/",
       "dry": false,
       "dir": "posts/20261027-fr-piege"
+    },
+    {
+      "kind": "palmares",
+      "id": "pal-etihad-cdg-hkg-2026-08",
+      "live": false,
+      "from": "CDG",
+      "to": "HKG",
+      "city": {
+        "fr": "Hong Kong",
+        "en": "Hong Kong"
+      },
+      "cityCode": "HKG",
+      "price": 2413,
+      "was": 3388,
+      "discount": 29,
+      "carrier": "Etihad",
+      "aircraft": "A380 · 787-9",
+      "stops": {
+        "fr": "1 escale",
+        "en": "1 stop"
+      },
+      "seat": {
+        "fr": "Lit entièrement à plat sur les deux tronçons (Business Studio, A380 + 787).",
+        "en": "Fully flat bed on both legs (Business Studio, A380 + 787)."
+      },
+      "seatKind": "flat",
+      "dep": "2026-09-25",
+      "ret": "2026-10-04",
+      "foundAt": "2026-08-21",
+      "photo": "https://www.aeryndo.co/api/photo?city=HKG",
+      "kicker": {
+        "fr": "Déniché le 21 août 2026",
+        "en": "Found on 21 Aug 2026"
+      },
+      "slot": "deal",
+      "market": "fr",
+      "date": "2026-10-30",
+      "contentId": "pal-etihad-cdg-hkg-2026-08",
+      "at": "2026-10-30T11:32:40.214Z",
+      "igId": "18579204910077837",
+      "permalink": "https://www.instagram.com/p/DfHe2oBFWYo/",
+      "dry": false,
+      "dir": "posts/20261030-fr-deal"
     }
   ],
   "runs": [
