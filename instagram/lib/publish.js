@@ -54,27 +54,37 @@ function graph(gate) {
     return call("POST", `${G}/${ig}/media_publish`, { creation_id: parent.id, access_token: token });
   }
 
-  // audio = { id, volume?, videoVolume? } (catalogue Instagram, porte Facebook uniquement). Si Meta refuse le conteneur
-  // avec musique, ou si son traitement échoue, on republie SANS musique plutôt que de rater le créneau.
-  async function publishReel(ig, token, videoUrl, coverUrl, caption, audio, log) {
+  // audios = liste ordonnée de { id, title?, artist?, volume?, videoVolume? } (catalogue Instagram, porte Facebook uniquement).
+  // On essaie chaque musique dans l'ordre ; si Meta refuse le conteneur ou si son traitement échoue, on passe à la
+  // suivante. Si aucune ne passe : opts.required → erreur (Reel NON publié, décision de Valentyna du 2 nov. 2026 :
+  // jamais de Reel muet) ; sinon publication sans musique.
+  async function publishReel(ig, token, videoUrl, coverUrl, caption, audios, log, opts) {
     const base = { media_type: "REELS", video_url: videoUrl, cover_url: coverUrl, caption, share_to_feed: "true", access_token: token };
     const say = (...a) => { if (log) log(...a); };
-    let container = null, withAudio = false, audioError = null;
-    if (audio && audio.id) {
+    const list = (Array.isArray(audios) ? audios : audios ? [audios] : []).filter(a => a && a.id);
+    const errors = [];
+    let container = null, used = null;
+    for (let i = 0; i < list.length; i++) {
+      const audio = list[i];
       const cfg = JSON.stringify({ audio_id: String(audio.id), audio_volume: audio.volume == null ? 100 : audio.volume, video_volume: audio.videoVolume == null ? 0 : audio.videoVolume });
       try {
         const c = await call("POST", `${G}/${ig}/media`, Object.assign({ audio_configuration: cfg }, base));
-        await waitReady(c.id, token, 12 * 60000);
-        container = c; withAudio = true;
-      } catch (e) { audioError = e.message; say("Reel avec musique refusé (" + e.message + ") — nouvel essai sans musique"); }
+        await waitReady(c.id, token, 8 * 60000);
+        container = c; used = audio; break;
+      } catch (e) {
+        errors.push((audio.title || audio.id) + " : " + e.message);
+        say("musique « " + (audio.title || audio.id) + " » refusée (" + e.message + ")" + (i + 1 < list.length ? " — essai avec la suivante" : ""));
+      }
     }
     if (!container) {
+      if (list.length && opts && opts.required) throw new Error("aucune des musiques demandées n'a pu être attachée (" + errors.join(" ; ") + ") — Reel NON publié (reelAudio.required)");
+      if (list.length) say("Reel publié sans musique");
       container = await call("POST", `${G}/${ig}/media`, base);
       await waitReady(container.id, token, 12 * 60000);
     }
     const pub = await call("POST", `${G}/${ig}/media_publish`, { creation_id: container.id, access_token: token });
-    pub.audio = withAudio ? { id: String(audio.id), title: audio.title || null, artist: audio.artist || null } : null;
-    if (audioError) pub.audioError = audioError;
+    pub.audio = used ? { id: String(used.id), title: used.title || null, artist: used.artist || null } : null;
+    if (errors.length) pub.audioError = errors.join(" ; ");
     return pub;
   }
 

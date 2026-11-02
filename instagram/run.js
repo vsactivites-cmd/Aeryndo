@@ -71,13 +71,19 @@ async function runOne(m, slot, state) {
     catch (e) { say("porte Facebook indisponible (" + e.message + ") — repli sur la porte Instagram"); }
     if (!session) session = await P.openInstagram(m, say);
     log(tag, "compte vérifié : @" + session.username + " (" + session.target + ", " + session.label + ")");
-    if (slot.kind === "reel" && session.gate === "facebook") session.audio = await FB.findAudio(session, say);
+    if (slot.kind === "reel") {
+      const want = FB.wanted(m);
+      if (session.gate === "facebook") session.audios = await FB.findAudio(session, say);
+      else if (want.tracks.length) say("porte Instagram : pas de musique possible sur ce Reel");
+      if (session.catalogue) state.audioCatalogue = { at: new Date().toISOString(), market: m.id, wanted: want.tracks.map(t => t.title), ready: (session.audios || []).map(a => a.title), searches: session.catalogue };
+      if (want.required && want.tracks.length && !(session.audios && session.audios.length)) throw new Error("aucune des musiques demandées n'est disponible (" + want.tracks.map(t => t.title).join(", ") + ") — Reel NON publié (reelAudio.required)");
+    }
   }
 
   // 1. contenu
   const c = await C.pick(slot, state, m);
   if (!c) { log(tag, "aucun contenu disponible pour ce créneau (pas de deal au départ de", m.origins.join("/"), ", ou pas de post du jour pour la story) — on passe"); return; }
-  log(tag, "contenu :", c.kind, c.id || c.contentId, c.title ? c.title.fr : c.city ? c.city.fr : "");
+  log(tag, "contenu :", c.kind, c.id || c.contentId, c.title ? c.title.fr : c.city ? c.city.fr : "", c.rotation ? "(rotation du palmarès : tout a déjà été posté depuis moins de 60 jours)" : "");
 
   // 2. visuels + légende
   const stamp = slot.date.replace(/-/g, "") + "-" + m.id + "-" + slot.id;
@@ -97,7 +103,7 @@ async function runOne(m, slot, state) {
   if (!DRY) {
     const A = session.api, tk = session.token, igTarget = session.target;
     if (slot.kind === "carousel") result = await A.publishCarousel(igTarget, tk, urls, caption);
-    else if (slot.kind === "reel") result = await A.publishReel(igTarget, tk, urls.video, urls.cover, caption, session.audio, (...a) => log(tag, ...a));
+    else if (slot.kind === "reel") result = await A.publishReel(igTarget, tk, urls.video, urls.cover, caption, session.audios, (...a) => log(tag, ...a), { required: FB.wanted(m).required });
     else if (slot.kind === "story") result = await A.publishStory(igTarget, tk, urls[0]);
     result.permalink = await A.permalink(result.id, tk);
     log(tag, "PUBLIÉ :", result.permalink || result.id, result.audio ? "— musique : " + result.audio.title : (slot.kind === "reel" ? "— sans musique" : ""));

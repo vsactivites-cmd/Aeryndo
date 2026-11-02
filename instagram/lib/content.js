@@ -79,7 +79,11 @@ function fromPalmares(p, site) {
 
 // Les deals postés partent des aéroports du marché (m.origins) : un compte péruvien ne verra
 // que des départs de Lima, le compte français des départs de Paris/Nice/Lyon…
-// Si aucun deal vérifié ne part du marché, on prend le palmarès du marché ; sinon rien (pas de post forcé).
+// Si aucun deal vérifié ne part du marché, on prend le palmarès du marché : d'abord une entrée jamais postée
+// (ou postée il y a plus de 60 jours), sinon (v8.1) la rotation — l'entrée postée le plus anciennement, à condition
+// qu'elle date de plus de PAL_MIN_GAP_DAYS (7 jours : avec 4 entrées et 2 créneaux par semaine, l'écart réel est ~2 semaines). Constaté le 2 nov. 2026 : 4 entrées de palmarès, toutes postées en 8 jours,
+// aucun deal vérifié au départ de France → le Reel ne trouvait plus rien et le créneau passait à vide.
+const PAL_FRESH_DAYS = 60, PAL_MIN_GAP_DAYS = 7;
 async function pickDeal(state, m) {
   const site = (m && m.site) || SITE;
   const origins = new Set((m && m.origins) || []);
@@ -90,9 +94,12 @@ async function pickDeal(state, m) {
   const soon = new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10);
   const live = (await Promise.all((j.deals || []).filter(d => fromMarket(d) && d.dep > soon).map(d => fromLiveDeal(d, site)))).filter(c => c && !posted.has(c.id));
   if (live.length) return live.sort((a, b) => (b.discount || 0) - (a.discount || 0) || a.price - b.price)[0];
-  const recent = new Set(real.filter(p => Date.now() - Date.parse(p.at) < 60 * 86400000).map(p => p.contentId));
-  const pal = (j.palmares || []).filter(fromMarket).map(p => fromPalmares(p, site)).filter(c => !recent.has(c.id));
-  if (pal.length) return pal[Math.floor(Math.random() * pal.length)];
+  const lastAt = id => real.filter(p => p.contentId === id).reduce((t, p) => Math.max(t, Date.parse(p.at) || 0), 0);
+  const all = (j.palmares || []).filter(fromMarket).map(p => fromPalmares(p, site));
+  const fresh = all.filter(c => Date.now() - lastAt(c.id) > PAL_FRESH_DAYS * 86400000);
+  if (fresh.length) return fresh[Math.floor(Math.random() * fresh.length)];
+  const rotation = all.filter(c => Date.now() - lastAt(c.id) > PAL_MIN_GAP_DAYS * 86400000).sort((a, b) => lastAt(a.id) - lastAt(b.id));
+  if (rotation.length) return Object.assign({}, rotation[0], { rotation: true });
   return null;
 }
 

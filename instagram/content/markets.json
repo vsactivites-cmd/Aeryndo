@@ -10,7 +10,13 @@
     "igUsername": "aeryndo.co",
     "tokenEnv": "IG_ACCESS_TOKEN",
     "fbTokenEnv": "FB_USER_TOKEN",
-    "reelAudio": { "title": "London Flowers", "artist": "Jeremy Black" },
+    "reelAudio": {
+      "required": true,
+      "tracks": [
+        { "type": "music", "title": "London Flowers", "artist": "Jeremy Black" },
+        { "type": "original_sound", "title": "Too Sweet (Short Cover)", "username": "themacaronsproject" }
+      ]
+    },
     "site": "https://www.aeryndo.co",
     "slots": [
       { "id": "piege", "kind": "carousel", "day": 2, "hour": 18, "minute": 30 },

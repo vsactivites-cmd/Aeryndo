@@ -4,7 +4,7 @@
 // POST /api/igtoken?key=CRON_SECRET&market=fr   { token, expiresAt } → enregistre le jeton rafraîchi
 // Le jeton Instagram « longue durée » vit 60 jours ; le robot le rafraîchit quand il reste < 15 jours
 // et dépose le nouveau ici, pour ne jamais avoir à le ressaisir dans les secrets GitHub.
-// v8 — &kind=fb : coffre de la porte Facebook { pageToken (permanent), pageId, pageName, igUserId, audio } ;
+// v8 — &kind=fb : coffre de la porte Facebook { pageToken (permanent), pageId, pageName, igUserId, audios } ;
 // le robot l'alimente lui-même à partir du secret FB_USER_TOKEN, puis n'a plus besoin de ce secret.
 // Stocké dans Upstash (clé ig:token:<marché>[:<kind>]). Jamais affiché sur le site, jamais sans la clé.
 // ============================================================
@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
       }
       if (kind) {
         if (!body.pageToken || String(body.pageToken).length < 20) return D.sendJson(res, 400, { ok: false, error: "pageToken manquant" });
-        const keep = ["pageToken", "pageId", "pageName", "igUserId", "discoveredAt", "audio"];
+        const keep = ["pageToken", "pageId", "pageName", "igUserId", "discoveredAt", "audios"];
         const v = { savedAt: new Date().toISOString() }; for (const k of keep) if (body[k] != null) v[k] = body[k];
         v.pageToken = String(v.pageToken).trim();
         await S.set(key, v);

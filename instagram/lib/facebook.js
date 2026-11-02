@@ -23,7 +23,7 @@ async function loadStore(m) {
 }
 async function saveStore(m, st) {
   const key = process.env.CRON_SECRET; if (!key) return false;
-  const body = { pageToken: st.pageToken, pageId: st.pageId, pageName: st.pageName, igUserId: st.igUserId, discoveredAt: st.discoveredAt, audio: st.audio || null };
+  const body = { pageToken: st.pageToken, pageId: st.pageId, pageName: st.pageName, igUserId: st.igUserId, discoveredAt: st.discoveredAt, audios: st.audios || {} };
   const r = await fetch(`${m.site}/api/igtoken?key=${encodeURIComponent(key)}&market=${m.id}&kind=fb`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (!r.ok) throw new Error("dépôt du jeton de Page sur Vercel refusé : HTTP " + r.status);
   return true;
@@ -69,34 +69,59 @@ async function open(m, log) {
   return { gate: "facebook", api, token: st.pageToken, target: String(m.igUserId), username: me.username, userToken, store: st, m, label: "porte Facebook, Page « " + st.pageName + " », jeton permanent" };
 }
 
-// ---------- musique du Reel : catalogue Instagram (titres autorisés pour les apps tierces) ----------
-async function findAudio(session, log) {
-  const m = session.m, want = m.reelAudio;
-  if (!want || (!want.title && !want.id)) return null;
-  if (want.id) return { id: String(want.id), title: want.title || null, artist: want.artist || null, volume: want.volume, videoVolume: want.videoVolume };
-  const cached = session.store.audio;
-  if (cached && cached.id && norm(cached.wantTitle) === norm(want.title) && Date.now() - Date.parse(cached.at || 0) < 90 * 86400000) {
-    return Object.assign({}, cached, { volume: want.volume, videoVolume: want.videoVolume });
-  }
+// ---------- musiques du Reel : catalogue Instagram (titres autorisés pour les apps tierces) ----------
+// markets.json → reelAudio : { required, tracks: [ { type: "music"|"original_sound", title, artist|username, id?, volume?, videoVolume? } ] }
+// (l'ancienne forme { title, artist } reste acceptée). `required: true` = jamais de Reel sans musique (décision du 2 nov. 2026).
+function wanted(m) {
+  const ra = m.reelAudio;
+  if (!ra) return { required: false, tracks: [] };
+  const tracks = (Array.isArray(ra.tracks) ? ra.tracks : ra.title || ra.id ? [ra] : []).filter(t => t && (t.title || t.id)).map(t => Object.assign({ type: t.type || "music" }, t));
+  return { required: ra.required !== false && tracks.length > 0, tracks };
+}
+
+// Cherche UNE piste dans le catalogue (jeton de Page puis jeton utilisateur) ; null si absente.
+async function lookup(session, want, log) {
   const tokens = [session.token, session.userToken].filter(Boolean);
   let lastErr = null;
   for (const tk of tokens) {
     try {
-      const j = await api.call("GET", `${api.G}/ig_audio?${q({ audio_type: "music", search_query: want.title, user_id: session.target, access_token: tk })}`);
+      const j = await api.call("GET", `${api.G}/ig_audio?${q({ audio_type: want.type, search_query: want.title, user_id: session.target, access_token: tk })}`);
       const list = j.audio || j.data || [];
-      log("catalogue (" + list.length + ") : " + (list.slice(0, 8).map(a => a.title + " — " + (a.display_artist || "?") + " [" + (a.audio_id || a.id) + "]").join(" · ") || "rien"));
-      const byBoth = list.find(a => norm(a.title).includes(norm(want.title)) && (!want.artist || norm(a.display_artist).includes(norm(want.artist))));
-      const hit = byBoth || (want.artist ? null : list.find(a => norm(a.title).includes(norm(want.title))));
-      if (!hit) { log("« " + want.title + (want.artist ? " » de " + want.artist : " »") + " n'est pas dans le catalogue autorisé — Reel publié sans musique"); return null; }
-      const audio = { id: String(hit.audio_id || hit.id), title: hit.title, artist: hit.display_artist || null, durationMs: hit.duration_in_ms || null, wantTitle: want.title, at: new Date().toISOString() };
-      session.store.audio = audio;
-      try { await saveStore(m, session.store); } catch (e) { log("mémorisation de la musique impossible : " + e.message); }
-      log("musique : « " + audio.title + " » — " + audio.artist + " (" + audio.id + ")");
-      return Object.assign({}, audio, { volume: want.volume, videoVolume: want.videoVolume });
+      const who = a => a.display_artist || a.ig_username || a.username || "?";
+      // trace lisible dans state.json (branche media) : ce que le catalogue propose, pour choisir un autre titre sans lire les journaux GitHub
+      (session.catalogue = session.catalogue || []).push({ type: want.type, query: want.title, at: new Date().toISOString(), results: list.slice(0, 10).map(a => ({ id: String(a.audio_id || a.id), title: a.title, by: who(a) })) });
+      log("catalogue " + want.type + " « " + want.title + " » (" + list.length + ") : " + (list.slice(0, 8).map(a => a.title + " — " + who(a) + " [" + (a.audio_id || a.id) + "]").join(" · ") || "rien"));
+      const owner = want.type === "music" ? want.artist : want.username;
+      const byBoth = list.find(a => norm(a.title).includes(norm(want.title)) && (!owner || norm(who(a)).includes(norm(owner))));
+      const hit = byBoth || (owner ? null : list.find(a => norm(a.title).includes(norm(want.title))));
+      if (!hit) return null;
+      return { id: String(hit.audio_id || hit.id), title: hit.title, artist: who(hit), type: want.type, durationMs: hit.duration_in_ms || null, wantKey: norm(want.type + "|" + want.title + "|" + (owner || "")), at: new Date().toISOString() };
     } catch (e) { lastErr = e; }
   }
-  log("recherche de musique impossible (" + (lastErr && lastErr.message) + ") — Reel publié sans musique");
-  return null;
+  throw lastErr || new Error("recherche impossible");
 }
 
-module.exports = { open, findAudio, discoverPage, api };
+// Toutes les pistes demandées, dans l'ordre, résolues en identifiants (mémoire 90 jours dans le coffre Vercel).
+async function findAudio(session, log) {
+  const m = session.m, want = wanted(m);
+  if (!want.tracks.length) return [];
+  const st = session.store; st.audios = st.audios || {};
+  const out = []; let changed = false;
+  for (const t of want.tracks) {
+    if (t.id) { out.push({ id: String(t.id), title: t.title || null, artist: t.artist || t.username || null, volume: t.volume, videoVolume: t.videoVolume }); continue; }
+    const key = norm(t.type + "|" + t.title + "|" + (t.type === "music" ? t.artist || "" : t.username || ""));
+    let a = st.audios[key];
+    if (!(a && a.id && Date.now() - Date.parse(a.at || 0) < 90 * 86400000)) {
+      try { a = await lookup(session, t, log); }
+      catch (e) { log("recherche de « " + t.title + " » impossible (" + e.message + ")"); a = null; }
+      if (a) { st.audios[key] = a; changed = true; }
+      else log("« " + t.title + " » (" + (t.artist || t.username || t.type) + ") n'est pas dans le catalogue autorisé");
+    }
+    if (a) out.push(Object.assign({}, a, { volume: t.volume, videoVolume: t.videoVolume }));
+  }
+  if (changed) { try { await saveStore(m, st); } catch (e) { log("mémorisation des musiques impossible : " + e.message); } }
+  log(out.length ? "musiques prêtes : " + out.map(a => "« " + a.title + " » — " + a.artist + " (" + a.id + ")").join(" → ") : "aucune musique disponible");
+  return out;
+}
+
+module.exports = { open, findAudio, wanted, discoverPage, api };
