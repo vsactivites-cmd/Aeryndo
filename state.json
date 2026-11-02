@@ -527,6 +527,13 @@
       "slot": "reel",
       "dry": false,
       "error": "photo de destination indisponible : https://www.aeryndo.co/api/photo?city=HKG — HTTP 400"
+    },
+    {
+      "at": "2026-11-02T16:53:05.070Z",
+      "market": "fr",
+      "slot": "reel",
+      "dry": false,
+      "error": "aucune des musiques demandées n'est disponible (London Flowers, Too Sweet (Short Cover)) — Reel NON publié (reelAudio.required)"
     }
   ],
   "drafts": [
