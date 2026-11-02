@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // ============================================================
-// AERYNDO — robot Instagram (v7)
+// AERYNDO — robot Instagram (v8)
 // Lancé par GitHub Actions : à l'heure exacte via /api/igtrigger (cron-job.org → workflow_dispatch avec le
 // créneau forcé), et toutes les heures en filet de sécurité (cron GitHub, irrégulier). Pour chaque marché
 // (content/markets.json) dû maintenant — ou forcé par --slot :
-//   0. pré-vol (hors brouillon) : jeton Instagram valide et appartenant bien au compte du marché
+//   0. pré-vol (hors brouillon) : porte Facebook (jeton de Page permanent + musique des Reels, v8) si elle est
+//      configurée, sinon porte Instagram historique ; dans les deux cas le compte est vérifié avant tout rendu
 //   1. choix du contenu (deal vérifié au départ du marché → palmarès → piège → story du post du jour)
 //   2. rendu des visuels (Playwright) : carrousel 3 × 1080×1350, story 1080×1920, Reel MP4 14 s
 //   3. push des médias sur la branche `media` (URL publiques raw.githubusercontent.com), sonde HEAD avant Meta
@@ -22,6 +23,7 @@ const C = require("./lib/content.js");
 const R = require("./lib/render.js");
 const K = require("./lib/caption.js");
 const P = require("./lib/publish.js");
+const FB = require("./lib/facebook.js");
 
 const args = process.argv.slice(2);
 const opt = n => { const i = args.indexOf("--" + n); return i >= 0 ? args[i + 1] : null; };
@@ -61,15 +63,15 @@ async function runOne(m, slot, state) {
   const tag = `[${m.id}/${slot.id}]`;
   if (state.posted.some(p => p.market === m.id && p.slot === slot.id && p.date === slot.date)) { log(tag, "déjà publié aujourd'hui, rien à faire"); return; }
 
-  // 0. pré-vol : jeton et compte, AVANT de passer 2 minutes à rendre des visuels
-  let tk = null, igTarget = String(m.igUserId);
+  // 0. pré-vol : porte, jeton et compte, AVANT de passer 2 minutes à rendre des visuels
+  let session = null;
   if (!DRY) {
-    tk = await P.refreshIfNeeded(m, await P.loadToken(m), (...a) => log(tag, ...a));
-    const me = await P.me(tk.token);
-    const expected = String(m.igUserId);
-    if (me.id !== expected && me.userId !== expected && me.username !== (m.igUsername || "")) throw new Error(`le jeton appartient au compte @${me.username || "?"} (${me.userId || me.id}), pas au compte attendu ${expected}`);
-    igTarget = me.target;
-    log(tag, "compte vérifié : @" + me.username + " (" + igTarget + ", jeton " + tk.from + (tk.expiresAt ? ", valable jusqu'au " + tk.expiresAt.slice(0, 10) : "") + ")");
+    const say = (...a) => log(tag, ...a);
+    try { session = await FB.open(m, say); }
+    catch (e) { say("porte Facebook indisponible (" + e.message + ") — repli sur la porte Instagram"); }
+    if (!session) session = await P.openInstagram(m, say);
+    log(tag, "compte vérifié : @" + session.username + " (" + session.target + ", " + session.label + ")");
+    if (slot.kind === "reel" && session.gate === "facebook") session.audio = await FB.findAudio(session, say);
   }
 
   // 1. contenu
@@ -93,15 +95,16 @@ async function runOne(m, slot, state) {
   // 4. publication
   let result = { dry: DRY };
   if (!DRY) {
-    if (slot.kind === "carousel") result = await P.publishCarousel(igTarget, tk.token, urls, caption);
-    else if (slot.kind === "reel") result = await P.publishReel(igTarget, tk.token, urls.video, urls.cover, caption);
-    else if (slot.kind === "story") result = await P.publishStory(igTarget, tk.token, urls[0]);
-    result.permalink = await P.permalink(result.id, tk.token);
-    log(tag, "PUBLIÉ :", result.permalink || result.id);
+    const A = session.api, tk = session.token, igTarget = session.target;
+    if (slot.kind === "carousel") result = await A.publishCarousel(igTarget, tk, urls, caption);
+    else if (slot.kind === "reel") result = await A.publishReel(igTarget, tk, urls.video, urls.cover, caption, session.audio, (...a) => log(tag, ...a));
+    else if (slot.kind === "story") result = await A.publishStory(igTarget, tk, urls[0]);
+    result.permalink = await A.permalink(result.id, tk);
+    log(tag, "PUBLIÉ :", result.permalink || result.id, result.audio ? "— musique : " + result.audio.title : (slot.kind === "reel" ? "— sans musique" : ""));
   } else log(tag, "MODE BROUILLON — rien n'a été publié sur Instagram (IG_DRY_RUN=" + JSON.stringify(process.env.IG_DRY_RUN || "") + ")");
 
   // 5. état
-  const entry = Object.assign({}, c, { slot: slot.id, market: m.id, date: slot.date, contentId: c.id || c.contentId, at: new Date().toISOString(), igId: result.id || null, permalink: result.permalink || null, dry: DRY, dir: path.relative(MEDIA_DIR, outDir) });
+  const entry = Object.assign({}, c, { slot: slot.id, market: m.id, date: slot.date, contentId: c.id || c.contentId, at: new Date().toISOString(), igId: result.id || null, permalink: result.permalink || null, dry: DRY, gate: session ? session.gate : null, audio: result.audio || null, audioError: result.audioError || null, dir: path.relative(MEDIA_DIR, outDir) });
   if (DRY) state.drafts = state.drafts.concat([entry]).slice(-60);
   else state.posted = state.posted.concat([entry]).slice(-400);
 }
