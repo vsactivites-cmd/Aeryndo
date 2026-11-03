@@ -28,7 +28,7 @@ const radar = require("./radar.js");
 const M = require("./_mail.js");
 
 const ROUTES_PER_RUN = Number(process.env.SCAN_ROUTES_PER_RUN || 40);
-const DAILY_CAP = Number(process.env.VERIFY_DAILY_CAP || process.env.AMADEUS_DAILY_CAP || V.DEFAULT_DAILY_CAP); // appels de vérification / jour (SerpApi gratuit : 250/mois → 8/jour)
+const DAILY_CAP = Number(process.env.VERIFY_DAILY_CAP || process.env.AMADEUS_DAILY_CAP || V.DEFAULT_DAILY_CAP); // appels de vérification / jour (SerpApi Starter : 1 000/mois → 32/jour)
 const EXPLORE_ORIGINS = ["PAR", "NCE", "LYS", "LON", "AMS", "BRU", "FRA", "MUC", "ZRH", "GVA", "MIL", "ROM", "MAD", "BCN", "LIS", "CPH", "STO", "DUB", "VIE", "IST"];
 const EXPLORE_MARKETS = (process.env.EXPLORE_MARKETS || "fr,de,gb,es,it,tr,ae").split(",").map(x => x.trim()).filter(Boolean);
 const VEILLE_PER_RUN = Number(process.env.VEILLE_PER_RUN || 2);   // annonces des sites de deals vérifiées par passage (prioritaires)

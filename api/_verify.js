@@ -14,8 +14,9 @@ const A = require("./_amadeus.js");
 const provider = G.ENABLED ? "google" : A.ENABLED ? "amadeus" : null;
 const impl = provider === "google" ? G : provider === "amadeus" ? A : null;
 
-// Budget quotidien par défaut : 250/mois chez SerpApi → 8 par jour ; Amadeus ≈ 2 000/mois → 60.
-const DEFAULT_DAILY_CAP = provider === "google" ? 8 : 60;
+// Budget quotidien par défaut : forfait SerpApi Starter (décision du 3 nov. 2026) 1 000/mois → 32 par jour
+// (≈ 990 sur 31 jours, marge pour les mois longs) ; Amadeus ≈ 2 000/mois → 60. Surcharge : VERIFY_DAILY_CAP (Vercel).
+const DEFAULT_DAILY_CAP = provider === "google" ? 32 : 60;
 
 module.exports = {
   ENABLED: Boolean(impl),
