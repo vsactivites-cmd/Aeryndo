@@ -39,7 +39,10 @@ const REVERIFY_HOURS = Number(process.env.SCAN_REVERIFY_HOURS || (V.NAME === "go
 const DEAL_TTL_HOURS = 36;       // sans re-contrôle réussi, il disparaît (16 h de grâce après REVERIFY_HOURS : le budget du jour peut être épuisé)
 // Budget réservé : les NOUVELLES vérifications (veille + découverte) ne peuvent pas consommer tout le budget du
 // jour ; le reste sert à re-contrôler les deals affichés, qui sinon expireraient faute d'appels (v7).
-const NEW_DAILY_CAP = Number(process.env.VERIFY_NEW_DAILY_CAP || Math.max(2, DAILY_CAP - 5));
+// v8.2 (3 nov. 2026) : la réserve est proportionnée aux deals réellement affichés (un re-contrôle par deal et par
+// jour) — constaté : 0 deal affiché et 3 nouveautés/jour seulement, 5 appels sur 8 perdus chaque jour.
+const NEW_CAP_FLOOR = Number(process.env.VERIFY_NEW_DAILY_CAP || Math.max(2, DAILY_CAP - 5));
+const newDailyCap = dealsCount => Math.max(NEW_CAP_FLOOR, DAILY_CAP - Math.min(5, dealsCount));
 const RETRY_AFTER_ERROR_MS = 3 * 3600 * 1000; // erreur du vérificateur : on réessaie dans 3 h, pas au passage suivant
 const MAX_DEALS = 12;
 const RUN_BUDGET_MS = 45000;
@@ -104,14 +107,15 @@ module.exports = async (req, res) => {
     const spend = async () => { used += 1; await S.set(budgetKey, used, 48 * 3600); };
     const newKey = "verify:new:" + day;
     let usedNew = Number(await S.get(newKey)) || 0;
-    const canVerifyNew = () => canVerify() && usedNew < NEW_DAILY_CAP;
-    const spendNew = async () => { usedNew += 1; await S.set(newKey, usedNew, 48 * 3600); await spend(); };
 
     let deals = (await S.get("deals:list")) || [];
     const today = D.todayISO();
     const soon = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10);
     // ménage : départ passé ou trop proche (le site cache déjà les départs à moins de 3 jours : inutile de les re-payer)
     deals = deals.filter(d => d.dep > soon);
+    const NEW_DAILY_CAP = newDailyCap(deals.length); // réserve = un re-contrôle par deal affiché (5 au plus)
+    const canVerifyNew = () => canVerify() && usedNew < NEW_DAILY_CAP;
+    const spendNew = async () => { usedNew += 1; await S.set(newKey, usedNew, 48 * 3600); await spend(); };
 
     // ---------- 2. re-vérification des deals affichés ----------
     deals.sort((a, b) => Date.parse(a.verifiedAt) - Date.parse(b.verifiedAt));
