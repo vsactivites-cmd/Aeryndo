@@ -51,7 +51,7 @@ const CABIN_RE = /\b(business|affaires)\b/i;
 const EXCLUDE_RE = /premium\s*(economy|eco|comfort|économique)|\beco(nomy|nomique|nómica)?\b|miles?\b|points?\b|flying\s*blue|privilege\s*club|skywards|miles\s*&\s*smiles|upgrade|surclassement|hôtel|hotel|voiture|car\s+rental|one[-\s]?way|aller\s+simple/i;
 
 async function get(url) {
-  const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 9000);
+  const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 16000); // pages lourdes : 16 s (lecture quotidienne, en parallèle)
   try {
     const resp = await fetch(url, { headers: { "User-Agent": UA, "Accept": "text/html,application/xhtml+xml", "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.6" }, signal: ctrl.signal, redirect: "follow" });
     if (!resp.ok) return { html: null, status: resp.status };
