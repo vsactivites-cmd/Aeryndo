@@ -26,7 +26,16 @@ const SOURCES = [
   { id: "travel-dealz-all", name: "Travel-Dealz", lang: "en", kind: "rss", url: "https://travel-dealz.com/deal/feed/", business: false },
   { id: "dealabs-vols", name: "Dealabs", lang: "fr", kind: "rss", url: "https://www.dealabs.com/rss/groupe/billets-d-avion", business: false },
   { id: "mydealz-fluege", name: "mydealz", lang: "de", kind: "rss", url: "https://www.mydealz.de/rss/gruppe/fluege", business: false },
-  { id: "frankfurtflyer", name: "Frankfurtflyer", lang: "de", kind: "rss", url: "https://frankfurtflyer.de/tag/business-class/feed/", business: true }
+  { id: "frankfurtflyer", name: "Frankfurtflyer", lang: "de", kind: "rss", url: "https://frankfurtflyer.de/tag/business-class/feed/", business: true },
+  // v9 (4 nov. 2026) : 9 → 16 sources. Les flux généralistes sont filtrés par CLASS_RE (business:false).
+  { id: "secret-flying", name: "Secret Flying", lang: "en", kind: "rss", url: "https://www.secretflying.com/feed/", business: false },
+  { id: "flyertalk-pfd", name: "FlyerTalk", lang: "en", kind: "rss", url: "https://www.flyertalk.com/forum/external.php?type=RSS2&forumids=372", business: true },
+  { id: "voyages-pirates", name: "Voyages Pirates", lang: "fr", kind: "rss", url: "https://www.voyagespirates.fr/feed/", business: false },
+  { id: "insideflyer-uk", name: "InsideFlyer UK", lang: "en", kind: "rss", url: "https://www.insideflyer.co.uk/feed/", business: false },
+  { id: "insideflyer-de", name: "InsideFlyer DE", lang: "de", kind: "rss", url: "https://www.insideflyer.de/feed/", business: false },
+  { id: "loyaltylobby", name: "LoyaltyLobby", lang: "en", kind: "rss", url: "https://loyaltylobby.com/feed/", business: false },
+  { id: "fly4free-premium", name: "Fly4free", lang: "en", kind: "rss", url: "https://www.fly4free.com/flight-deals/premium-class/feed/", business: true,
+    fallback: "https://www.fly4free.com/flight-deals/premium-class/" }
 ];
 
 // ---------- lecture ----------
@@ -219,9 +228,10 @@ async function refresh(force) {
   const seenAll = (await S.get("veille:seen")) || {};
   const out = { at: new Date().toISOString(), sources: {}, candidates: [], skipped: [] };
   const cutoff = Date.now() - 21 * 24 * 3600000;
-  for (const src of SOURCES) {
-    let items = [];
-    try { items = await readSource(src); } catch (e) { out.sources[src.id] = "ERR " + (e.message || e); continue; }
+  // v9 : les 16 sources sont lues EN PARALLÈLE (en série, 16 × 9 s dépassaient le budget-temps du passage)
+  const reads = await Promise.all(SOURCES.map(src => readSource(src).then(items => ({ src, items }), e => ({ src, items: [], error: "ERR " + (e && e.message || e) }))));
+  for (const { src, items, error } of reads) {
+    if (error) { out.sources[src.id] = error; continue; }
     out.sources[src.id] = items.length;
     for (const it of items) {
       if (it.pub && it.pub < cutoff) continue;

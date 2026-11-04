@@ -32,7 +32,32 @@ const ROUTES = [
   { o: "PAR", d: "HKG", city: "Hong Kong", country: "Hong Kong",         normal: 3100 },
   { o: "PAR", d: "LAX", city: "Los Angeles", country: "États-Unis",      normal: 3000 },
   { o: "PAR", d: "DEL", city: "New Delhi", country: "Inde",              normal: 2600 },
-  { o: "NCE", d: "NYC", city: "New York",  country: "États-Unis (dép. Nice)", normal: 2800 }
+  // v9 (4 nov. 2026) : 10 → 30 routes, départs PAR, NCE, LYS, GVA, BRU (le marché français du robot Instagram)
+  { o: "PAR", d: "MRU", city: "Île Maurice", country: "Maurice",         normal: 3500 },
+  { o: "PAR", d: "DPS", city: "Bali",      country: "Indonésie",         normal: 3400 },
+  { o: "PAR", d: "MIA", city: "Miami",     country: "États-Unis",        normal: 2900 },
+  { o: "PAR", d: "JNB", city: "Johannesburg", country: "Afrique du Sud", normal: 3000 },
+  { o: "PAR", d: "SEL", city: "Séoul",     country: "Corée du Sud",      normal: 3100 },
+  { o: "PAR", d: "BOM", city: "Mumbai",    country: "Inde",              normal: 2600 },
+  { o: "PAR", d: "HKT", city: "Phuket",    country: "Thaïlande",         normal: 3000 },
+  { o: "NCE", d: "NYC", city: "New York",  country: "États-Unis (dép. Nice)", normal: 2800 },
+  { o: "NCE", d: "DXB", city: "Dubaï",     country: "Émirats arabes unis (dép. Nice)", normal: 2500 },
+  { o: "NCE", d: "BKK", city: "Bangkok",   country: "Thaïlande (dép. Nice)", normal: 2900 },
+  { o: "NCE", d: "MLE", city: "Maldives",  country: "Maldives (dép. Nice)", normal: 3500 },
+  { o: "NCE", d: "TYO", city: "Tokyo",     country: "Japon (dép. Nice)",  normal: 3300 },
+  { o: "LYS", d: "NYC", city: "New York",  country: "États-Unis (dép. Lyon)", normal: 2800 },
+  { o: "LYS", d: "DXB", city: "Dubaï",     country: "Émirats arabes unis (dép. Lyon)", normal: 2500 },
+  { o: "LYS", d: "BKK", city: "Bangkok",   country: "Thaïlande (dép. Lyon)", normal: 2900 },
+  { o: "LYS", d: "MRU", city: "Île Maurice", country: "Maurice (dép. Lyon)", normal: 3500 },
+  { o: "GVA", d: "NYC", city: "New York",  country: "États-Unis (dép. Genève)", normal: 2800 },
+  { o: "GVA", d: "DXB", city: "Dubaï",     country: "Émirats arabes unis (dép. Genève)", normal: 2500 },
+  { o: "GVA", d: "BKK", city: "Bangkok",   country: "Thaïlande (dép. Genève)", normal: 2900 },
+  { o: "GVA", d: "SIN", city: "Singapour", country: "Singapour (dép. Genève)", normal: 3100 },
+  { o: "GVA", d: "MLE", city: "Maldives",  country: "Maldives (dép. Genève)", normal: 3500 },
+  { o: "BRU", d: "NYC", city: "New York",  country: "États-Unis (dép. Bruxelles)", normal: 2700 },
+  { o: "BRU", d: "DXB", city: "Dubaï",     country: "Émirats arabes unis (dép. Bruxelles)", normal: 2400 },
+  { o: "BRU", d: "BKK", city: "Bangkok",   country: "Thaïlande (dép. Bruxelles)", normal: 2800 },
+  { o: "BRU", d: "TYO", city: "Tokyo",     country: "Japon (dép. Bruxelles)",  normal: 3200 }
 ];
 
 // Nombre minimal de tarifs en cache pour qu'une médiane (et donc une remise) soit affichée.

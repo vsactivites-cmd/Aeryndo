@@ -4,14 +4,20 @@
 // GET /api/veille?key=CRON_SECRET&force=1  → relit les sources maintenant
 // Ne vérifie rien et ne publie rien : la vérification Google Flights se fait dans /api/scan.
 // ============================================================
+// GET /api/veille?key=CRON_SECRET&promos=1 → les pages « offres » des compagnies (v9) au lieu des sites de deals
 const D = require("./_data.js");
 const VE = require("./_veille.js");
+const PR = require("./_promos.js");
 
 module.exports = async (req, res) => {
   const q = req.query || {};
   const secret = (process.env.CRON_SECRET || "").trim();
   if (secret && String(q.key || "").trim() !== secret) return D.sendJson(res, 401, { ok: false, error: "clé requise" });
   try {
+    if (q.promos === "1") {
+      const out = await PR.refresh(q.force === "1");
+      return D.sendJson(res, 200, Object.assign({ ok: true, pages: PR.PAGES.map(p => p.id + " " + p.url) }, out));
+    }
     const out = await VE.refresh(q.force === "1");
     return D.sendJson(res, 200, Object.assign({ ok: true, sourcesList: VE.SOURCES.map(s => s.id + " " + s.url) }, out));
   } catch (e) {
