@@ -28,14 +28,21 @@ module.exports = async (req, res) => {
     id: d.id, from: d.from, to: d.to, dep: d.dep, ret: d.ret,
     price: d.price, prevPrice: d.prevPrice, changedAt: d.changedAt,
     median: d.median, discount: d.discount, distance: d.distance, perKm: d.perKm, dates: d.dates,
+    // v9 : économie en euros (contre la médiane mesurée de la route, jamais contre un chiffre inventé),
+    // date limite d'émission quand la source l'annonce, temps de vol, source.
+    savings: d.median && d.median > d.price ? Math.round(d.median - d.price) : null,
+    deadline: d.source && d.source.deadline ? d.source.deadline : null,
+    flightMinutes: d.flightMinutes || null,
+    source: d.source ? { name: d.source.name, announced: d.source.announced } : null,
     carrier: d.carrier, carrierName: d.carrierName, carriers: d.carriers, aircraft: d.aircraft, stops: d.stops,
     seat: d.seat, seats: d.seats, reasons: d.reasons,
     foundAt: d.foundAt, verifiedAt: d.verifiedAt, link: d.link, airlines: D.airlinesFor(d.from, d.to),
     photo: "/api/photo?city=" + D.cityCode(d.to)
   }));
 
-  if (q.history === "1") {
-    for (const d of deals) d.history = (await S.get("deals:history:" + d.id)) || [];
+  // v9 : l'historique de prix est servi d'office (mini-courbe sur la carte) ; ?history=0 pour l'omettre
+  if (q.history !== "0") {
+    await Promise.all(deals.map(async d => { d.history = (await S.get("deals:history:" + d.id).catch(() => null)) || []; }));
   }
 
   D.sendJson(res, 200, {
@@ -46,7 +53,7 @@ module.exports = async (req, res) => {
     scan: last ? { at: last.at, verifyUsed: last.verifyUsed, cap: last.cap } : null,
     count: deals.length,
     deals,
-    palmares: P.list(),
+    palmares: await P.list(),
     marker: D.MARKER
   }, 120);
 };

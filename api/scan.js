@@ -23,6 +23,8 @@ const D = require("./_data.js");
 const C = require("./_charte.js");
 const V = require("./_verify.js");
 const VE = require("./_veille.js");
+const PR = require("./_promos.js");
+const P = require("./_palmares.js");
 const S = require("./_store.js");
 const radar = require("./radar.js");
 const M = require("./_mail.js");
@@ -112,6 +114,9 @@ module.exports = async (req, res) => {
     const today = D.todayISO();
     const soon = new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10);
     // ménage : départ passé ou trop proche (le site cache déjà les départs à moins de 3 jours : inutile de les re-payer)
+    // v9 : tout deal qui quitte le site entre au palmarès automatique (« trouvé à X le …, parti en N jours »)
+    const retire = async (d, reason) => { try { await P.archive(d, reason); log.archived = (log.archived || 0) + 1; } catch (e) { log.errors.push("palmarès: " + (e && e.message || e)); } };
+    for (const d of deals) if (!(d.dep > soon)) await retire(d, "départ imminent");
     deals = deals.filter(d => d.dep > soon);
     const NEW_DAILY_CAP = newDailyCap(deals.length); // réserve = un re-contrôle par deal affiché (5 au plus)
     const canVerifyNew = () => canVerify() && usedNew < NEW_DAILY_CAP;
@@ -144,6 +149,7 @@ module.exports = async (req, res) => {
       }
     }
     // le retrait sur l'âge ne vient qu'APRÈS avoir eu la chance de re-contrôler
+    for (const d of deals) if (d._drop) await retire(d, d._drop); else if (hoursSince(d.verifiedAt) >= DEAL_TTL_HOURS) await retire(d, "preuve de plus de " + DEAL_TTL_HOURS + " h");
     deals = deals.filter(d => !d._drop && hoursSince(d.verifiedAt) < DEAL_TTL_HOURS);
     // on persiste tout de suite : si la fonction est tuée plus loin, le travail (et le budget dépensé) n'est pas perdu
     await S.set("deals:list", deals, 7 * 24 * 3600);
@@ -154,11 +160,14 @@ module.exports = async (req, res) => {
     // période annoncée) et on demande à Google Flights. Même charte, même verdict que pour le cache.
     try {
       const veille = Date.now() < deadline - 20000 ? await VE.refresh(q.veille === "1") : ((await S.get("veille:last")) || { sources: {}, candidates: [] });
+      // v9 : les pages « offres » des compagnies (une lecture par jour) alimentent la même file
+      let promos = { sources: {}, candidates: [] };
+      try { promos = Date.now() < deadline - 25000 ? await PR.refresh(q.promos === "1") : ((await S.get("promos:last")) || promos); } catch (e) { log.errors.push("promos: " + (e && e.message || e)); }
       const done = (await S.get("veille:done")) || {};
       const shownIds = new Set(deals.map(d => d.id));
-      const vlog = { sources: veille.sources, candidates: veille.candidates.length, tried: 0, verified: 0, rejected: [] };
+      const vlog = { sources: veille.sources, promos: promos.sources, candidates: veille.candidates.length + promos.candidates.length, tried: 0, verified: 0, rejected: [] };
       const queue = [];
-      for (const c of veille.candidates) for (const o of c.origins.slice(0, c.generic ? 3 : 1)) {
+      for (const c of veille.candidates.concat(promos.candidates)) for (const o of c.origins.slice(0, c.generic ? 3 : 1)) {
         const id = o + "-" + c.to, key = id + "|" + c.price;
         if (o === c.to || shownIds.has(id) || (done[key] && done[key] > Date.now())) continue;
         queue.push({ id, key, from: o, to: c.to, announced: c.price, c });
@@ -339,6 +348,7 @@ function judge(c, r) {
       carrier: r.carrier, carrierName: air.name || r.carrier, carriers: r.carriers,
       aircraft: [...new Set(r.segments.map(s => s.aircraft).filter(Boolean))],
       stops: r.stops, seat, seats: r.seats,
+      flightMinutes: r.segments.reduce((t, s) => t + C.isoMinutes(s.duration), 0) || null, // temps de vol à l'aller (hors escales)
       perKm: perKm !== null ? Math.round(perKm * 1000) / 1000 : null,
       discount: discount !== null ? Math.round(discount * 100) : null,
       link: D.aviasalesLink({ from: c.from, to: c.to, dep: c.dep, ret: c.ret, pax: 1, sub: D.SUB.deal })
