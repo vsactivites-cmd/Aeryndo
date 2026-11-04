@@ -833,6 +833,54 @@
       "permalink": null,
       "dry": true,
       "dir": "posts/20261029-fr-piege"
+    },
+    {
+      "kind": "deal",
+      "id": "deal-PAR-KUL-2198",
+      "live": true,
+      "from": "PAR",
+      "to": "KUL",
+      "city": {
+        "fr": "Kuala Lumpur",
+        "en": "Kuala Lumpur"
+      },
+      "cityCode": "KUL",
+      "price": 2198,
+      "was": null,
+      "discount": null,
+      "carrier": "Etihad",
+      "aircraft": "A350 · 787",
+      "stops": {
+        "fr": "1 escale",
+        "en": "1 stop"
+      },
+      "seat": {
+        "fr": "Lit à plat sur AUH → KUL (787) et sur les correspondances",
+        "en": "Fully flat bed on the long-haul legs (AUH → KUL)"
+      },
+      "seatKind": "flat",
+      "dep": "2026-11-17",
+      "ret": "2026-11-30",
+      "verifiedAt": "2026-11-04T00:31:10.615Z",
+      "link": "https://www.aviasales.fr/search/PAR1711KUL3011c1?marker=745122.site-deal&currency=eur&locale=fr",
+      "photo": "https://www.aeryndo.co/api/photo?city=KUL",
+      "kicker": {
+        "fr": "Deal vérifié · 4 nov.",
+        "en": "Verified deal · 4 Nov"
+      },
+      "source": null,
+      "slot": "reel",
+      "market": "fr",
+      "date": "2026-11-04",
+      "contentId": "deal-PAR-KUL-2198",
+      "at": "2026-11-04T11:54:27.881Z",
+      "igId": null,
+      "permalink": null,
+      "dry": true,
+      "gate": null,
+      "audio": null,
+      "audioError": null,
+      "dir": "posts/20261104-fr-reel"
     }
   ]
 }
