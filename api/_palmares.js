@@ -24,7 +24,7 @@ const LIST = [
     carrier: "AI", carrierName: "Air India", aircraft: ["777", "321"], stops: 1,
     price: 2285, was: null, foundAt: "2026-10-13", goneAt: null, dep: "2027-01-07", ret: "2027-01-16",
     seat: { kind: "partial", fr: "Lit à plat sur CDG → DEL (777) ; siège classique sur le tronçon court.", en: "Flat bed on the long-haul leg (CDG → DEL, 777); standard seat on the short hop." },
-    note: { fr: "Via Delhi. Vérifié sur Google Flights le 13 oct. 2026, publié sur Instagram le jour même.", en: "Via Delhi. Verified on Google Flights on 13 Oct 2026, posted on Instagram the same day." }
+    note: { fr: "Via Delhi. Vérifié sur Google Flights le 13 oct. 2026, publié sur Instagram le jour même.", en: "Via Delhi. Verified on Google Flights on 13 Oct 2026, posted on Instagram the same day.", es: "Vía Delhi. Verificado en Google Flights el 13 oct. 2026, publicado en Instagram el mismo día.", de: "Via Delhi. Am 13. Okt. 2026 auf Google Flights geprüft, am selben Tag auf Instagram veröffentlicht.", it: "Via Delhi. Verificato su Google Flights il 13 ott. 2026, pubblicato su Instagram lo stesso giorno.", pt: "Via Deli. Verificado no Google Flights a 13 out. 2026, publicado no Instagram no mesmo dia.", ru: "Через Дели. Проверено в Google Flights 13 окт. 2026 г., опубликовано в Instagram в тот же день.", zh: "经德里中转。2026 年 10 月 13 日在 Google Flights 核实，当天发布于 Instagram。", ar: "عبر دلهي. تم التحقق على Google Flights في 13 أكتوبر 2026، ونُشر على Instagram في اليوم نفسه.", ja: "デリー経由。2026年10月13日に Google Flights で確認、同日 Instagram に投稿。", ko: "델리 경유. 2026년 10월 13일 Google Flights에서 검증, 같은 날 Instagram에 게시.", hi: "दिल्ली होकर। 13 अक्टू. 2026 को Google Flights पर सत्यापित, उसी दिन Instagram पर प्रकाशित।" }
   },
   {
     id: "beond-cdg-mle-2026-08", from: "CDG", to: "MLE", cityCode: "MLE",
@@ -32,7 +32,7 @@ const LIST = [
     carrier: "B4", carrierName: "Beond", aircraft: ["319"], stops: 0,
     price: 3198, was: 4982, foundAt: "2026-08-21", dep: "2027-02-07", ret: "2027-02-20",
     seat: { kind: "flat", fr: "Avion 100 % Business : lit entièrement à plat sur tout le vol.", en: "All-Business aircraft: fully flat bed for the whole flight." },
-    note: { fr: "Paris → Malé en direct, cabine 100 % Business.", en: "Paris → Malé nonstop, all-Business cabin." }
+    note: { fr: "Paris → Malé en direct, cabine 100 % Business.", en: "Paris → Malé nonstop, all-Business cabin.", es: "París → Malé sin escalas, cabina 100 % Business.", de: "Paris → Malé nonstop, 100 % Business-Kabine.", it: "Parigi → Malé diretto, cabina 100 % Business.", pt: "Paris → Malé direto, cabine 100 % Business.", ru: "Париж → Мале без пересадок, салон только бизнес-класс.", zh: "巴黎 → 马累直飞，全商务舱客舱。", ar: "باريس → ماليه دون توقف، مقصورة 100٪ درجة أعمال.", ja: "パリ → マレ直行、全席ビジネスクラス。", ko: "파리 → 말레 직항, 전 좌석 비즈니스 클래스.", hi: "पेरिस → माले सीधी उड़ान, 100% बिज़नेस केबिन।" }
   },
   {
     id: "lacompagnie-ory-ewr-2026-08", from: "ORY", to: "EWR", cityCode: "NYC",
@@ -40,7 +40,7 @@ const LIST = [
     carrier: "B0", carrierName: "La Compagnie", aircraft: ["32Q"], stops: 0,
     price: 2012, was: 2422, foundAt: "2026-08-21", dep: "2026-09-25", ret: "2026-10-11",
     seat: { kind: "flat", fr: "Lit entièrement à plat, cabine 100 % Business (A321neo).", en: "Fully flat bed, all-Business cabin (A321neo)." },
-    note: { fr: "Orly → Newark en direct.", en: "Orly → Newark nonstop." }
+    note: { fr: "Orly → Newark en direct.", en: "Orly → Newark nonstop.", es: "Orly → Newark sin escalas.", de: "Orly → Newark nonstop.", it: "Orly → Newark diretto.", pt: "Orly → Newark direto.", ru: "Орли → Ньюарк без пересадок.", zh: "奥利 → 纽瓦克直飞。", ar: "أورلي → نيوارك دون توقف.", ja: "オルリー → ニューアーク直行。", ko: "오를리 → 뉴어크 직항.", hi: "ओर्ली → नेवार्क सीधी उड़ान।" }
   },
   {
     id: "etihad-cdg-hkg-2026-08", from: "CDG", to: "HKG", cityCode: "HKG",
@@ -48,7 +48,7 @@ const LIST = [
     carrier: "EY", carrierName: "Etihad", aircraft: ["388", "789"], stops: 1,
     price: 2413, was: 3388, foundAt: "2026-08-21", dep: "2026-09-25", ret: "2026-10-04",
     seat: { kind: "flat", fr: "Lit entièrement à plat sur les deux tronçons (Business Studio, A380 + 787).", en: "Fully flat bed on both legs (Business Studio, A380 + 787)." },
-    note: { fr: "Via Abu Dhabi.", en: "Via Abu Dhabi." }
+    note: { fr: "Via Abu Dhabi.", en: "Via Abu Dhabi.", es: "Vía Abu Dabi.", de: "Via Abu Dhabi.", it: "Via Abu Dhabi.", pt: "Via Abu Dhabi.", ru: "Через Абу-Даби.", zh: "经阿布扎比中转。", ar: "عبر أبوظبي.", ja: "アブダビ経由。", ko: "아부다비 경유.", hi: "अबू धाबी होकर।" }
   },
   {
     id: "kenya-cdg-mru-2026-09", from: "CDG", to: "MRU", cityCode: "MRU",
@@ -56,7 +56,7 @@ const LIST = [
     carrier: "KQ", carrierName: "Kenya Airways", aircraft: ["788"], stops: 1,
     price: 2493, was: 3580, foundAt: "2026-09-01", dep: "2026-10-19", ret: "2026-10-27",
     seat: { kind: "partial", fr: "Lit à plat (787) sur les vols de nuit ; siège inclinable sur le saut de 4 h en journée via Nairobi.", en: "Flat bed (787) on the night flights; recliner on the 4-hour daytime hop via Nairobi." },
-    note: { fr: "Via Nairobi, bagages et taxes compris.", en: "Via Nairobi, bags and taxes included." }
+    note: { fr: "Via Nairobi, bagages et taxes compris.", en: "Via Nairobi, bags and taxes included.", es: "Vía Nairobi, equipaje y tasas incluidos.", de: "Via Nairobi, Gepäck und Steuern inklusive.", it: "Via Nairobi, bagagli e tasse inclusi.", pt: "Via Nairobi, bagagem e taxas incluídas.", ru: "Через Найроби, багаж и сборы включены.", zh: "经内罗毕中转，含行李和税费。", ar: "عبر نيروبي، شاملاً الأمتعة والرسوم.", ja: "ナイロビ経由、手荷物・税金込み。", ko: "나이로비 경유, 수하물 및 세금 포함.", hi: "नैरोबी होकर, सामान और कर सहित।" }
   }
 ];
 
