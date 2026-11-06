@@ -579,6 +579,54 @@
       "audio": null,
       "audioError": null,
       "dir": "posts/20261103-fr-story-piege"
+    },
+    {
+      "kind": "deal",
+      "id": "deal-PAR-DPS-2169",
+      "live": true,
+      "from": "PAR",
+      "to": "DPS",
+      "city": {
+        "fr": "Bali",
+        "en": "Bali"
+      },
+      "cityCode": "DPS",
+      "price": 2169,
+      "was": null,
+      "discount": null,
+      "carrier": "China Eastern",
+      "aircraft": "777 · A330",
+      "stops": {
+        "fr": "1 escale",
+        "en": "1 stop"
+      },
+      "seat": {
+        "fr": "Lit à plat sur CDG → PVG (777) et sur les correspondances",
+        "en": "Fully flat bed on the long-haul legs (CDG → PVG)"
+      },
+      "seatKind": "flat",
+      "dep": "2027-01-12",
+      "ret": "2027-01-27",
+      "verifiedAt": "2026-11-06T03:30:59.733Z",
+      "link": "https://www.aviasales.fr/search/PAR1201DPS2701c1?marker=745122.site-deal&currency=eur&locale=fr",
+      "photo": "https://www.aeryndo.co/api/photo?city=DPS",
+      "kicker": {
+        "fr": "Deal vérifié · 6 nov.",
+        "en": "Verified deal · 6 Nov"
+      },
+      "source": null,
+      "slot": "deal",
+      "market": "fr",
+      "date": "2026-11-06",
+      "contentId": "deal-PAR-DPS-2169",
+      "at": "2026-11-06T11:33:50.097Z",
+      "igId": "18033882419913962",
+      "permalink": "https://www.instagram.com/p/DfZgjaqFrpH/",
+      "dry": false,
+      "gate": "instagram",
+      "audio": null,
+      "audioError": null,
+      "dir": "posts/20261106-fr-deal"
     }
   ],
   "runs": [
