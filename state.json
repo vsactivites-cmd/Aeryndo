@@ -675,6 +675,47 @@
       "audio": null,
       "audioError": null,
       "dir": "posts/20261106-fr-story-deal"
+    },
+    {
+      "kind": "piege",
+      "photo": "https://www.aeryndo.co/api/photo?city=MLE",
+      "cityCode": "MLE",
+      "id": "piege-prix-adulte",
+      "title": {
+        "fr": "Le prix est par personne",
+        "en": "The price is per person"
+      },
+      "hook": {
+        "fr": "Maldives en Business à 1 488 €. Pour deux ?",
+        "en": "Maldives in Business for €1,488. For two?"
+      },
+      "price": "1 488 €",
+      "route": "CDG → MLE",
+      "detail": {
+        "fr": "Par adulte, aller-retour. À deux, c’est 2 976 €.",
+        "en": "Per adult, round trip. For two, that is €2,976."
+      },
+      "body": {
+        "fr": "Tous les tarifs affichés par les compagnies et les comparateurs sont par adulte. Le piège n’est pas le prix, c’est la lecture trop rapide : on se projette à deux et on découvre le double au paiement.",
+        "en": "Every fare shown by airlines and comparison sites is per adult. The trap is not the price, it is the quick read: you picture a trip for two and discover double at checkout."
+      },
+      "lesson": {
+        "fr": "Aeryndo écrit « par adulte » sur chaque deal, et le lien ouvre la recherche au bon nombre de voyageurs.",
+        "en": "Aeryndo writes “per adult” on every deal, and the link opens the search with the right passenger count."
+      },
+      "city": "MLE",
+      "slot": "piege",
+      "market": "fr",
+      "date": "2026-11-10",
+      "contentId": "piege-prix-adulte",
+      "at": "2026-11-10T17:31:56.961Z",
+      "igId": "18102476387437443",
+      "permalink": "https://www.instagram.com/p/Dfkcv4slSz4/",
+      "dry": false,
+      "gate": "instagram",
+      "audio": null,
+      "audioError": null,
+      "dir": "posts/20261110-fr-piege"
     }
   ],
   "runs": [
