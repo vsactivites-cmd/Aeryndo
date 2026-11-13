@@ -762,6 +762,52 @@
       "audio": null,
       "audioError": null,
       "dir": "posts/20261113-fr-deal"
+    },
+    {
+      "kind": "palmares",
+      "id": "pal-airindia-par-dps-2026-10",
+      "live": false,
+      "from": "CDG",
+      "to": "DPS",
+      "city": {
+        "fr": "Bali",
+        "en": "Bali"
+      },
+      "cityCode": "DPS",
+      "price": 2285,
+      "was": null,
+      "discount": null,
+      "carrier": "Air India",
+      "aircraft": "777 · A321",
+      "stops": {
+        "fr": "1 escale",
+        "en": "1 stop"
+      },
+      "seat": {
+        "fr": "Lit à plat sur CDG → DEL (777) ; siège classique sur le tronçon court.",
+        "en": "Flat bed on the long-haul leg (CDG → DEL, 777); standard seat on the short hop."
+      },
+      "seatKind": "partial",
+      "dep": "2027-01-07",
+      "ret": "2027-01-16",
+      "foundAt": "2026-10-13",
+      "photo": "https://www.aeryndo.co/api/photo?city=DPS",
+      "kicker": {
+        "fr": "Déniché le 13 oct. 2026",
+        "en": "Found on 13 Oct 2026"
+      },
+      "slot": "story-deal",
+      "market": "fr",
+      "date": "2026-11-13",
+      "contentId": "pal-airindia-par-dps-2026-10",
+      "at": "2026-11-13T13:31:35.203Z",
+      "igId": "18339118369259021",
+      "permalink": "https://www.instagram.com/stories/aeryndo.co/4029523780121073670",
+      "dry": false,
+      "gate": "instagram",
+      "audio": null,
+      "audioError": null,
+      "dir": "posts/20261113-fr-story-deal"
     }
   ],
   "runs": [
