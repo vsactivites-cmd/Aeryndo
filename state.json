@@ -808,6 +808,47 @@
       "audio": null,
       "audioError": null,
       "dir": "posts/20261113-fr-story-deal"
+    },
+    {
+      "kind": "piege",
+      "photo": "https://www.aeryndo.co/api/photo?city=MRU",
+      "cityCode": "MRU",
+      "id": "piege-tronçon-court",
+      "title": {
+        "fr": "Le lit s’arrête à l’escale",
+        "en": "The bed stops at the layover"
+      },
+      "hook": {
+        "fr": "Paris → Maurice en Business à 2 493 €. Le piège ?",
+        "en": "Paris → Mauritius in Business for €2,493. The catch?"
+      },
+      "price": "2 493 €",
+      "route": "CDG → MRU",
+      "detail": {
+        "fr": "Lit à plat sur les vols de nuit ; siège inclinable sur le saut de 4 h en journée.",
+        "en": "Flat bed on the night flights; recliner on the 4-hour daytime hop."
+      },
+      "body": {
+        "fr": "Ce n’est pas un mauvais deal — nous l’avons publié. Mais il faut le savoir : via Nairobi, le long-courrier de nuit est en 787 avec un vrai lit, et le tronçon de jour vers Maurice se fait en fauteuil. Honnête, c’est acceptable. Caché, c’est un piège.",
+        "en": "This is not a bad deal — we published it. But you should know: via Nairobi, the overnight long-haul is a 787 with a real bed, and the daytime hop to Mauritius is a recliner. Stated plainly, it is fine. Hidden, it is a trap."
+      },
+      "lesson": {
+        "fr": "Aeryndo décrit le siège sur chaque tronçon, pas seulement sur le plus long.",
+        "en": "Aeryndo describes the seat on every leg, not just the longest one."
+      },
+      "city": "MRU",
+      "slot": "piege",
+      "market": "fr",
+      "date": "2026-11-17",
+      "contentId": "piege-tronçon-court",
+      "at": "2026-11-17T17:32:47.256Z",
+      "igId": "17916278391285276",
+      "permalink": "https://www.instagram.com/p/Df2eX6bGP5S/",
+      "dry": false,
+      "gate": "instagram",
+      "audio": null,
+      "audioError": null,
+      "dir": "posts/20261117-fr-piege"
     }
   ],
   "runs": [
