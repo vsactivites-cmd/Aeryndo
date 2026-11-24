@@ -30,6 +30,14 @@
     },
     "api/igtrigger.js": {
       "maxDuration": 15
+    },
+    "api/journal.js": {
+      "maxDuration": 10,
+      "includeFiles": "index.html"
+    },
+    "api/sitemap.js": {
+      "maxDuration": 10,
+      "includeFiles": "index.html"
     }
   },
   "headers": [
@@ -47,5 +55,27 @@
     "deploymentEnabled": {
       "media": false
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/journal",
+      "destination": "/api/journal?lang=fr"
+    },
+    {
+      "source": "/journal/:id",
+      "destination": "/api/journal?lang=fr&id=:id"
+    },
+    {
+      "source": "/:lang(en|es|de|it|pt|ru|zh|ar|ja|ko|hi)/journal",
+      "destination": "/api/journal?lang=:lang"
+    },
+    {
+      "source": "/:lang(en|es|de|it|pt|ru|zh|ar|ja|ko|hi)/journal/:id",
+      "destination": "/api/journal?lang=:lang&id=:id"
+    }
+  ]
 }
