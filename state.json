@@ -951,6 +951,47 @@
       "audio": null,
       "audioError": null,
       "dir": "posts/20261120-fr-story-deal"
+    },
+    {
+      "kind": "piege",
+      "photo": "https://www.aeryndo.co/api/photo?city=DXB",
+      "cityCode": "DXB",
+      "id": "piege-escale-nuit",
+      "title": {
+        "fr": "L’escale de 14 heures",
+        "en": "The 14-hour layover"
+      },
+      "hook": {
+        "fr": "Paris → Dubaï en Business à 1 190 €. Le piège ?",
+        "en": "Paris → Dubai in Business for €1,190. The catch?"
+      },
+      "price": "1 190 €",
+      "route": "CDG → DXB",
+      "detail": {
+        "fr": "14 heures d’escale à Mascate, de nuit, sans hôtel inclus.",
+        "en": "A 14-hour overnight layover in Muscat, no hotel included."
+      },
+      "body": {
+        "fr": "Le prix est réel, le lit à plat aussi. Mais l’aller passe par Mascate avec 14 heures d’attente, de 23 h à 13 h. Sans salon correct ni hôtel, la nuit se passe dans l’aérogare : votre Business vous aura reposé… jusqu’à l’escale.",
+        "en": "The price is real, so is the flat bed. But the outbound routes through Muscat with a 14-hour wait, from 11 pm to 1 pm. With no proper lounge or hotel, you spend the night in the terminal: your Business cabin rests you… until the layover."
+      },
+      "lesson": {
+        "fr": "Regardez toujours la durée de l’escale avant le prix. Aeryndo l’affiche sur chaque deal.",
+        "en": "Always read the layover length before the price. Aeryndo shows it on every deal."
+      },
+      "city": "DXB",
+      "slot": "piege",
+      "market": "fr",
+      "date": "2026-11-24",
+      "contentId": "piege-escale-nuit",
+      "at": "2026-11-24T17:32:10.670Z",
+      "igId": "18123798671057069",
+      "permalink": "https://www.instagram.com/p/DgIf3lxGuu_/",
+      "dry": false,
+      "gate": "instagram",
+      "audio": null,
+      "audioError": null,
+      "dir": "posts/20261124-fr-piege"
     }
   ],
   "runs": [
