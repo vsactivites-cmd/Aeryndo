@@ -1274,6 +1274,57 @@
       "audio": null,
       "audioError": null,
       "dir": "posts/20261104-fr-reel"
+    },
+    {
+      "kind": "deal",
+      "id": "deal-PAR-MNL-1982",
+      "live": true,
+      "from": "PAR",
+      "to": "MNL",
+      "city": {
+        "fr": "Manille",
+        "en": "Manila"
+      },
+      "cityCode": "MNL",
+      "price": 1982,
+      "was": null,
+      "discount": null,
+      "carrier": "Air India",
+      "aircraft": "777 · 787",
+      "stops": {
+        "fr": "1 escale",
+        "en": "1 stop"
+      },
+      "seat": {
+        "fr": "Lit à plat sur CDG → DEL (777) et sur les correspondances",
+        "en": "Fully flat bed on the long-haul legs (CDG → DEL)"
+      },
+      "seatKind": "flat",
+      "dep": "2027-01-24",
+      "ret": "2027-02-12",
+      "verifiedAt": "2026-11-24T00:01:20.438Z",
+      "link": "https://www.aviasales.fr/search/PAR2401MNL1202c1?marker=745122.site-deal&currency=eur&locale=fr",
+      "photo": "https://www.aeryndo.co/api/photo?city=MNL",
+      "kicker": {
+        "fr": "Deal vérifié · 24 nov.",
+        "en": "Verified deal · 24 Nov"
+      },
+      "source": {
+        "name": "Premium Flights",
+        "announced": 1960
+      },
+      "slot": "reel",
+      "market": "fr",
+      "date": "2026-11-24",
+      "contentId": "deal-PAR-MNL-1982",
+      "at": "2026-11-24T12:41:57.359Z",
+      "igId": null,
+      "permalink": null,
+      "dry": true,
+      "gate": null,
+      "audio": null,
+      "audioError": null,
+      "dir": "posts/20261124-fr-reel"
     }
   ]
 }
