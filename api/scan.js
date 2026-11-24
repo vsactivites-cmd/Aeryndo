@@ -313,6 +313,21 @@ module.exports = async (req, res) => {
     await S.set("deals:list", deals, 7 * 24 * 3600);
     await S.set("scan:last", { at: nowISO(), ms: Date.now() - started, log, verifier: V.NAME, verifyUsed: used, usedNew, cap: DAILY_CAP, newCap: NEW_DAILY_CAP, persistent: S.PERSISTENT }, 7 * 24 * 3600);
 
+    // ---------- v10 : journal des refus (10 jours glissants) ----------
+    // Alimente « Refusés de la semaine » (/api/viseur → refusedWeek, post du jeudi) : chaque motif de refus
+    // après vérification, horodaté. Les simples avertissements (re-contrôle au prochain cycle) n'y entrent pas.
+    try {
+      const at = nowISO();
+      const add = []
+        .concat(((log.veille && log.veille.rejected) || []).map(t => ({ at, kind: "veille", text: t })))
+        .concat((log.rejected || []).filter(t => !/avertissement/.test(t)).map(t => ({ at, kind: "cache", text: t })));
+      if (add.length) {
+        const prev = (await S.get("scan:refused")) || [];
+        const keep = Date.now() - 10 * 24 * 3600 * 1000;
+        await S.set("scan:refused", prev.filter(r => r && Date.parse(r.at) > keep).concat(add).slice(-200), 14 * 24 * 3600);
+      }
+    } catch (e) { log.errors.push("refused: " + (e.message || e)); }
+
     return D.sendJson(res, 200, { ok: true, ms: Date.now() - started, deals: deals.length, basket: basket.length, cursor, verifier: { name: V.NAME, enabled: V.ENABLED, usedToday: used, usedNew, cap: DAILY_CAP, newCap: NEW_DAILY_CAP }, store: S.PERSISTENT ? "upstash" : "mémoire", log });
   } catch (e) {
     return D.sendJson(res, 500, { ok: false, error: String(e && e.message || e), log });

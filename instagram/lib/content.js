@@ -62,7 +62,11 @@ async function fromLiveDeal(d, site) {
     carrier: d.carrierName || d.carrier, aircraft: aircraftNames(d.aircraft), stops, seat: seatTxt, seatKind: seat,
     dep: d.dep, ret: d.ret, verifiedAt: d.verifiedAt, link: d.link, photo: (site || SITE) + d.photo,
     kicker: { fr: "Deal vérifié · " + fmtDay(d.verifiedAt.slice(0, 10), "fr"), en: "Verified deal · " + fmtDay(d.verifiedAt.slice(0, 10), "en") },
-    source: d.source || null
+    source: d.source || null,
+    // v10-com : le chiffre (ce que la lectrice garde) et l'urgence (date limite annoncée par la source)
+    savings: d.savings && d.savings > 0 ? Math.round(d.savings) : null,
+    deadline: d.deadline && d.deadline >= new Date().toISOString().slice(0, 10) ? d.deadline : null,
+    flightMinutes: d.flightMinutes || null
   };
 }
 // Un deal du palmarès → même forme, formulé au passé
@@ -73,7 +77,8 @@ function fromPalmares(p, site) {
     price: p.price, was: p.was, discount: p.discount, carrier: p.carrierName, aircraft: aircraftNames(p.aircraft),
     stops: { fr: p.stops === 0 ? "direct" : p.stops === 1 ? "1 escale" : p.stops + " escales", en: p.stops === 0 ? "nonstop" : p.stops === 1 ? "1 stop" : p.stops + " stops" },
     seat: { fr: p.seat.fr, en: p.seat.en }, seatKind: p.seat.kind, dep: p.dep, ret: p.ret, foundAt: p.foundAt, photo: (site || SITE) + p.photo,
-    kicker: { fr: "Déniché le " + fmtDate(p.foundAt, "fr"), en: "Found on " + fmtDate(p.foundAt, "en") }
+    kicker: { fr: "Déniché le " + fmtDate(p.foundAt, "fr"), en: "Found on " + fmtDate(p.foundAt, "en") },
+    savings: p.savings && p.savings > 0 ? Math.round(p.savings) : null, livedDays: p.livedDays || null
   };
 }
 
@@ -112,12 +117,53 @@ function pickPiege(state, m) {
   return Object.assign({ kind: "piege", photo: site + "/api/photo?city=" + pick.city, cityCode: pick.city }, pick);
 }
 
+// ---------- v10-com : « Refusés de la semaine » (jeudi, marche 3 de l'échelle de conscience) ----------
+// La matière vient de /api/viseur → refusedWeek : les tarifs lus sur les sites de deals ou dans le cache
+// partenaire, vérifiés à l'écran de paiement, et écartés — avec le motif du robot. On en montre jusqu'à 5,
+// une route au plus par post, formulés pour le public (reasonText). Moins de 3 refus lisibles → pas de post.
+const REFUSE_RULES = [
+  [/prix en direct (\d[\d\s]*) € vs (\d[\d\s]*) € annoncé/, (m) => ({ fr: `Annoncé ${num(m[2])} €, en réalité ${num(m[1])} € à l’écran de paiement`, en: `Advertised €${numEn(m[2])}, actually €${numEn(m[1])} at checkout`, kind: "prix" })],
+  [/prix en direct (\d[\d\s]*) € : hors charte/, (m) => ({ fr: `${num(m[1])} € à l’écran de paiement : au-dessus de notre plafond pour cette route`, en: `€${numEn(m[1])} at checkout: above our ceiling for this route`, kind: "plafond" })],
+  [/sans lit à plat/, () => ({ fr: "Fauteuil inclinable sur le long-courrier, pas un lit", en: "Recliner on the long haul, not a bed", kind: "siège" })],
+  [/cabine mixte/, () => ({ fr: "Un tronçon hors Business", en: "One leg not in Business", kind: "cabine" })],
+  [/départ imminent/, () => ({ fr: "Départ trop proche pour être réservé sereinement", en: "Departure too soon to book calmly", kind: "dates" })],
+  [/aucun tarif en direct|introuvable/, () => ({ fr: "Tarif introuvable à l’écran de paiement", en: "Fare not found at checkout", kind: "introuvable" })],
+  [/plus de (\d+) h/, (m) => ({ fr: `Plus de ${m[1]} h de vol pour ce prix : hors charte`, en: `Over ${m[1]} h of flying for that price: outside our rules`, kind: "durée" })]
+];
+const num = s => Number(String(s).replace(/\s/g, "")).toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, " ");
+const numEn = s => Number(String(s).replace(/\s/g, "")).toLocaleString("en-GB");
+function parseRefusal(r) {
+  const m = /^([A-Z]{3})-([A-Z]{3})(?: \(([^)]*)\))?(?: \(re-contrôle\))? : (.*)$/.exec(String(r.text || "").trim());
+  if (!m) return null;
+  const src = m[3] && !/re-contrôle/.test(m[3]) ? m[3].split(",")[0].trim() : null;
+  let reason = null;
+  for (const [re, fn] of REFUSE_RULES) { const x = re.exec(m[4]); if (x) { reason = fn(x); break; } }
+  if (!reason) return null;
+  return { from: m[1], to: m[2], src, raw: m[4], reason, at: r.at || null, kind: r.kind || null };
+}
+async function pickRefuses(state, m) {
+  const site = (m && m.site) || SITE;
+  const j = await getJson(site + "/api/viseur");
+  const list = (j.refusedWeek && j.refusedWeek.length ? j.refusedWeek : (j.rejected || [])).map(parseRefusal).filter(Boolean);
+  const seen = new Set(), items = [];
+  for (const r of list) { const k = r.from + "-" + r.to; if (seen.has(k)) continue; seen.add(k); items.push(r); if (items.length >= 5) break; }
+  if (items.length < 3) return null;
+  for (const r of items) { r.cityTo = (await cityNames(r.to)) || { fr: r.to, en: r.to }; r.cityFrom = (await cityNames(r.from)) || { fr: r.from, en: r.from }; }
+  const date = new Date().toISOString().slice(0, 10);
+  return {
+    kind: "refuses", id: "refuses-" + date, items, total: Math.max(list.length, (j.refusedWeek || []).length),
+    photo: site + "/api/photo?city=" + items[0].to, cityCode: items[0].to, city: items[0].cityTo,
+    kicker: { fr: "Refusés cette semaine", en: "Refused this week" }
+  };
+}
+
 async function pick(slot, state, m) {
   if (slot.id === "piege") return pickPiege(state, m);
+  if (slot.id === "refuses") return pickRefuses(state, m);
   if (slot.id === "deal" || slot.id === "reel") return pickDeal(state, m);
   // story : uniquement le post RÉEL du jour sur le créneau lié (jamais un brouillon ni le post de la semaine passée)
   if (slot.kind === "story") { const last = (state.posted || []).filter(p => !p.dry && p.igId && p.slot === slot.after && p.market === (m ? m.id : p.market) && p.date === slot.date).pop(); return last ? Object.assign({ kind: "story" }, last) : null; }
   return null;
 }
 
-module.exports = { pick, pickDeal, pickPiege, cityNames, cityOf, fmtEUR, fmtEURen, fmtDate, fmtDay, SITE };
+module.exports = { pick, pickDeal, pickPiege, pickRefuses, parseRefusal, cityNames, cityOf, fmtEUR, fmtEURen, fmtDate, fmtDay, SITE };

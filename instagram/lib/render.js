@@ -62,6 +62,9 @@ html,body{background:${INK};color:${IVORY};font-family:'Jost',system-ui,sans-ser
 .cta .k{font-size:25px;letter-spacing:7.5px;text-transform:uppercase;color:${CORAL}}
 .cta .t{font-size:34px;line-height:1.35;margin-top:18px}
 .hook{font-family:'Playfair Display';font-style:italic;font-size:46px;color:${STONE};line-height:1.3}
+.rf{padding:26px 0;border-bottom:1px solid rgba(243,240,233,.12)}.rf:last-child{border-bottom:0}
+.rt{font-family:'Playfair Display';font-weight:500;font-size:44px;line-height:1.15}.rs{font-family:'Geist Mono';font-size:22px;letter-spacing:2px;color:${STONE};font-weight:400}
+.rr{font-size:30px;line-height:1.35;color:${STONE};margin-top:10px}.rr::before{content:"✕  ";color:${CORAL}}
 `;
 const DIAMOND = `<svg class="d" viewBox="0 0 48 48"><path d="M24 2 L31 18 L46 24 L31 30 L24 46 L17 30 L2 24 L17 18 Z" fill="${CORAL}"/></svg>`;
 // échappement HTML + espace insécable fine avant ? ! : ; (typographie française : pas de « ? » orphelin en fin de ligne)
@@ -111,10 +114,28 @@ function piegeSlides(c, lang) {
   return [s1, s2, s3];
 }
 
+// ---------- carrousel « refusés de la semaine » (v10-com, jeudi, marche 3) : 3 écrans ----------
+// La preuve la plus honnête qu'on puisse montrer : ce que le robot a lu, vérifié à l'écran de paiement, et refusé.
+function refusesSlides(c, lang) {
+  const L = lang;
+  const n = c.items.length, total = Math.max(c.total || 0, n);
+  const s1 = frame("p", `<div class="block" style="bottom:150px"><div class="kicker">${L === "fr" ? "Refusés cette semaine" : "Refused this week"}</div>
+    <div class="city" style="font-size:78px">${L === "fr" ? `${total} tarifs Business<br>écartés.` : `${total} Business fares<br>turned down.`}</div>
+    <div class="hook" style="margin-top:40px">${L === "fr" ? "Vus sur les sites de deals. Vérifiés à l’écran de paiement. Jamais publiés." : "Seen on deal sites. Verified at checkout. Never published."}</div></div>`, c.photo, "1 / 3");
+  const rows = c.items.map(r => `<div class="rf"><div class="rt">${esc(r.cityFrom[L])} → ${esc(r.cityTo[L])}${r.src ? ` <span class="rs">· ${esc(r.src)}</span>` : ""}</div><div class="rr">${esc(r.reason[L])}</div></div>`).join("");
+  const s2 = frame("p", `<div class="block" style="top:250px"><div class="kicker">${L === "fr" ? "Pourquoi" : "Why"}</div>${rows}</div>`, null, "2 / 3");
+  const s3 = frame("p", `<div class="block" style="top:300px"><div class="kicker">${L === "fr" ? "La règle" : "The rule"}</div>
+    <div class="title">${L === "fr" ? "Un prix annoncé n’est pas <em>un prix payé.</em>" : "An advertised fare is not <em>a paid fare.</em>"}</div>
+    <div class="body">${L === "fr" ? "Chaque jour, le robot Aeryndo lit les sites de deals et le cache des comparateurs, puis vérifie chaque tarif à l’écran de paiement : prix, compagnie, appareil, siège sur chaque tronçon. Ce qui ne tient pas n’est jamais publié." : "Every day, the Aeryndo robot reads the deal sites and the fare caches, then verifies each fare at checkout: price, airline, aircraft, seat on every leg. Whatever fails is never published."}</div></div>
+    <div class="cta"><div class="k">${L === "fr" ? "Ce que nous publions a passé ce filtre" : "What we publish passed this filter"}</div><div class="t">${L === "fr" ? "Les deals Business vérifiés de la semaine sont sur aeryndo.co. Lien en bio." : "This week’s verified Business deals are on aeryndo.co. Link in bio."}</div></div>`, null, "3 / 3");
+  return [s1, s2, s3];
+}
+
 // ---------- story 1080×1920 (écran 1 recadré + mention) ----------
 function storyPage(c, lang, slotId) {
   const L = lang;
   const head = slotId === "story-piege" ? `<div class="kicker">${L === "fr" ? "Le piège de la semaine" : "This week’s trap"}</div><div class="city" style="font-size:80px">${esc(c.title ? c.title[L] : "")}</div><div class="hook" style="margin-top:36px">${esc(c.hook ? c.hook[L] : "")}</div><div class="price"><span class="amt">${esc(c.price)}</span></div>`
+    : slotId === "story-refuses" ? `<div class="kicker">${L === "fr" ? "Refusés cette semaine" : "Refused this week"}</div><div class="city" style="font-size:80px">${L === "fr" ? `${Math.max(c.total || 0, (c.items || []).length)} tarifs Business écartés.` : `${Math.max(c.total || 0, (c.items || []).length)} Business fares turned down.`}</div><div class="hook" style="margin-top:36px">${L === "fr" ? "Vérifiés à l’écran de paiement. Jamais publiés." : "Verified at checkout. Never published."}</div>`
     : `<div class="kicker">${esc(c.kicker ? c.kicker[L] : "")}</div><div class="city">${esc(c.city ? c.city[L] : "")}</div><div class="route">${c.from} → ${c.to}</div><div class="price"><span class="amt">${fmtEUR(c.price)}</span>${c.was ? `<span class="was">${fmtEUR(c.was)}</span>` : ""}</div><div class="det">${esc(c.seat ? c.seat[L] : "")}</div>`;
   return frame("s", `<div class="block" style="top:560px">${head}</div><div class="cta" style="bottom:260px"><div class="k">${L === "fr" ? "Nouveau post" : "New post"}</div><div class="t">${L === "fr" ? "Tout le détail sur le fil · lien en bio" : "Full details on the feed · link in bio"}</div></div>`, c.photo, "");
 }
@@ -220,8 +241,8 @@ async function render(slot, c, outDir) {
   fs.mkdirSync(outDir, { recursive: true });
   c = Object.assign({}, c, { photo: await inlinePhoto(c.photo) });
   if (slot.kind === "carousel") {
-    const slides = slot.id === "piege" ? piegeSlides(c, "fr") : dealSlides(c, "fr");
-    const en = slot.id === "piege" ? piegeSlides(c, "en") : dealSlides(c, "en");
+    const build = slot.id === "piege" ? piegeSlides : slot.id === "refuses" ? refusesSlides : dealSlides;
+    const slides = build(c, "fr"), en = build(c, "en");
     const files = await renderImages(slides, outDir, "slide", 1080, 1350);
     await renderImages(en, outDir, "slide-en", 1080, 1350);
     return { images: files };
@@ -238,4 +259,4 @@ async function render(slot, c, outDir) {
   throw new Error("créneau inconnu " + slot.kind);
 }
 
-module.exports = { render, dealSlides, piegeSlides, storyPage, reelPage, shell };
+module.exports = { render, dealSlides, piegeSlides, refusesSlides, storyPage, reelPage, shell };

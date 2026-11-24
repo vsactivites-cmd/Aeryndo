@@ -12,11 +12,12 @@ const D = require("./_data.js");
 const S = require("./_store.js");
 
 module.exports = async (req, res) => {
-  let veille = null, last = null, cands = null, deals = [];
+  let veille = null, last = null, cands = null, deals = [], refused = [];
   try {
-    [veille, last, cands, deals] = await Promise.all([
+    [veille, last, cands, deals, refused] = await Promise.all([
       S.get("veille:last").catch(() => null), S.get("scan:last").catch(() => null),
-      S.get("scan:candidates").catch(() => null), S.get("deals:list").catch(() => [])
+      S.get("scan:candidates").catch(() => null), S.get("deals:list").catch(() => []),
+      S.get("scan:refused").catch(() => [])
     ]);
   } catch (e) { /* mémoire indisponible : tableau vide */ }
   const shown = new Set((deals || []).map(d => d.id));
@@ -41,8 +42,17 @@ module.exports = async (req, res) => {
     .concat((log.rejected || []).map(r => ({ kind: "cache", text: r })))
     .slice(0, 12);
 
+  // v10 : les refus des 7 derniers jours (journal scan:refused), sans doublon, les plus récents d'abord —
+  // la matière du post « Refusés de la semaine » (jeudi) et la preuve la plus honnête du site.
+  const week = Date.now() - 7 * 24 * 3600 * 1000, seen = new Set();
+  const refusedWeek = (Array.isArray(refused) ? refused : []).filter(r => r && r.text && Date.parse(r.at) > week)
+    .sort((a, b) => String(b.at).localeCompare(String(a.at)))
+    .filter(r => { const k = r.text.replace(/\s+/g, " ").trim(); if (seen.has(k)) return false; seen.add(k); return true; })
+    .slice(0, 40).map(r => ({ at: r.at, kind: r.kind, text: r.text }));
+
   D.sendJson(res, 200, {
     ok: true,
+    refusedWeek,
     at: (veille && veille.at) || null, scanAt: (last && last.at) || null,
     used: last ? last.verifyUsed : null, cap: last ? last.cap : null,
     sources: veille && veille.sources ? Object.keys(veille.sources).filter(k => Number(veille.sources[k]) > 0).length : null,

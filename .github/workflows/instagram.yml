@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       slot:
-        description: "Créneau à forcer (piege, deal, reel, story-piege, story-deal, story-reel) — vide = créneaux dus maintenant"
+        description: "Créneau à forcer (piege, refuses, deal, reel, story-piege, story-refuses, story-deal, story-reel) — vide = créneaux dus maintenant"
         required: false
         default: ""
       market:
