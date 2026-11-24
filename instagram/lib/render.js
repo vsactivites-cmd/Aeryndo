@@ -207,8 +207,11 @@ async function renderReel(html, outDir, name) {
     webm = await p.video().path(); await ctx.close();
   } finally { await b.close(); }
   const mp4 = path.join(outDir, name + ".mp4");
-  // MP4 H.264 + piste audio silencieuse AAC (exigée par Instagram), 30 i/s, 14 s
-  execFileSync("ffmpeg", ["-y", "-i", webm, "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo", "-ss", skip.toFixed(2), "-t", "14", "-r", "30", "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "64k", "-shortest", "-use_editlist", "0", "-movflags", "+faststart", mp4], { stdio: ["ignore", "ignore", "pipe"] });
+  // v9.2 : MP4 H.264 + la musique originale Aeryndo (lib/music.js, composée à chaque rendu) en AAC 128 k, 30 i/s, 14 s.
+  // La vidéo est coupée de `skip` (temps de chargement avant le départ des animations) ; la musique démarre avec elles.
+  const wav = path.join(vdir, "music.wav");
+  require("./music.js").write(wav);
+  execFileSync("ffmpeg", ["-y", "-ss", skip.toFixed(2), "-i", webm, "-i", wav, "-map", "0:v:0", "-map", "1:a:0", "-t", "14", "-r", "30", "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-shortest", "-use_editlist", "0", "-movflags", "+faststart", mp4], { stdio: ["ignore", "ignore", "pipe"] });
   fs.rmSync(vdir, { recursive: true, force: true });
   return mp4;
 }

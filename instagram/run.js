@@ -7,7 +7,8 @@
 //   0. pré-vol (hors brouillon) : porte Facebook (jeton de Page permanent + musique des Reels, v8) si elle est
 //      configurée, sinon porte Instagram historique ; dans les deux cas le compte est vérifié avant tout rendu
 //   1. choix du contenu (deal vérifié au départ du marché → palmarès → piège → story du post du jour)
-//   2. rendu des visuels (Playwright) : carrousel 3 × 1080×1350, story 1080×1920, Reel MP4 14 s
+//   2. rendu des visuels (Playwright) : carrousel 3 × 1080×1350, story 1080×1920, Reel MP4 14 s — avec la musique
+//      originale Aeryndo composée par lib/music.js (v9.2) : le Reel n'est jamais muet, même sans porte Facebook
 //   3. push des médias sur la branche `media` (URL publiques raw.githubusercontent.com), sonde HEAD avant Meta
 //   4. publication Instagram — SEULEMENT si IG_DRY_RUN vaut exactement "0" (sinon brouillon : rien n'est publié)
 //   5. état dans ig-media/state.json : `posted` (publications réelles) et `drafts` (brouillons), séparés.
@@ -24,6 +25,7 @@ const R = require("./lib/render.js");
 const K = require("./lib/caption.js");
 const P = require("./lib/publish.js");
 const FB = require("./lib/facebook.js");
+const MUSIC = require("./lib/music.js");
 
 const args = process.argv.slice(2);
 const opt = n => { const i = args.indexOf("--" + n); return i >= 0 ? args[i + 1] : null; };
@@ -74,7 +76,7 @@ async function runOne(m, slot, state) {
     if (slot.kind === "reel") {
       const want = FB.wanted(m);
       if (session.gate === "facebook") session.audios = await FB.findAudio(session, say);
-      else if (want.tracks.length) say("porte Instagram : pas de musique possible sur ce Reel");
+      else say("porte Instagram : la musique originale Aeryndo est intégrée dans la vidéo (v9.2)");
       if (session.catalogue) state.audioCatalogue = { at: new Date().toISOString(), market: m.id, wanted: want.tracks.map(t => t.title), ready: (session.audios || []).map(a => a.title), searches: session.catalogue };
       if (want.required && want.tracks.length && !(session.audios && session.audios.length)) throw new Error("aucune des musiques demandées n'est disponible (" + want.tracks.map(t => t.title).join(", ") + ") — Reel NON publié (reelAudio.required)");
     }
@@ -103,7 +105,7 @@ async function runOne(m, slot, state) {
   if (!DRY) {
     const A = session.api, tk = session.token, igTarget = session.target;
     if (slot.kind === "carousel") result = await A.publishCarousel(igTarget, tk, urls, caption);
-    else if (slot.kind === "reel") result = await A.publishReel(igTarget, tk, urls.video, urls.cover, caption, session.audios, (...a) => log(tag, ...a), { required: FB.wanted(m).required });
+    else if (slot.kind === "reel") result = await A.publishReel(igTarget, tk, urls.video, urls.cover, caption, session.audios, (...a) => log(tag, ...a), { required: FB.wanted(m).required, audioName: MUSIC.TITLE });
     else if (slot.kind === "story") result = await A.publishStory(igTarget, tk, urls[0]);
     result.permalink = await A.permalink(result.id, tk);
     log(tag, "PUBLIÉ :", result.permalink || result.id, result.audio ? "— musique : " + result.audio.title : (slot.kind === "reel" ? "— sans musique" : ""));

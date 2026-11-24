@@ -78,9 +78,18 @@ function graph(gate) {
     }
     if (!container) {
       if (list.length && opts && opts.required) throw new Error("aucune des musiques demandées n'a pu être attachée (" + errors.join(" ; ") + ") — Reel NON publié (reelAudio.required)");
-      if (list.length) say("Reel publié sans musique");
-      container = await call("POST", `${G}/${ig}/media`, base);
+      // v9.2 : la vidéo porte déjà la musique originale Aeryndo (lib/music.js) ; on la nomme pour Instagram.
+      const audioName = opts && opts.audioName;
+      if (list.length) say("Reel publié avec la musique originale intégrée (pas de titre du catalogue)");
+      let params = audioName ? Object.assign({ audio_name: audioName }, base) : base;
+      try { container = await call("POST", `${G}/${ig}/media`, params); }
+      catch (e) {
+        if (!audioName) throw e;
+        say("audio_name refusé (" + e.message + ") — conteneur sans nom d'audio");
+        container = await call("POST", `${G}/${ig}/media`, base);
+      }
       await waitReady(container.id, token, 12 * 60000);
+      if (audioName) used = { id: "original", title: audioName, artist: "Aeryndo" };
     }
     const pub = await call("POST", `${G}/${ig}/media_publish`, { creation_id: container.id, access_token: token });
     pub.audio = used ? { id: String(used.id), title: used.title || null, artist: used.artist || null } : null;
