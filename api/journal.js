@@ -204,8 +204,26 @@ function indexPage(lang, journal, i18n) {
   return shell({ lang, title, description: intro, canonical: urlOf(lang), alternates, og: SITE + "/og.png", jsonld, body: html, i18n });
 }
 
+// /sitemap.xml (rewrite → ?sitemap=1) : accueil + sommaires + articles, 12 langues. Même fonction que le journal :
+// le plan Hobby de Vercel limite un déploiement à 12 fonctions, on n'en ouvre pas une de plus pour un fichier XML.
+function sitemap(journal) {
+  const urls = [{ loc: SITE + "/", pri: "1.0", freq: "daily" }];
+  for (const l of LANGS) urls.push({ loc: urlOf(l), pri: "0.7", freq: "weekly" });
+  for (const a of journal) for (const l of LANGS) urls.push({ loc: urlOf(l, a.id), pri: l === "fr" || l === "en" ? "0.8" : "0.5", freq: "monthly", alts: LANGS.map(x => [x, urlOf(x, a.id)]) });
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls.map(u => `  <url><loc>${u.loc}</loc><changefreq>${u.freq}</changefreq><priority>${u.pri}</priority>${(u.alts || []).map(([l, h]) => `<xhtml:link rel="alternate" hreflang="${l}" href="${h}"/>`).join("")}</url>`).join("\n")}
+</urlset>`;
+}
+
 module.exports = (req, res) => {
   const q = req.query || {};
+  if (q.sitemap === "1") {
+    let journal = []; try { journal = load().journal; } catch (e) { journal = []; }
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
+    return res.end(sitemap(journal));
+  }
   const lang = LANGS.includes(String(q.lang || "")) ? String(q.lang) : "fr";
   const id = String(q.id || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 60);
   res.setHeader("Content-Type", "text/html; charset=utf-8");
