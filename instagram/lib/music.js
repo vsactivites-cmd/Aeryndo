@@ -12,7 +12,9 @@
 //     comme une intro de DJ, charleys discrets, pas de grosse caisse ;
 //   · le prix (4,6 s) : la grosse caisse ronde entre, quatre temps par mesure, la basse profonde qui pompe
 //     (side-chain), les accords prennent leur place ;
-//   · un lead doux et bref sur les détails (7,2 s) et l'appel (9,8 s), fondu sur la dernière seconde.
+//   · quatre notes Rhodes brèves sur les détails (7,2 s) et l'appel (9,8 s), fondu sur la dernière seconde
+//     (v4 : plus de basse, plus de lead tenu ni de vibrato, charleys adoucis — brief du 24 nov. ;
+//      v5, 25 nov. : la pompe ne module plus que la basse — c'était le dernier « wwww » — et la basse monte encore).
 // Accords Dm9 — Gm9 — Bbmaj9 — Am7 (i · iv · VI · v) : le dernier appelle le premier, la boucle tourne.
 // Sortie : WAV 16 bits stéréo 44,1 kHz, déterministe (même fichier à chaque rendu).
 // ============================================================
@@ -53,7 +55,7 @@ for (let b = 0; beatTime(b) < DUR - 0.9; b++) if (beatTime(b) >= DROP - 1e-6) KI
 // side-chain : creux à chaque grosse caisse (la pompe deep house)
 function pump(t) {
   let g = 1;
-  for (const k of KICKS) { const d = t - k; if (d >= 0 && d < 0.3) g = Math.min(g, 0.35 + 0.65 * smooth(d / 0.3)); }
+  for (const k of KICKS) { const d = t - k; if (d >= 0 && d < 0.22) g = Math.min(g, 0.55 + 0.45 * smooth(d / 0.22)); }
   return g;
 }
 
@@ -65,10 +67,10 @@ function renderKick(L, R) {
     let ph = 0;
     for (let i = i0; i < i1; i++) {
       const tr = (i - i0) / SR;
-      const f = 46 + 64 * Math.exp(-tr / 0.03);
+      const f = 42 + 70 * Math.exp(-tr / 0.03);
       ph += TAU * f / SR;
-      const a = Math.exp(-tr / 0.17) * Math.min(1, tr / 0.004);
-      const s = Math.tanh(Math.sin(ph) * 1.3) * a * 0.72;
+      const a = Math.exp(-tr / 0.2) * Math.min(1, tr / 0.004);
+      const s = Math.tanh(Math.sin(ph) * 1.3) * a * 0.86;
       L[i] += s; R[i] += s;
     }
   }
@@ -86,34 +88,35 @@ function renderHats(L, R) {
     if (pos === 2 && (beatInBar === 1 || beatInBar === 3)) { vol = 0.6; dec = 0.16; } // « et » de 2 et 4 : ouvert
     if (pos === 1 || pos === 3) { vol = 0.16; dec = 0.02; }                   // doubles : shaker discret
     if (!vol) continue;
-    vol *= t < DROP ? 0.5 + 0.3 * smooth(t / DROP) : 0.85;
+    vol *= t < DROP ? 0.4 + 0.2 * smooth(t / DROP) : 0.55;
     const i0 = Math.floor(t * SR), i1 = Math.min(N, i0 + Math.ceil((dec * 4) * SR));
     for (let i = i0; i < i1; i++) { const tr = (i - i0) / SR; tmp[i] += rnd() * Math.exp(-tr / dec) * Math.min(1, tr / 0.001) * vol; }
   }
+  const soft = onePole(9000), soft2 = onePole(9000);
   for (let i = 0; i < N; i++) {
     const x = tmp[i] - hp(tmp[i]);            // passe-haut 6 kHz : fin, sans sable dans les médiums
     const y = x - hp2(x);
-    L[i] += y * 0.34; R[i] += y * 0.30;
+    L[i] += soft(y) * 0.3; R[i] += soft2(y) * 0.27;   // et un voile au-dessus de 9 kHz : moins de fatigue
   }
 }
 
 function renderBass(L, R) {
   // basse profonde et ronde : sinus + un peu d'octave et de 3e harmonique, ligne syncopée (1 · et-de-2 · 3 · et-de-4)
   // sur la fondamentale et l'octave, side-chainée ; absente avant le prix (l'intro reste aérienne)
-  const lp = onePole(260);
+  const lp = onePole(320);
   const pattern = [[0, 0, 0.75], [1.5, 12, 0.4], [2, 0, 0.7], [3.5, 12, 0.45], [3, 7, 0.35]]; // [temps dans la mesure, intervalle, tenue]
   const notes = [];
   for (let bar = 0; T0 + bar * BAR < DUR; bar++) {
     const ch = CHORDS[bar % 4];
-    for (const [off, iv, hold] of pattern) { const t = T0 + bar * BAR + off * BEAT; if (t >= DROP - 1e-6 && t < DUR - 0.8) notes.push({ t, f: midi(ch.bass + iv), hold: hold * BEAT }); }
+    for (const [off, iv, hold] of pattern) { const t = T0 + bar * BAR + off * BEAT; if (t >= DROP - 1e-6 && t < DUR - 0.8) notes.push({ t, f: midi(ch.bass + iv), hold: hold * BEAT, deep: off === 0 }); }
   }
   for (const n of notes) {
     const i0 = Math.floor(n.t * SR), i1 = Math.min(N, Math.ceil((n.t + n.hold + 0.12) * SR));
     for (let i = i0; i < i1; i++) {
       const tr = (i - i0) / SR;
       const e = Math.min(1, tr / 0.012) * (tr < n.hold ? 1 : Math.max(0, 1 - (tr - n.hold) / 0.12));
-      const raw = Math.sin(TAU * n.f * tr) + 0.28 * Math.sin(TAU * 2 * n.f * tr) + 0.1 * Math.sin(TAU * 3 * n.f * tr);
-      const s = Math.tanh(raw * 1.2) * e * 0.5;
+      const raw = Math.sin(TAU * n.f * tr) + 0.3 * Math.sin(TAU * 2 * n.f * tr) + 0.12 * Math.sin(TAU * 3 * n.f * tr) + (n.deep ? 0.35 * Math.sin(TAU * n.f / 2 * tr) : 0);
+      const s = Math.tanh(raw * 1.3) * e * 0.78;
       L[i] += s; R[i] += s;
     }
   }
@@ -124,7 +127,7 @@ function rhodes(f, tr, hold) {
   // timbre Rhodes : sinus + harmoniques 2 et 3 qui s'éteignent plus vite, léger trémolo, attaque 8 ms
   const a = Math.min(1, tr / 0.008);
   const d1 = Math.exp(-tr / (hold * 0.9)), d2 = Math.exp(-tr / (hold * 0.35)), d3 = Math.exp(-tr / (hold * 0.18));
-  const trem = 1 - 0.12 * (0.5 - 0.5 * Math.cos(TAU * 5.2 * tr));
+  const trem = 1 - 0.03 * (0.5 - 0.5 * Math.cos(TAU * 4.5 * tr));
   return (Math.sin(TAU * f * tr) * d1 + 0.4 * Math.sin(TAU * 2 * f * tr + 0.4) * d2 + 0.18 * Math.sin(TAU * 3 * f * tr) * d3 + 0.08 * Math.sin(TAU * 4.01 * f * tr) * d3) * a * trem;
 }
 
@@ -154,11 +157,10 @@ function renderStabs(L, R) {
   const lpL = onePole(1200), lpR = onePole(1200);
   for (let i = 0; i < N; i++) {
     const t = i / SR;
-    const m1 = Math.round((0.012 + 0.004 * Math.sin(TAU * 0.6 * t)) * SR), m2 = Math.round((0.017 + 0.004 * Math.cos(TAU * 0.45 * t)) * SR);
+    const m1 = Math.round((0.012 + 0.0015 * Math.sin(TAU * 0.5 * t)) * SR), m2 = Math.round((0.017 + 0.0015 * Math.cos(TAU * 0.4 * t)) * SR);
     const cl = tmpL[i] * 0.8 + (i - m1 >= 0 ? tmpL[i - m1] : 0) * 0.5, cr = tmpR[i] * 0.8 + (i - m2 >= 0 ? tmpR[i - m2] : 0) * 0.5;
     const cut = 350 + 4500 * open(t);
-    const g = 0.75 + 0.25 * pump(t);
-    dL[i] = lpL(cl, cut) * g; dR[i] = lpR(cr, cut) * g;
+    dL[i] = lpL(cl, cut); dR[i] = lpR(cr, cut);
   }
   for (let i = 0; i < N; i++) { L[i] += dL[i]; R[i] += dR[i]; }
 }
@@ -184,27 +186,26 @@ function renderPad(L, R) {
   }
   const l1 = onePole(300), l2 = onePole(300), r1 = onePole(300), r2 = onePole(300);
   for (let i = 0; i < N; i++) {
-    const t = i / SR, cut = 220 + 1900 * open(t), g = 0.26 * (0.8 + 0.2 * pump(t));
+    const t = i / SR, cut = 220 + 1900 * open(t), g = 0.24;
     L[i] += g * l2(l1(tmpL[i], cut), cut); R[i] += g * r2(r1(tmpR[i], cut), cut);
   }
 }
 
 function renderLead(L, R) {
   // lead doux et bref (sinus + vibrato, un peu de 2e harmonique), quelques notes seulement
-  const notes = [[7.25, 69, 0.5], [7.6, 72, 0.9], [9.85, 74, 0.5], [10.2, 72, 0.5], [10.55, 69, 1.1], [12.3, 65, 1.4]];
-  const d = Math.round(0.738 * SR);     // écho croche pointée au tempo
+  // (v4, brief du 24 nov. : « moins d'effet wwww vers la fin ») — sans vibrato, sans écho, notes brèves et feutrées
+  const notes = [[7.25, 69, 0.35], [7.6, 72, 0.45], [9.85, 74, 0.35], [10.2, 69, 0.5]];
   const tmp = new Float64Array(N);
   for (const [at, n, hold] of notes) {
-    const f = midi(n), i0 = Math.floor(at * SR), i1 = Math.min(N, Math.ceil((at + hold + 0.3) * SR));
+    const f = midi(n), i0 = Math.floor(at * SR), i1 = Math.min(N, Math.ceil((at + hold + 0.25) * SR));
     for (let i = i0; i < i1; i++) {
       const tr = (i - i0) / SR;
-      const vib = 1 + 0.004 * Math.sin(TAU * 5.5 * tr) * smooth(tr / 0.25);
-      const e = Math.min(1, tr / 0.03) * (tr < hold ? 1 : Math.max(0, 1 - (tr - hold) / 0.3));
-      tmp[i] += (Math.sin(TAU * f * vib * tr) + 0.25 * Math.sin(TAU * 2 * f * vib * tr)) * e * 0.13;
+      const e = Math.min(1, tr / 0.02) * (tr < hold ? 1 : Math.max(0, 1 - (tr - hold) / 0.25));
+      tmp[i] += rhodes(f, tr, hold + 0.25) * e * 0.1;
     }
   }
-  const lp = onePole(2400);
-  for (let i = 0; i < N; i++) { const s = lp(tmp[i] + (i - d >= 0 ? tmp[i - d] * 0.35 : 0)) * pump(i / SR); L[i] += s * 0.9; R[i] += s * 1.1; }
+  const lp = onePole(1800);
+  for (let i = 0; i < N; i++) { const s = lp(tmp[i]); L[i] += s * 0.9; R[i] += s * 1.1; }
 }
 
 function renderIntroSwell(L, R) {
