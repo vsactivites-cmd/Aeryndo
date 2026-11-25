@@ -130,6 +130,8 @@ const T2 = {
     refusedNote: "Vus sur les sites de deals ou dans le cache des comparateurs, vérifiés à l’écran de paiement, jamais publiés.",
     none: "Rien n’a passé le filtre cette semaine : on ne publie pas pour publier. Les deals vérifiés restent sur aeryndo.co.",
     cta: "Tous les deals vérifiés →", unsubAll: "Ne plus recevoir ces emails",
+    whyH: "Pourquoi réserver par Aeryndo",
+    why: "Le bouton Réserver ouvre exactement le vol vérifié — mêmes dates, même cabine, même prix que chez le vendeur, rien à rechercher ni à deviner. Le prix a été vu à l’écran de paiement, le siège contrôlé tronçon par tronçon, et des dizaines de routes sont surveillées chaque jour pour que le prochain deal vous arrive avant les autres. Réserver par ce lien garde Aeryndo gratuit.",
     legal: "Prix par adulte, taxes comprises, vus à l’écran de paiement au moment de la vérification ; ils peuvent changer à tout moment. Liens partenaires : si vous réservez, nous pouvons percevoir une commission, au même prix pour vous. Aeryndo · AURUM GLOBAL HOLDING."
   },
   en: {
@@ -146,6 +148,8 @@ const T2 = {
     refusedNote: "Seen on deal sites or in fare caches, verified at checkout, never published.",
     none: "Nothing passed the filter this week: we do not publish for the sake of it. Verified deals stay on aeryndo.co.",
     cta: "All verified deals →", unsubAll: "Stop receiving these emails",
+    whyH: "Why book through Aeryndo",
+    why: "The Book button opens exactly the verified flight — same dates, same cabin, same price as at the seller, nothing to search or guess. The fare was seen at checkout, the seat checked leg by leg, and dozens of routes are watched every day so the next deal reaches you first. Booking through this link keeps Aeryndo free.",
     legal: "Prices per adult, taxes included, seen at checkout at verification time; they can change at any moment. Partner links: if you book, we may earn a commission, at the same price for you. Aeryndo · AURUM GLOBAL HOLDING."
   }
 };
@@ -205,6 +209,10 @@ function dealsEmail({ kind, deals, refused, names, email, l }) {
       <div style="font-size:11px;letter-spacing:3px;color:#FF6B57;margin:0 0 6px;">${t.dealsH.toUpperCase()}</div>
       ${table ? `<table style="width:100%;border-collapse:collapse;background:#161516;">${table}</table>` : `<p style="color:#b8b3aa;font-size:14px;line-height:1.6;">${t.none}</p>`}
       <p style="margin:16px 0 0;"><a href="${SITE}/#deals" style="font-size:13px;color:#FF6B57;text-decoration:none;">${t.cta}</a></p>
+      <div style="margin:26px 0 0;padding:16px 18px;border:1px solid #2a2a2e;border-radius:10px;background:#131315;">
+        <div style="font-size:11px;letter-spacing:3px;color:#FF6B57;margin-bottom:6px;">${t.whyH.toUpperCase()}</div>
+        <p style="color:#b8b3aa;font-size:13px;line-height:1.6;margin:0;">${t.why}</p>
+      </div>
       ${refusedHtml}
       ${readHtml}
       <p style="color:#8f8a82;font-size:11px;line-height:1.6;margin-top:28px;">${t.legal} · <a href="${unsubLink(email)}" style="color:#8f8a82;">${t.unsubAll}</a></p>

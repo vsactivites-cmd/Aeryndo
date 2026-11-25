@@ -13,6 +13,23 @@ const TAGS = {
 // Mention légale (loi du 9 juin 2023 sur l'influence commerciale) : nos liens de réservation sont des liens
 // partenaires rémunérés → chaque légende se termine par #publicité (choix de Valentyna, 23 oct. 2026) et #ad pour l'anglais.
 const LEGAL = "#publicité #ad";
+// La raison unique (règle de Valentyna, 25 nov. 2026) : chaque contenu dit pourquoi réserver par Aeryndo — sans
+// se comparer à personne, en donnant envie. Toujours les mêmes phrases, toujours présentes.
+const WHY = {
+  fr: `Pourquoi réserver par Aeryndo ? Le lien ouvre exactement le vol vérifié — mêmes dates, même cabine, même prix que chez le vendeur, rien à rechercher. Le prix a été vu à l’écran de paiement, le siège contrôlé tronçon par tronçon. Et réserver par ce lien garde Aeryndo gratuit.`,
+  en: `Why book through Aeryndo? The link opens exactly the verified flight — same dates, same cabin, same price as at the seller, nothing to search again. The fare was seen at checkout, the seat checked leg by leg. And booking through it keeps Aeryndo free.`
+};
+// Instagram : 2 200 caractères maximum. On assemble FR + raison + EN + raison + hashtags, et si c'est trop long
+// on sacrifie d'abord la raison en anglais, puis on raccourcit la partie anglaise (le français reste intact).
+const LIMIT = 2150;
+function assemble(fr, en, tagLine) {
+  const full = (e, w) => `${fr}\n\n${WHY.fr}\n\n—\n\n${e}${w ? "\n" + WHY.en : ""}\n\n${tagLine}`;
+  if (full(en, true).length <= LIMIT) return full(en, true);
+  if (full(en, false).length <= LIMIT) return full(en, false);
+  const room = LIMIT - full("", false).length;
+  const cut = en.length > room ? en.slice(0, Math.max(0, room - 1)).replace(/\s+\S*$/, "") + "…" : en;
+  return full(cut, false);
+}
 function tags(c) { const city = (c.city && c.city.en || c.cityCode || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z]/g, ""); const extra = city ? ["#" + city] : []; return TAGS.fr.concat(extra, TAGS.en).join(" ") + " " + LEGAL; }
 // « 16 oct. » + « . » → une seule ponctuation finale
 const dot = s => String(s).replace(/\.$/, "") + ".";
@@ -56,7 +73,7 @@ ${figureEn}
 The proof: total price per adult, taxes included, seen at checkout and verified on Google Flights on ${dot(fmtDay(c.verifiedAt.slice(0, 10), "en"))} ${c.carrier}${c.aircraft ? " · " + c.aircraft : ""} · ${c.stops.en}${dur ? " · " + dur + " flying" : ""}. ${dot(c.seat.en)} ${fmtDay(c.dep, "en")} → ${dot(fmtDay(c.ret, "en"))}${left != null ? (left <= 1 ? " Last day to book at this fare." : ` ${left} days left to book at this fare.`) : " This fare can vanish within the day."} Booking link in bio — and the next deals reach you first.`
     : `${c.city.en} in Business for ${fmtEURen(c.price)} round trip${c.was ? `, instead of the usual ${fmtEURen(c.was)}` : ""}. Found on ${dot(fmtDate(c.foundAt, "en"))}${c.savings ? ` Those who saw it in time kept ${fmtEURen(c.savings)}.` : ""}
 ${c.carrier}${c.aircraft ? " · " + c.aircraft : ""} · ${c.stops.en}. ${dot(c.seat.en)} Total price per adult seen at checkout${c.discount ? `, ${c.discount}% below the route’s usual fare` : ""}. Gone now${c.livedDays ? ` after ${c.livedDays} day${c.livedDays > 1 ? "s" : ""}` : ""} — the next one reaches you first, link in bio.`;
-  return `${fr}\n\n—\n\n${en}\n\n${tags(c)}`;
+  return assemble(fr, en, tags(c));
 }
 
 function piegeCaption(c) {
@@ -72,7 +89,7 @@ ${c.lesson.fr} Ce vol n’a pas été publié sur aeryndo.co — c’est à ça 
 ${c.hook.en} ${c.detail.en}
 ${c.body.en}
 ${c.lesson.en} This flight was never published on aeryndo.co — that is what verification is for. Link in bio.`;
-  return `${fr}\n\n—\n\n${en}\n\n#piegedelasemaine ${tags(c)}`;
+  return assemble(fr, en, "#piegedelasemaine " + tags(c));
 }
 
 function reelCaption(c) {
@@ -82,7 +99,7 @@ function reelCaption(c) {
   const en = c.live
     ? `Business Class is not reserved for people who don’t look at the price. ${c.city.en}, flat bed, ${fmtEURen(c.price)} round trip${c.was ? ` instead of ${fmtEURen(c.was)}` : ""} — verified at checkout on ${dot(fmtDay(c.verifiedAt.slice(0, 10), "en"))} ${dot(c.seat.en)} Link in bio before it goes.`
     : `Business Class is not reserved for people who don’t look at the price. ${c.city.en}, flat bed, ${fmtEURen(c.price)} round trip${c.was ? ` instead of ${fmtEURen(c.was)}` : ""} — found on ${dot(fmtDate(c.foundAt, "en"))} ${dot(c.seat.en)} The next one reaches you first: link in bio.`;
-  return `${fr}\n\n—\n\n${en}\n\n${tags(c)} #reels`;
+  return assemble(fr, en, tags(c) + " #reels");
 }
 
 // Jeudi « Refusés de la semaine » (marche 3) : la crédibilité en acte — ce qu'on n'a PAS publié, et pourquoi.
@@ -100,7 +117,7 @@ Ce que nous publions a passé ce filtre : les deals vérifiés de la semaine son
   const en = `This week, ${total} Business fares were seen, verified at checkout… and refused.
 ${linesEn}
 An advertised fare is not a paid fare. Every day, the Aeryndo robot reads the deal sites and the fare caches, then verifies each fare: price, airline, aircraft, seat on every leg. Whatever fails is never published. What we publish passed this filter — this week’s verified deals are on aeryndo.co, link in bio.`;
-  return `${fr}\n\n—\n\n${en}\n\n#refusesdelasemaine ${tags(c)}`;
+  return assemble(fr, en, "#refusesdelasemaine " + tags(c));
 }
 
 function caption(slot, c) {
@@ -110,4 +127,4 @@ function caption(slot, c) {
   return dealCaption(c);
 }
 
-module.exports = { caption, dealCaption, piegeCaption, reelCaption, refusesCaption };
+module.exports = { caption, dealCaption, piegeCaption, reelCaption, refusesCaption, WHY };
