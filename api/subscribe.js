@@ -46,13 +46,19 @@ async function brevoList() {
 
 // La matière de l'email : deals vérifiés, refus de la semaine, noms de villes.
 async function dealsMaterial() {
-  const [deals, refused] = await Promise.all([S.get("deals:list").catch(() => []), S.get("scan:refused").catch(() => [])]);
+  const [raw, refused] = await Promise.all([S.get("deals:list").catch(() => []), S.get("scan:refused").catch(() => [])]);
+  // mêmes champs dérivés que /api/deals (économie vs médiane de la route, date limite annoncée par la source)
+  const deals = (raw || []).map(d => Object.assign({}, d, {
+    savings: d.median && d.median > d.price ? Math.round(d.median - d.price) : null,
+    deadline: d.source && d.source.deadline ? d.source.deadline : null,
+    carrierName: d.carrierName || d.carrier
+  }));
   const codes = new Set();
   for (const d of deals || []) { codes.add(d.from); codes.add(d.to); }
   for (const r of (refused || []).slice(-40)) { const m = /^([A-Z]{3})-([A-Z]{3})/.exec(String(r.text || "")); if (m) { codes.add(m[1]); codes.add(m[2]); } }
   const names = {};
   await Promise.all([...codes].map(async c => { try { names[c] = await P.cityNames(c); } catch (e) { names[c] = null; } }));
-  return { deals: deals || [], refused: refused || [], names };
+  return { deals, refused: refused || [], names };
 }
 
 async function sendDigest(dry) {
