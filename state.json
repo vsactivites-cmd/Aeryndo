@@ -1366,6 +1366,28 @@
       "audio": null,
       "audioError": null,
       "dir": "posts/20261124-fr-reel"
+    },
+    {
+      "kind": "email",
+      "slot": "digest",
+      "market": "fr",
+      "date": "2026-11-25",
+      "contentId": "digest-2026-11-25",
+      "at": "2026-11-25T12:27:04.931Z",
+      "dry": true,
+      "stats": {
+        "ok": true,
+        "at": "2026-11-25T12:27:04.706Z",
+        "recipients": 2,
+        "deals": 10,
+        "sent": 2,
+        "failed": 0,
+        "dry": true,
+        "preview": {
+          "to": "1…@gmail.com",
+          "subject": "Canton en Business à 1 711 € — et ce qu’on a refusé"
+        }
+      }
     }
   ]
 }
