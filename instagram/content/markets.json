@@ -27,6 +27,7 @@
       { "id": "story-piege", "kind": "story", "day": 2, "hour": 20, "minute": 30, "after": "piege" },
       { "id": "story-refuses", "kind": "story", "day": 4, "hour": 14, "minute": 30, "after": "refuses" },
       { "id": "story-deal", "kind": "story", "day": 5, "hour": 14, "minute": 30, "after": "deal" },
+      { "id": "digest", "kind": "email", "day": 5, "hour": 16, "minute": 30 },
       { "id": "story-reel", "kind": "story", "day": 0, "hour": 12, "minute": 30, "after": "reel" }
     ]
   }

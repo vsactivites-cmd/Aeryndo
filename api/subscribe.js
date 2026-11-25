@@ -9,12 +9,67 @@
 //      - le robot (/api/scan) surveille ensuite la route et envoie une
 //        alerte à chaque baisse de prix.
 // GET ?stop=<email base64url>&sig=<signature>[&route=PAR-TYO]
-//   → arrête le suivi (lien en bas de chaque email).
+//   → arrête le suivi (lien en bas de chaque email) ; sans route : désinscription complète (liste Brevo comprise).
+// v10 (25 nov. 2026) — « le deal + le refusé » :
+//   · inscription sans trajet → email de bienvenue immédiat (deals vérifiés du moment, refus de la semaine, journal) ;
+//   · GET ?digest=1&key=CRON_SECRET[&dry=1] → digest du vendredi à toute la liste Brevo (déclenché par le robot
+//     Instagram, créneau `digest`, parce que le plan Vercel Hobby limite à 2 crons et 12 fonctions).
 // La clé Brevo n'est JAMAIS dans le code : variable BREVO_API_KEY sur Vercel.
 // ============================================================
 const D = require("./_data.js");
 const S = require("./_store.js");
 const M = require("./_mail.js");
+const P = require("./_palmares.js");
+
+const BREVO_LIST = 3;
+const BREVO = { accept: "application/json", "content-type": "application/json" };
+async function brevoRemove(email) {
+  const KEY = process.env.BREVO_API_KEY; if (!KEY) return false;
+  try {
+    const r = await fetch(`https://api.brevo.com/v3/contacts/lists/${BREVO_LIST}/contacts/remove`, { method: "POST", headers: Object.assign({ "api-key": KEY }, BREVO), body: JSON.stringify({ emails: [email] }) });
+    return r.ok || r.status === 204;
+  } catch (e) { return false; }
+}
+async function brevoList() {
+  const KEY = process.env.BREVO_API_KEY; if (!KEY) return [];
+  const out = [];
+  for (let offset = 0; offset < 5000; offset += 500) {
+    const r = await fetch(`https://api.brevo.com/v3/contacts/lists/${BREVO_LIST}/contacts?limit=500&offset=${offset}`, { headers: Object.assign({ "api-key": KEY }, BREVO) });
+    if (!r.ok) break;
+    const j = await r.json();
+    const list = (j && j.contacts) || [];
+    for (const c of list) if (c && c.email && !c.emailBlacklisted) out.push(String(c.email).toLowerCase());
+    if (list.length < 500) break;
+  }
+  return out;
+}
+
+// La matière de l'email : deals vérifiés, refus de la semaine, noms de villes.
+async function dealsMaterial() {
+  const [deals, refused] = await Promise.all([S.get("deals:list").catch(() => []), S.get("scan:refused").catch(() => [])]);
+  const codes = new Set();
+  for (const d of deals || []) { codes.add(d.from); codes.add(d.to); }
+  for (const r of (refused || []).slice(-40)) { const m = /^([A-Z]{3})-([A-Z]{3})/.exec(String(r.text || "")); if (m) { codes.add(m[1]); codes.add(m[2]); } }
+  const names = {};
+  await Promise.all([...codes].map(async c => { try { names[c] = await P.cityNames(c); } catch (e) { names[c] = null; } }));
+  return { deals: deals || [], refused: refused || [], names };
+}
+
+async function sendDigest(dry) {
+  const mat = await dealsMaterial();
+  const emails = await brevoList();
+  const stats = { at: new Date().toISOString(), recipients: emails.length, deals: mat.deals.length, sent: 0, failed: 0, dry: !!dry };
+  if (!mat.deals.length) { stats.skipped = "aucun deal vérifié"; await S.set("digest:last", stats, 30 * 24 * 3600); return stats; }
+  for (const email of emails.slice(0, 280)) {           // plan Brevo gratuit : 300 emails/jour
+    const sub = (await S.get("sub:" + email).catch(() => null)) || {};
+    const mail = M.dealsEmail(Object.assign({ kind: "weekly", email, l: sub.lang || "fr" }, mat));
+    if (dry) { stats.sent++; stats.preview = stats.preview || { to: email.replace(/(.).+(@.*)/, "$1…$2"), subject: mail.subject }; continue; }
+    const r = await M.send(email, mail);
+    if (r.ok) stats.sent++; else stats.failed++;
+  }
+  if (!dry) await S.set("digest:last", stats, 30 * 24 * 3600);
+  return stats;
+}
 
 const MAX_ROUTES_PER_EMAIL = 5;
 
@@ -83,6 +138,16 @@ async function stopWatch(email, routeId) {
 module.exports = async (req, res) => {
   if (req.method === "OPTIONS") { cors(res); return res.status(200).end(); }
 
+  // ---------- digest du vendredi (robot) ----------
+  if (req.method === "GET" && String((req.query || {}).digest || "") === "1") {
+    const q = req.query || {};
+    const secret = (process.env.CRON_SECRET || "").trim();
+    const auth = String((req.headers && req.headers.authorization) || "").trim();
+    if (secret && String(q.key || "").trim() !== secret && auth !== "Bearer " + secret) return json(res, 401, { ok: false, error: "clé requise" });
+    try { return json(res, 200, Object.assign({ ok: true }, await sendDigest(String(q.dry || "") === "1"))); }
+    catch (e) { return json(res, 500, { ok: false, error: String(e && e.message || e) }); }
+  }
+
   // ---------- désinscription (lien signé) ----------
   if (req.method === "GET") {
     const q = req.query || {};
@@ -90,10 +155,13 @@ module.exports = async (req, res) => {
     let email = "";
     try { email = Buffer.from(String(q.stop), "base64url").toString("utf8").toLowerCase(); } catch (e) {}
     if (!email || M.sig(email) !== String(q.sig)) return json(res, 403, { error: "Lien invalide" });
-    await stopWatch(email, q.route ? String(q.route).toUpperCase() : null);
+    const routeId = q.route ? String(q.route).toUpperCase() : null;
+    await stopWatch(email, routeId);
+    if (!routeId) { await brevoRemove(email); await S.del("sub:" + email).catch(() => {}); }
     cors(res);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-    return res.status(200).end(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aeryndo</title><body style="margin:0;background:#0E0E0F;color:#F3F0E9;font-family:Georgia,serif;display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px"><div><div style="font-size:14px;letter-spacing:4px">AERYNDO</div><p style="font-size:22px;margin:18px 0 8px">Suivi arrêté.</p><p style="color:#b8b3aa;font-family:Arial,sans-serif;font-size:14px">Vous ne recevrez plus d'alerte pour ce trajet. <a href="https://aeryndo.co" style="color:#FF6B57">Retour au site</a></p></div></body>`);
+    const msg = routeId ? ["Suivi arrêté.", "Vous ne recevrez plus d'alerte pour ce trajet."] : ["Désinscription effectuée.", "Vous ne recevrez plus d'email d'Aeryndo."];
+    return res.status(200).end(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aeryndo</title><body style="margin:0;background:#0E0E0F;color:#F3F0E9;font-family:Georgia,serif;display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px"><div><div style="font-size:14px;letter-spacing:4px">AERYNDO</div><p style="font-size:22px;margin:18px 0 8px">${msg[0]}</p><p style="color:#b8b3aa;font-family:Arial,sans-serif;font-size:14px">${msg[1]} <a href="https://aeryndo.co" style="color:#FF6B57">Retour au site</a></p></div></body>`);
   }
   if (req.method !== "POST") return json(res, 405, { error: "Method not allowed" });
 
@@ -112,6 +180,8 @@ module.exports = async (req, res) => {
     const lang = M.lang(String(body.lang || "fr").slice(0, 2));
 
     const added = await brevoContact(email);
+    const known = await S.get("sub:" + email).catch(() => null);
+    await S.set("sub:" + email, { lang, since: (known && known.since) || new Date().toISOString() }, 400 * 24 * 3600).catch(() => {});
 
     // ---------- trajet à suivre ----------
     let route = null;
@@ -128,6 +198,10 @@ module.exports = async (req, res) => {
       await addWatch(email, lang, route, price);
       const r = await M.send(email, M.routeEmail(route, offers, median, email, lang));
       mailed = !!r.ok;
+    } else if (!known) {
+      // v10 : première inscription sans trajet → bienvenue avec les deals vérifiés du moment (une seule fois par adresse)
+      try { const mat = await dealsMaterial(); const r = await M.send(email, M.dealsEmail(Object.assign({ kind: "welcome", email, l: lang }, mat))); mailed = !!r.ok; }
+      catch (e) { console.error("bienvenue : " + (e && e.message || e)); }
     }
     return json(res, 200, { ok: true, added, watching: route ? route.id : null, mailed, price, persistent: S.PERSISTENT });
   } catch (e) {

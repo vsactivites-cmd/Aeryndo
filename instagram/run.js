@@ -61,9 +61,24 @@ async function waitPublic(urls) {
   }
 }
 
+// v10 : créneau « email » — le robot déclenche le digest du vendredi (« le deal + le refusé ») sur le site,
+// qui l'envoie à toute la liste Brevo. Pas de visuel, pas d'Instagram ; la clé n'apparaît jamais dans les journaux.
+async function runEmail(m, slot, state) {
+  const tag = `[${m.id}/${slot.id}]`;
+  const key = process.env.CRON_SECRET; if (!key) throw new Error("CRON_SECRET manquant : digest non déclenché");
+  const r = await fetch(`${m.site}/api/subscribe?digest=1&key=${encodeURIComponent(key)}${DRY ? "&dry=1" : ""}`);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.ok) throw new Error("digest : HTTP " + r.status + " " + JSON.stringify(j).slice(0, 300));
+  log(tag, DRY ? "MODE BROUILLON — digest simulé :" : "digest envoyé :", JSON.stringify(j));
+  const entry = { kind: "email", slot: slot.id, market: m.id, date: slot.date, contentId: "digest-" + slot.date, at: new Date().toISOString(), dry: DRY, stats: j };
+  if (DRY) state.drafts = state.drafts.concat([entry]).slice(-60);
+  else state.posted = state.posted.concat([entry]).slice(-400);
+}
+
 async function runOne(m, slot, state) {
   const tag = `[${m.id}/${slot.id}]`;
   if (state.posted.some(p => p.market === m.id && p.slot === slot.id && p.date === slot.date)) { log(tag, "déjà publié aujourd'hui, rien à faire"); return; }
+  if (slot.kind === "email") return runEmail(m, slot, state);
 
   // 0. pré-vol : porte, jeton et compte, AVANT de passer 2 minutes à rendre des visuels
   let session = null;

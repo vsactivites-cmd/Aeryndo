@@ -12,7 +12,7 @@
 const D = require("./_data.js");
 
 const REPO = process.env.GITHUB_REPO || "vsactivites-cmd/Aeryndo";
-const SLOTS = new Set(["piege", "refuses", "deal", "reel", "story-piege", "story-refuses", "story-deal", "story-reel"]);
+const SLOTS = new Set(["piege", "refuses", "deal", "reel", "story-piege", "story-refuses", "story-deal", "story-reel", "digest"]);
 
 module.exports = async (req, res) => {
   const q = req.query || {};
