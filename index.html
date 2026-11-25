@@ -935,7 +935,8 @@ let trip="round";
   const d=new Date();d.setDate(d.getDate()+21);const r=new Date();r.setDate(r.getDate()+28);const iso=x=>x.toISOString().split("T")[0];
   document.getElementById("dep").value=iso(d);document.getElementById("ret").value=iso(r);
   const nav=(navigator.language||"fr").slice(0,2).toLowerCase();
-  setLang(SUPPORTED.includes(nav)?nav:"fr");
+  const want=new URLSearchParams(location.search).get("lang"); /* v10-seo : ?lang=xx depuis les pages du journal */
+  setLang(SUPPORTED.includes(want)?want:SUPPORTED.includes(nav)?nav:"fr");
   loadDeals();loadViseur();
   try{const last=JSON.parse(localStorage.getItem("aeryndo:last")||"null");if(last&&last.from&&last.to){setField("from",last.from);setField("to",last.to);if(last.dep&&last.dep>iso(new Date()))document.getElementById("dep").value=last.dep;if(last.ret&&last.ret>iso(new Date()))document.getElementById("ret").value=last.ret;if(last.trip)setTripUI(last.trip);}}catch(e){}
 })();
