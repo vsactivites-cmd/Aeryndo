@@ -992,6 +992,140 @@
       "audio": null,
       "audioError": null,
       "dir": "posts/20261124-fr-piege"
+    },
+    {
+      "kind": "refuses",
+      "id": "refuses-2026-11-26",
+      "items": [
+        {
+          "from": "PAR",
+          "to": "SYD",
+          "src": "Premium Flights",
+          "raw": "prix en direct 3707 € vs 3005 € annoncé (> +10 %)",
+          "reason": {
+            "fr": "Annoncé 3 005 €, en réalité 3 707 € à l’écran de paiement",
+            "en": "Advertised €3,005, actually €3,707 at checkout",
+            "kind": "prix"
+          },
+          "at": "2026-11-26T06:31:11.452Z",
+          "kind": "veille",
+          "cityTo": {
+            "fr": "Sydney",
+            "en": "Sydney"
+          },
+          "cityFrom": {
+            "fr": "Paris",
+            "en": "Paris"
+          }
+        },
+        {
+          "from": "NCE",
+          "to": "SYD",
+          "src": "Premium Flights",
+          "raw": "prix en direct 4351 € vs 3005 € annoncé (> +10 %)",
+          "reason": {
+            "fr": "Annoncé 3 005 €, en réalité 4 351 € à l’écran de paiement",
+            "en": "Advertised €3,005, actually €4,351 at checkout",
+            "kind": "prix"
+          },
+          "at": "2026-11-26T06:31:11.452Z",
+          "kind": "veille",
+          "cityTo": {
+            "fr": "Sydney",
+            "en": "Sydney"
+          },
+          "cityFrom": {
+            "fr": "Nice",
+            "en": "Nice"
+          }
+        },
+        {
+          "from": "STO",
+          "to": "NYC",
+          "src": null,
+          "raw": "prix en direct 1442 € vs 1183 € annoncé (> +10 %)",
+          "reason": {
+            "fr": "Annoncé 1 183 €, en réalité 1 442 € à l’écran de paiement",
+            "en": "Advertised €1,183, actually €1,442 at checkout",
+            "kind": "prix"
+          },
+          "at": "2026-11-26T06:31:11.452Z",
+          "kind": "cache",
+          "cityTo": {
+            "fr": "New York",
+            "en": "New York"
+          },
+          "cityFrom": {
+            "fr": "Stockholm",
+            "en": "Stockholm"
+          }
+        },
+        {
+          "from": "LIS",
+          "to": "TAS",
+          "src": null,
+          "raw": "prix en direct 3009 € vs 1373 € annoncé (> +10 %)",
+          "reason": {
+            "fr": "Annoncé 1 373 €, en réalité 3 009 € à l’écran de paiement",
+            "en": "Advertised €1,373, actually €3,009 at checkout",
+            "kind": "prix"
+          },
+          "at": "2026-11-26T05:31:00.276Z",
+          "kind": "cache",
+          "cityTo": {
+            "fr": "Tachkent",
+            "en": "Tashkent"
+          },
+          "cityFrom": {
+            "fr": "Lisbonne",
+            "en": "Lisbon"
+          }
+        },
+        {
+          "from": "MIL",
+          "to": "HKT",
+          "src": null,
+          "raw": "cabine mixte (un tronçon hors Business)",
+          "reason": {
+            "fr": "Un tronçon hors Business",
+            "en": "One leg not in Business",
+            "kind": "cabine"
+          },
+          "at": "2026-11-26T05:31:00.276Z",
+          "kind": "cache",
+          "cityTo": {
+            "fr": "Phuket",
+            "en": "Phuket"
+          },
+          "cityFrom": {
+            "fr": "Milan",
+            "en": "Milan"
+          }
+        }
+      ],
+      "total": 16,
+      "photo": "https://www.aeryndo.co/api/photo?city=SYD",
+      "cityCode": "SYD",
+      "city": {
+        "fr": "Sydney",
+        "en": "Sydney"
+      },
+      "kicker": {
+        "fr": "Refusés cette semaine",
+        "en": "Refused this week"
+      },
+      "slot": "refuses",
+      "market": "fr",
+      "date": "2026-11-26",
+      "contentId": "refuses-2026-11-26",
+      "at": "2026-11-26T11:20:14.110Z",
+      "igId": "18133043449874356",
+      "permalink": "https://www.instagram.com/p/DgM-5PzlceO/",
+      "dry": false,
+      "gate": "instagram",
+      "audio": null,
+      "audioError": null,
+      "dir": "posts/20261126-fr-refuses"
     }
   ],
   "runs": [
