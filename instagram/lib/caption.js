@@ -16,8 +16,9 @@ const LEGAL = "#publicité #ad";
 // La raison unique (règle de Valentyna, 25 nov. 2026) : chaque contenu dit pourquoi réserver par Aeryndo — sans
 // se comparer à personne, en donnant envie. Toujours les mêmes phrases, toujours présentes.
 const WHY = {
-  fr: `Pourquoi réserver par Aeryndo ? Le lien ouvre exactement le vol vérifié — mêmes dates, même cabine, même prix que chez le vendeur, rien à rechercher. Le prix a été vu à l’écran de paiement, le siège contrôlé tronçon par tronçon. Et réserver par ce lien garde Aeryndo gratuit.`,
-  en: `Why book through Aeryndo? The link opens exactly the verified flight — same dates, same cabin, same price as at the seller, nothing to search again. The fare was seen at checkout, the seat checked leg by leg. And booking through it keeps Aeryndo free.`
+  // Trois principes (Valentyna, 26 nov. 2026) : on résout un problème, avec empathie, et on tient une promesse.
+  fr: `On connaît la fatigue des comparateurs, la peur de la mauvaise cabine, le prix qui change au moment de payer. Alors on cherche à votre place, chaque jour, et on vérifie tout à l’écran de paiement. Notre promesse : jamais un prix que nous n’avons pas vu, jamais un siège que nous n’avons pas contrôlé — et quand un tarif part, on vous le dit. Le lien ouvre exactement ce vol, au même prix que chez le vendeur, et réserver par ce lien garde Aeryndo gratuit.`,
+  en: `We know the comparator fatigue, the fear of the wrong cabin, the price that changes at payment. So we search for you, every day, and verify everything at checkout. Our promise: never a fare we have not seen, never a seat we have not checked — and when a fare goes, we tell you. The link opens exactly this flight, same price as at the seller, and booking through it keeps Aeryndo free.`
 };
 // Instagram : 2 200 caractères maximum. On assemble FR + raison + EN + raison + hashtags, et si c'est trop long
 // on sacrifie d'abord la raison en anglais, puis on raccourcit la partie anglaise (le français reste intact).

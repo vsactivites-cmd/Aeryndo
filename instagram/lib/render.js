@@ -206,7 +206,7 @@ async function renderImages(pages, outDir, prefix, w, h) {
       await p.setContent(shell(pages[i]), { waitUntil: "load" });
       await settle(p);
       const file = path.join(outDir, `${prefix}-${i + 1}.jpg`);
-      await p.screenshot({ path: file, type: "jpeg", quality: 90, clip: { x: 0, y: 0, width: w, height: h } });
+      await p.screenshot({ path: file, type: "jpeg", quality: 93, clip: { x: 0, y: 0, width: w, height: h } });
       files.push(file);
     }
   } finally { await b.close(); }
@@ -232,7 +232,7 @@ async function renderReel(html, outDir, name) {
   // La vidéo est coupée de `skip` (temps de chargement avant le départ des animations) ; la musique démarre avec elles.
   const wav = path.join(vdir, "music.wav");
   require("./music.js").write(wav);
-  execFileSync("ffmpeg", ["-y", "-ss", skip.toFixed(2), "-i", webm, "-i", wav, "-map", "0:v:0", "-map", "1:a:0", "-t", "14", "-r", "30", "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-shortest", "-use_editlist", "0", "-movflags", "+faststart", mp4], { stdio: ["ignore", "ignore", "pipe"] });
+  execFileSync("ffmpeg", ["-y", "-ss", skip.toFixed(2), "-i", webm, "-i", wav, "-map", "0:v:0", "-map", "1:a:0", "-t", "14", "-r", "30", "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-shortest", "-use_editlist", "0", "-movflags", "+faststart", mp4], { stdio: ["ignore", "ignore", "pipe"] });
   fs.rmSync(vdir, { recursive: true, force: true });
   return mp4;
 }

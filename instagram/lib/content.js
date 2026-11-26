@@ -60,7 +60,7 @@ async function fromLiveDeal(d, site) {
     from: d.from, to: d.to, city, cityCode: cityOf(d.to),
     price: d.price, was: d.median && d.median > d.price ? d.median : null, discount: d.discount || null,
     carrier: d.carrierName || d.carrier, aircraft: aircraftNames(d.aircraft), stops, seat: seatTxt, seatKind: seat,
-    dep: d.dep, ret: d.ret, verifiedAt: d.verifiedAt, link: d.link, photo: (site || SITE) + d.photo,
+    dep: d.dep, ret: d.ret, verifiedAt: d.verifiedAt, link: d.link, photo: (site || SITE) + d.photo + "&portrait=1",
     kicker: { fr: "Deal vérifié · " + fmtDay(d.verifiedAt.slice(0, 10), "fr"), en: "Verified deal · " + fmtDay(d.verifiedAt.slice(0, 10), "en") },
     source: d.source || null,
     // v10-com : le chiffre (ce que la lectrice garde) et l'urgence (date limite annoncée par la source)
@@ -76,7 +76,7 @@ function fromPalmares(p, site) {
     from: p.from, to: p.to, city: p.city, cityCode: p.cityCode,
     price: p.price, was: p.was, discount: p.discount, carrier: p.carrierName, aircraft: aircraftNames(p.aircraft),
     stops: { fr: p.stops === 0 ? "direct" : p.stops === 1 ? "1 escale" : p.stops + " escales", en: p.stops === 0 ? "nonstop" : p.stops === 1 ? "1 stop" : p.stops + " stops" },
-    seat: { fr: p.seat.fr, en: p.seat.en }, seatKind: p.seat.kind, dep: p.dep, ret: p.ret, foundAt: p.foundAt, photo: (site || SITE) + p.photo,
+    seat: { fr: p.seat.fr, en: p.seat.en }, seatKind: p.seat.kind, dep: p.dep, ret: p.ret, foundAt: p.foundAt, photo: (site || SITE) + p.photo + "&portrait=1",
     kicker: { fr: "Déniché le " + fmtDate(p.foundAt, "fr"), en: "Found on " + fmtDate(p.foundAt, "en") },
     savings: p.savings && p.savings > 0 ? Math.round(p.savings) : null, livedDays: p.livedDays || null
   };
@@ -114,7 +114,7 @@ function pickPiege(state, m) {
   const posted = (state.posted || []).filter(p => !p.dry && p.contentId && p.contentId.startsWith("piege-"));
   const never = list.filter(p => !posted.some(x => x.contentId === p.id));
   const pick = never.length ? never[0] : list.slice().sort((a, b) => { const la = posted.filter(x => x.contentId === a.id).pop(), lb = posted.filter(x => x.contentId === b.id).pop(); return Date.parse(la ? la.at : 0) - Date.parse(lb ? lb.at : 0); })[0];
-  return Object.assign({ kind: "piege", photo: site + "/api/photo?city=" + pick.city, cityCode: pick.city }, pick);
+  return Object.assign({ kind: "piege", photo: site + "/api/photo?portrait=1&city=" + pick.city, cityCode: pick.city }, pick);
 }
 
 // ---------- v10-com : « Refusés de la semaine » (jeudi, marche 3 de l'échelle de conscience) ----------
@@ -152,7 +152,7 @@ async function pickRefuses(state, m) {
   const date = new Date().toISOString().slice(0, 10);
   return {
     kind: "refuses", id: "refuses-" + date, items, total: Math.max(list.length, (j.refusedWeek || []).length),
-    photo: site + "/api/photo?city=" + items[0].to, cityCode: items[0].to, city: items[0].cityTo,
+    photo: site + "/api/photo?portrait=1&city=" + items[0].to + "", cityCode: items[0].to, city: items[0].cityTo,
     kicker: { fr: "Refusés cette semaine", en: "Refused this week" }
   };
 }

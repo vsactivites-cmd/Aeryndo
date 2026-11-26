@@ -15,6 +15,10 @@
 const S = require("./_store.js");
 
 const KEY = process.env.PIXABAY_API_KEY || "";
+// v10 (26 nov. 2026) : Pexels en premier quand PEXELS_API_KEY existe — images en pleine définition (Pixabay plafonne à
+// 1 280 px, d'où des visuels flous une fois étirés en 1080×1350 ou 1080×1920 : remarque de Valentyna). Adresses
+// permanentes (pas de rafraîchissement). `?portrait=1` : cadrage vertical pour les posts et les Reels du robot.
+const PEXELS = process.env.PEXELS_API_KEY || "";
 const TTL = 30 * 24 * 3600;          // mémoire du choix (identifiant de la photo)
 const URL_FRESH_MS = 12 * 3600 * 1000; // au-delà, on redemande l'adresse à Pixabay avant de servir
 
@@ -49,28 +53,50 @@ async function pixabay(params) {
 }
 const fromHit = (hit, q) => ({ id: hit.id, url: hit.largeImageURL, preview: hit.webformatURL, credit: hit.user, page: hit.pageURL, q, at: new Date().toISOString(), urlAt: Date.now() });
 
-async function search(city) {
+async function pexels(q, portrait) {
+  const ctrl = new AbortController(); const timer = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    const resp = await fetch("https://api.pexels.com/v1/search?" + new URLSearchParams({ query: q, orientation: portrait ? "portrait" : "landscape", size: "large", per_page: "12" }).toString(), { headers: { Authorization: PEXELS }, signal: ctrl.signal });
+    if (!resp.ok) return null;
+    const json = await resp.json();
+    const hit = (json.photos || []).find(p => p && p.src && p.src.original && (portrait ? p.height >= p.width * 1.2 : p.width >= p.height * 1.3));
+    if (!hit) return null;
+    const url = hit.src.original + (portrait ? "?auto=compress&cs=tinysrgb&h=2700" : "?auto=compress&cs=tinysrgb&w=2400");
+    return { id: "px" + hit.id, url, preview: hit.src.medium, credit: hit.photographer, page: hit.url, q, source: "pexels", at: new Date().toISOString(), urlAt: Date.now() };
+  } catch (e) { return null; } finally { clearTimeout(timer); }
+}
+const keyOf = (city, portrait) => (portrait ? "photo:p:" : "photo:") + city;
+
+async function search(city, portrait) {
   const q = QUERY[city] || (city + " city travel");
-  const hit = await pixabay({ q, image_type: "photo", orientation: "horizontal", category: "travel", min_width: "1280", safesearch: "true", order: "popular", per_page: "10" });
-  if (!hit) return null;
-  const chosen = fromHit(hit, q);
-  await S.set("photo:" + city, chosen, TTL);
+  let chosen = PEXELS ? await pexels(q, portrait) : null;
+  if (!chosen && KEY) {
+    const hit = await pixabay(portrait
+      ? { q, image_type: "photo", orientation: "vertical", category: "travel", min_height: "1200", safesearch: "true", order: "popular", per_page: "10" }
+      : { q, image_type: "photo", orientation: "horizontal", category: "travel", min_width: "1280", safesearch: "true", order: "popular", per_page: "10" });
+    if (hit) chosen = fromHit(hit, q);
+  }
+  if (!chosen) return null;
+  await S.set(keyOf(city, portrait), chosen, TTL);
   return chosen;
 }
 
 // Adresse fraîche pour une photo déjà choisie (par identifiant) ; nouvelle recherche si elle a disparu.
-async function refresh(city, cached) {
+async function refresh(city, cached, portrait) {
+  if (cached && cached.source === "pexels") return search(city, portrait);          // adresse permanente : si elle ne répond plus, on rechoisit
   const hit = cached && cached.id ? await pixabay({ id: String(cached.id) }) : null;
-  if (hit) { const fresh = Object.assign({}, cached, fromHit(hit, cached.q)); await S.set("photo:" + city, fresh, TTL); return fresh; }
-  return search(city);
+  if (hit) { const fresh = Object.assign({}, cached, fromHit(hit, cached.q)); await S.set(keyOf(city, portrait), fresh, TTL); return fresh; }
+  return search(city, portrait);
 }
 
-async function pick(city, force) {
-  if (!KEY) return null;
-  const cached = await S.get("photo:" + city);
-  if (!cached || !cached.id) return search(city);                       // ancien format (adresse seule) ou rien : on (re)choisit
-  if (!force && cached.url && cached.urlAt && Date.now() - cached.urlAt < URL_FRESH_MS) return cached;
-  return (await refresh(city, cached)) || cached;
+async function pick(city, force, portrait) {
+  if (!KEY && !PEXELS) return null;
+  const cached = await S.get(keyOf(city, portrait));
+  if (!cached || !cached.id) return search(city, portrait);             // ancien format (adresse seule) ou rien : on (re)choisit
+  if (force) return (await search(city, portrait)) || cached;
+  if (cached.source === "pexels") return cached;
+  if (cached.url && cached.urlAt && Date.now() - cached.urlAt < URL_FRESH_MS) return cached;
+  return (await refresh(city, cached, portrait)) || cached;
 }
 
 async function fetchImage(url) {
@@ -88,13 +114,14 @@ module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   if (!city) { res.statusCode = 400; return res.end("city?"); }
 
+  const portrait = q.portrait === "1";
   let chosen = null;
-  try { chosen = await pick(city, q.fresh === "1"); } catch (e) { chosen = null; }
+  try { chosen = await pick(city, q.fresh === "1", portrait); } catch (e) { chosen = null; }
 
   if (q.info === "1") {
     res.setHeader("Content-Type", "application/json; charset=utf-8");
     res.setHeader("Cache-Control", "no-store");
-    return res.end(JSON.stringify({ ok: Boolean(chosen), city, url: chosen ? chosen.url : null, id: chosen ? chosen.id : null, credit: chosen ? chosen.credit : null, source: chosen ? "pixabay" : "fallback" }));
+    return res.end(JSON.stringify({ ok: Boolean(chosen), city, portrait, url: chosen ? chosen.url : null, id: chosen ? chosen.id : null, credit: chosen ? chosen.credit : null, source: chosen ? (chosen.source || "pixabay") : "fallback" }));
   }
 
   if (!chosen) { res.statusCode = 302; res.setHeader("Location", FALLBACK); res.setHeader("Cache-Control", "public, s-maxage=3600"); return res.end(); }
@@ -102,7 +129,7 @@ module.exports = async (req, res) => {
   // L'image elle-même ; si l'adresse a expiré entre-temps, on en redemande une et on réessaie une fois.
   let img = await fetchImage(chosen.url);
   if (!img) {
-    try { chosen = (await refresh(city, chosen)) || chosen; } catch (e) { /* on garde */ }
+    try { chosen = (await refresh(city, chosen, portrait)) || chosen; } catch (e) { /* on garde */ }
     img = chosen && chosen.url ? await fetchImage(chosen.url) : null;
   }
   if (!img) { res.statusCode = 302; res.setHeader("Location", FALLBACK); res.setHeader("Cache-Control", "no-store"); return res.end(); }

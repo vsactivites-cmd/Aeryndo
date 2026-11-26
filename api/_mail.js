@@ -130,8 +130,8 @@ const T2 = {
     refusedNote: "Vus sur les sites de deals ou dans le cache des comparateurs, vérifiés à l’écran de paiement, jamais publiés.",
     none: "Rien n’a passé le filtre cette semaine : on ne publie pas pour publier. Les deals vérifiés restent sur aeryndo.co.",
     cta: "Tous les deals vérifiés →", unsubAll: "Ne plus recevoir ces emails",
-    whyH: "Pourquoi réserver par Aeryndo",
-    why: "Le bouton Réserver ouvre exactement le vol vérifié — mêmes dates, même cabine, même prix que chez le vendeur, rien à rechercher ni à deviner. Le prix a été vu à l’écran de paiement, le siège contrôlé tronçon par tronçon, et des dizaines de routes sont surveillées chaque jour pour que le prochain deal vous arrive avant les autres. Réserver par ce lien garde Aeryndo gratuit.",
+    whyH: "Notre promesse",
+    why: "On connaît la fatigue des comparateurs, la peur de la mauvaise cabine, le prix qui change au moment de payer. Alors on cherche à votre place, chaque jour, sur des dizaines de routes, et on vérifie tout à l’écran de paiement. Notre promesse : jamais un prix que nous n’avons pas vu, jamais un siège que nous n’avons pas contrôlé tronçon par tronçon — et quand un tarif part, on vous le dit. Le bouton Réserver ouvre exactement le vol vérifié, mêmes dates, même cabine, même prix que chez le vendeur ; réserver par ce lien garde Aeryndo gratuit.",
     legal: "Prix par adulte, taxes comprises, vus à l’écran de paiement au moment de la vérification ; ils peuvent changer à tout moment. Liens partenaires : si vous réservez, nous pouvons percevoir une commission, au même prix pour vous. Aeryndo · AURUM GLOBAL HOLDING."
   },
   en: {
@@ -148,8 +148,8 @@ const T2 = {
     refusedNote: "Seen on deal sites or in fare caches, verified at checkout, never published.",
     none: "Nothing passed the filter this week: we do not publish for the sake of it. Verified deals stay on aeryndo.co.",
     cta: "All verified deals →", unsubAll: "Stop receiving these emails",
-    whyH: "Why book through Aeryndo",
-    why: "The Book button opens exactly the verified flight — same dates, same cabin, same price as at the seller, nothing to search or guess. The fare was seen at checkout, the seat checked leg by leg, and dozens of routes are watched every day so the next deal reaches you first. Booking through this link keeps Aeryndo free.",
+    whyH: "Our promise",
+    why: "We know the comparator fatigue, the fear of the wrong cabin, the price that changes at payment. So we search for you, every day, across dozens of routes, and verify everything at checkout. Our promise: never a fare we have not seen, never a seat we have not checked leg by leg — and when a fare goes, we tell you. The Book button opens exactly the verified flight, same dates, same cabin, same price as at the seller; booking through it keeps Aeryndo free.",
     legal: "Prices per adult, taxes included, seen at checkout at verification time; they can change at any moment. Partner links: if you book, we may earn a commission, at the same price for you. Aeryndo · AURUM GLOBAL HOLDING."
   }
 };
