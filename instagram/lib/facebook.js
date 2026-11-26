@@ -38,9 +38,9 @@ async function saveStore(m, st, kind) {
 // interdit — un VRAI lien cliquable de réservation (sub_id Travelpayouts fb-<créneau>). Un échec ici ne bloque
 // jamais la publication Instagram : il est journalisé, c'est tout.
 // ============================================================
-async function openPage(m, say) {
+async function openPage(m, say, force) {
   if (!m.facebookPage) throw new Error("pas de facebookPage dans markets.json");
-  let st = await loadStore(m, "fbpage");
+  let st = force ? null : await loadStore(m, "fbpage");
   if (st) {
     try { await api.call("GET", `${api.G}/${st.pageId}?${q({ fields: "id,name", access_token: st.pageToken })}`); return st; }
     catch (e) { say("jeton de Page (miroir) refusé, redécouverte : " + e.message); }
@@ -85,11 +85,20 @@ function pageText(caption, c, slot) {
   return fr + tail + "\n\nTous les deals vérifiés : https://aeryndo.co" + "\n\n#publicité";
 }
 async function mirror(m, slot, c, urls, caption, say) {
-  const st = await openPage(m, say);
-  if (slot.kind === "carousel") return pagePhotos(st, urls, pageText(caption, c, slot));
-  if (slot.kind === "reel") return pageVideo(st, urls.video, pageText(caption, c, slot));
-  if (slot.kind === "story") return pageStory(st, Array.isArray(urls) ? urls[0] : urls);
-  throw new Error("créneau " + slot.kind + " sans miroir Facebook");
+  const go = async st => {
+    if (slot.kind === "carousel") return pagePhotos(st, urls, pageText(caption, c, slot));
+    if (slot.kind === "reel") return pageVideo(st, urls.video, pageText(caption, c, slot));
+    if (slot.kind === "story") return pageStory(st, Array.isArray(urls) ? urls[0] : urls);
+    throw new Error("créneau " + slot.kind + " sans miroir Facebook");
+  };
+  try { return await go(await openPage(m, say)); }
+  catch (e) {
+    // Autorisation manquante (#200) : le jeton de Page mémorisé vient d'un jeton utilisateur trop limité.
+    // Si FB_USER_TOKEN a été régénéré avec pages_manage_posts, la redécouverte règle le problème.
+    if (!/\(#200\)|pages_manage_posts|\(#10\)/.test(String(e.message || e))) throw e;
+    say("autorisation manquante — redécouverte de la Page avec le jeton utilisateur courant");
+    return go(await openPage(m, say, true));
+  }
 }
 
 // ---------- la Page reliée au compte Instagram du marché → son jeton (permanent) ----------
