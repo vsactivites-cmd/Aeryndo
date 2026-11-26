@@ -17,6 +17,10 @@ on:
         description: "Marché (fr)"
         required: false
         default: "fr"
+      fbonly:
+        description: "1 = miroir Facebook seulement (reprend le dernier post Instagram publié de ce créneau, ne touche pas à Instagram)"
+        required: false
+        default: ""
       dry:
         description: "Brouillon : 1 = préparer sans publier, 0 = publier, vide = suivre la variable IG_DRY_RUN"
         required: false
@@ -75,11 +79,13 @@ jobs:
           IN_SLOT: ${{ github.event.inputs.slot }}
           IN_MARKET: ${{ github.event.inputs.market }}
           IN_DRY: ${{ github.event.inputs.dry }}
+          IN_FBONLY: ${{ github.event.inputs.fbonly }}
         shell: bash
         run: |
           # les entrées du formulaire passent par des variables (jamais interpolées dans le script)
           FLAGS=()
           if [ -n "$IN_SLOT" ]; then FLAGS=(--slot "$IN_SLOT" --market "${IN_MARKET:-fr}"); fi
+          if [ "$IN_FBONLY" = "1" ]; then FLAGS+=(--fb-only); fi
           if [ "$IN_DRY" = "1" ]; then export IG_DRY_RUN=1; fi
           if [ "$IN_DRY" = "0" ]; then export IG_DRY_RUN=0; fi
           node run.js "${FLAGS[@]}"

@@ -32,6 +32,7 @@ const opt = n => { const i = args.indexOf("--" + n); return i >= 0 ? args[i + 1]
 // Brouillon par défaut : on ne publie que si IG_DRY_RUN vaut exactement "0" (ou --publish) et sans --dry.
 const DRY = args.includes("--dry") || !(String(process.env.IG_DRY_RUN || "").trim() === "0" || args.includes("--publish"));
 const LOCAL = args.includes("--local");
+const FB_ONLY = args.includes("--fb-only");
 const ROOT = path.resolve(__dirname, "..");
 const MEDIA_DIR = process.env.MEDIA_DIR || path.join(ROOT, "ig-media");    // worktree de la branche `media`
 const MEDIA_BASE = (process.env.MEDIA_BASE || "https://raw.githubusercontent.com/vsactivites-cmd/Aeryndo/media").replace(/\/$/, "");
@@ -75,8 +76,29 @@ async function runEmail(m, slot, state) {
   else state.posted = state.posted.concat([entry]).slice(-400);
 }
 
+// --fb-only : ne touche pas à Instagram ; reprend le dernier post publié de ce créneau (médias déjà en ligne sur la
+// branche media) et le publie sur la Page Facebook. Sert au rattrapage (premier miroir du 26 nov.) et aux tests.
+async function runFacebookOnly(m, slot, state) {
+  const tag = `[${m.id}/${slot.id}/facebook]`;
+  const entry = state.posted.slice().reverse().find(p => p.market === m.id && p.slot === slot.id && !p.dry && p.dir);
+  if (!entry) throw new Error("aucun post publié trouvé pour ce créneau");
+  if (entry.facebook) { log(tag, "déjà sur Facebook :", entry.facebook.url); return; }
+  const dir = path.join(MEDIA_DIR, entry.dir);
+  const rel = f => MEDIA_BASE + "/" + path.relative(MEDIA_DIR, f).split(path.sep).join("/");
+  const files = fs.readdirSync(dir);
+  const images = files.filter(f => /^slide-\d+\.jpg$/.test(f) || /^story-1\.jpg$/.test(f)).sort().map(f => rel(path.join(dir, f)));
+  const video = files.find(f => /\.mp4$/.test(f));
+  const urls = slot.kind === "reel" ? { video: rel(path.join(dir, video)), cover: rel(path.join(dir, "cover-1.jpg")) } : images;
+  const caption = fs.existsSync(path.join(dir, "caption.txt")) ? fs.readFileSync(path.join(dir, "caption.txt"), "utf8") : K.caption(slot, entry);
+  log(tag, "post Instagram du", entry.date, "→ Facebook :", JSON.stringify(urls));
+  if (DRY) { log(tag, "MODE BROUILLON — texte Facebook :", JSON.stringify(FB.pageText(caption, entry, slot).slice(0, 200)) + "…"); return; }
+  const fb = await FB.mirror(m, slot, entry, urls, caption, (...a) => log(tag, ...a));
+  entry.facebook = fb; log(tag, "Facebook :", fb.url);
+}
+
 async function runOne(m, slot, state) {
   const tag = `[${m.id}/${slot.id}]`;
+  if (FB_ONLY) return runFacebookOnly(m, slot, state);
   if (state.posted.some(p => p.market === m.id && p.slot === slot.id && p.date === slot.date)) { log(tag, "déjà publié aujourd'hui, rien à faire"); return; }
   if (slot.kind === "email") return runEmail(m, slot, state);
 
@@ -124,10 +146,18 @@ async function runOne(m, slot, state) {
     else if (slot.kind === "story") result = await A.publishStory(igTarget, tk, urls[0]);
     result.permalink = await A.permalink(result.id, tk);
     log(tag, "PUBLIÉ :", result.permalink || result.id, result.audio ? "— musique : " + result.audio.title : (slot.kind === "reel" ? "— sans musique" : ""));
-  } else log(tag, "MODE BROUILLON — rien n'a été publié sur Instagram (IG_DRY_RUN=" + JSON.stringify(process.env.IG_DRY_RUN || "") + ")");
+    // v10-fb : miroir sur la Page Facebook (jamais bloquant)
+    if (m.facebookPage) {
+      try { const fb = await FB.mirror(m, slot, c, urls, caption, (...a) => log(tag, ...a)); result.facebook = fb; log(tag, "Facebook :", fb.url); }
+      catch (e) { result.facebookError = String(e.message || e); log(tag, "Facebook (miroir) ÉCHEC :", result.facebookError); }
+    }
+  } else {
+    log(tag, "MODE BROUILLON — rien n'a été publié sur Instagram (IG_DRY_RUN=" + JSON.stringify(process.env.IG_DRY_RUN || "") + ")");
+    if (m.facebookPage && slot.kind !== "story") log(tag, "MODE BROUILLON — texte Facebook :", JSON.stringify(FB.pageText(caption, c, slot).slice(0, 160)) + "…");
+  }
 
   // 5. état
-  const entry = Object.assign({}, c, { slot: slot.id, market: m.id, date: slot.date, contentId: c.id || c.contentId, at: new Date().toISOString(), igId: result.id || null, permalink: result.permalink || null, dry: DRY, gate: session ? session.gate : null, audio: result.audio || null, audioError: result.audioError || null, dir: path.relative(MEDIA_DIR, outDir) });
+  const entry = Object.assign({}, c, { slot: slot.id, market: m.id, date: slot.date, contentId: c.id || c.contentId, at: new Date().toISOString(), igId: result.id || null, permalink: result.permalink || null, dry: DRY, gate: session ? session.gate : null, audio: result.audio || null, audioError: result.audioError || null, facebook: result.facebook || null, facebookError: result.facebookError || null, dir: path.relative(MEDIA_DIR, outDir) });
   if (DRY) state.drafts = state.drafts.concat([entry]).slice(-60);
   else state.posted = state.posted.concat([entry]).slice(-400);
 }

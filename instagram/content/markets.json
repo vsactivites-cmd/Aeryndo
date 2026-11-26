@@ -10,6 +10,7 @@
     "igUsername": "aeryndo.co",
     "tokenEnv": "IG_ACCESS_TOKEN",
     "fbTokenEnv": "FB_USER_TOKEN",
+    "facebookPage": "Aeryndo",
     "reelAudio": {
       "required": false,
       "note": "v9.2 (24 nov. 2026) : la musique originale Aeryndo est intégrée dans la vidéo ; les titres ci-dessous ne servent que si la porte Facebook revient (ils remplacent alors la piste intégrée).",

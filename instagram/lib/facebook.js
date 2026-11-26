@@ -12,21 +12,84 @@ const api = P.graph("facebook");
 const q = P.q;
 const norm = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, " ").trim();
 
-// ---------- coffre Vercel (clé ig:token:<marché>:fb) ----------
-async function loadStore(m) {
+// ---------- coffre Vercel (clé ig:token:<marché>:<kind>) — kind "fb" (porte musique) ou "fbpage" (miroir Page, v10) ----------
+async function loadStore(m, kind) {
   const key = process.env.CRON_SECRET; if (!key) return null;
   try {
-    const r = await fetch(`${m.site}/api/igtoken?key=${encodeURIComponent(key)}&market=${m.id}&kind=fb`);
+    const r = await fetch(`${m.site}/api/igtoken?key=${encodeURIComponent(key)}&market=${m.id}&kind=${kind || "fb"}`);
     if (!r.ok) return null;
     const j = await r.json(); return j && j.ok && j.pageToken ? j : null;
   } catch { return null; }
 }
-async function saveStore(m, st) {
+async function saveStore(m, st, kind) {
   const key = process.env.CRON_SECRET; if (!key) return false;
   const body = { pageToken: st.pageToken, pageId: st.pageId, pageName: st.pageName, igUserId: st.igUserId, discoveredAt: st.discoveredAt, audios: st.audios || {} };
-  const r = await fetch(`${m.site}/api/igtoken?key=${encodeURIComponent(key)}&market=${m.id}&kind=fb`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const r = await fetch(`${m.site}/api/igtoken?key=${encodeURIComponent(key)}&market=${m.id}&kind=${kind || "fb"}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (!r.ok) throw new Error("dépôt du jeton de Page sur Vercel refusé : HTTP " + r.status);
   return true;
+}
+
+// ============================================================
+// v10-fb (26 nov. 2026) — miroir sur la Page Facebook « Aeryndo », SANS liaison Instagram ↔ Page.
+// Demande de Valentyna : « Est-ce que nous postons également sur Facebook ? Il faut le faire également. »
+// La Page est trouvée par son nom (markets.json → facebookPage) dans /me/accounts du jeton utilisateur ; son jeton
+// de Page (permanent) est déposé sur Vercel (kind=fbpage). Carrousel → publication multi-photos ; Reel → vidéo ;
+// story → story de Page. Le texte Facebook garde le français, la raison de réserver, et — ce qu'Instagram
+// interdit — un VRAI lien cliquable de réservation (sub_id Travelpayouts fb-<créneau>). Un échec ici ne bloque
+// jamais la publication Instagram : il est journalisé, c'est tout.
+// ============================================================
+async function openPage(m, say) {
+  if (!m.facebookPage) throw new Error("pas de facebookPage dans markets.json");
+  let st = await loadStore(m, "fbpage");
+  if (st) {
+    try { await api.call("GET", `${api.G}/${st.pageId}?${q({ fields: "id,name", access_token: st.pageToken })}`); return st; }
+    catch (e) { say("jeton de Page (miroir) refusé, redécouverte : " + e.message); }
+  }
+  const userToken = process.env[m.fbTokenEnv || "FB_USER_TOKEN"];
+  if (!userToken) throw new Error("secret " + (m.fbTokenEnv || "FB_USER_TOKEN") + " absent");
+  const j = await api.call("GET", `${api.G}/me/accounts?${q({ fields: "id,name,access_token", limit: 100, access_token: userToken })}`);
+  const pages = j.data || [], want = norm(m.facebookPage);
+  const hit = pages.find(p => norm(p.name) === want) || pages.find(p => norm(p.name).includes(want));
+  if (!hit) throw new Error("Page « " + m.facebookPage + " » introuvable — Pages vues : " + (pages.map(p => "« " + p.name + " »").join(", ") || "aucune"));
+  if (!hit.access_token) throw new Error("la Page « " + hit.name + " » ne renvoie pas de jeton (autorisations pages_show_list / pages_manage_posts manquantes sur le jeton utilisateur)");
+  st = { pageToken: hit.access_token, pageId: String(hit.id), pageName: hit.name, discoveredAt: new Date().toISOString() };
+  await saveStore(m, st, "fbpage");
+  say("Page Facebook « " + hit.name + " » (" + st.pageId + ") : jeton de Page déposé sur Vercel");
+  return st;
+}
+
+async function pagePhotos(st, urls, message) {
+  const ids = [];
+  for (const u of urls) { const r = await api.call("POST", `${api.G}/${st.pageId}/photos`, { url: u, published: "false", access_token: st.pageToken }); ids.push(r.id); }
+  const body = { message, access_token: st.pageToken };
+  ids.forEach((id, i) => { body[`attached_media[${i}]`] = JSON.stringify({ media_fbid: id }); });
+  const r = await api.call("POST", `${api.G}/${st.pageId}/feed`, body);
+  return { id: r.id, url: "https://www.facebook.com/" + r.id };
+}
+async function pageVideo(st, videoUrl, message) {
+  const r = await api.call("POST", `${api.G}/${st.pageId}/videos`, { file_url: videoUrl, description: message, access_token: st.pageToken });
+  return { id: r.id, url: "https://www.facebook.com/" + st.pageId + "/videos/" + r.id };
+}
+async function pageStory(st, imageUrl) {
+  const ph = await api.call("POST", `${api.G}/${st.pageId}/photos`, { url: imageUrl, published: "false", access_token: st.pageToken });
+  const r = await api.call("POST", `${api.G}/${st.pageId}/photo_stories`, { photo_id: ph.id, access_token: st.pageToken });
+  return { id: r.post_id || r.id || ph.id, url: "https://www.facebook.com/" + st.pageId };
+}
+// Le texte Facebook : partie française de la légende Instagram (avant le « — »), sans la forêt de hashtags,
+// plus le lien de réservation cliquable (deals et Reels) ou le lien du site.
+function pageText(caption, c, slot) {
+  const fr = String(caption || "").split("\n\n—\n\n")[0].replace(/\n+#[^\n]*$/g, "").trim()
+    .replace(/est en bio/g, "est ci-dessous").replace(/Lien en bio\./g, "Le lien est ci-dessous.").replace(/lien en bio/gi, "lien ci-dessous");
+  const link = c && c.link ? String(c.link).replace(/marker=745122(\.[a-z0-9-]+)?/, "marker=745122.fb-" + (slot.id || "post")) : null;
+  const tail = link ? (c.live === false ? "" : "\n\nRéserver ce vol vérifié : " + link) : "";
+  return fr + tail + "\n\nTous les deals vérifiés : https://aeryndo.co" + "\n\n#publicité";
+}
+async function mirror(m, slot, c, urls, caption, say) {
+  const st = await openPage(m, say);
+  if (slot.kind === "carousel") return pagePhotos(st, urls, pageText(caption, c, slot));
+  if (slot.kind === "reel") return pageVideo(st, urls.video, pageText(caption, c, slot));
+  if (slot.kind === "story") return pageStory(st, Array.isArray(urls) ? urls[0] : urls);
+  throw new Error("créneau " + slot.kind + " sans miroir Facebook");
 }
 
 // ---------- la Page reliée au compte Instagram du marché → son jeton (permanent) ----------
@@ -124,4 +187,4 @@ async function findAudio(session, log) {
   return out;
 }
 
-module.exports = { open, findAudio, wanted, discoverPage, api };
+module.exports = { openPage, mirror, pageText,  open, findAudio, wanted, discoverPage, api };
