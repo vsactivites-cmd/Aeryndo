@@ -1191,6 +1191,13 @@
       "slot": "reel",
       "dry": false,
       "error": "aucune des musiques demandées n'est disponible (London Flowers, Too Sweet (Short Cover)) — Reel NON publié (reelAudio.required)"
+    },
+    {
+      "at": "2026-11-26T14:41:34.720Z",
+      "market": "fr",
+      "slot": "refuses",
+      "dry": false,
+      "error": "Instagram 403 (#200) The permission(s) pages_manage_posts are not available. It could because either they are deprecated or need to be approved by App Review. (code 200)"
     }
   ],
   "drafts": [
