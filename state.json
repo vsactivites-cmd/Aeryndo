@@ -1125,7 +1125,11 @@
       "gate": "instagram",
       "audio": null,
       "audioError": null,
-      "dir": "posts/20261126-fr-refuses"
+      "dir": "posts/20261126-fr-refuses",
+      "facebook": {
+        "id": "1434827046378856_122115356223537253",
+        "url": "https://www.facebook.com/1434827046378856_122115356223537253"
+      }
     },
     {
       "kind": "palmares",
