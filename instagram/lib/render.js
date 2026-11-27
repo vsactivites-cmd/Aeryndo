@@ -143,25 +143,53 @@ function storyPage(c, lang, slotId) {
 // ---------- reel 1080×1920 : animation 14 s (photo en mouvement lent, prix révélé, CTA) ----------
 // Reel : format de découverte (vu par des inconnus, souvent sans lire la légende) → texte à l'écran en ANGLAIS,
 // doublé d'une ligne française plus petite. La légende reste bilingue (caption.js). Décision du 13 oct. 2026.
+// ---------- Reel 1080×1920, 14 s — v11 « cinéma » (27 nov. 2026, référence de Valentyna : film Range Rover Sport) ----------
+// Une idée par écran, beaucoup d'air, typographie serif centrée, fondus lents, poussée lente sur l'image, vignette
+// sombre. Quatre actes calés sur la musique (la grosse caisse entre sur le prix, 4,6 s) :
+//   1. 0,9 s  la ville, un mot ; 2,4 s  « Business · lit à plat »
+//   2. 4,6 s  le prix, seul ; 5,4 s  la preuve (aller-retour, vu à l'écran de paiement le …) ; 6,2 s  l'ancien prix barré
+//   3. 8,0 s  « Vous ne payez plus le prix affiché. »
+//   4. 12,0 s diamant · aeryndo.co · lien en bio
 function reelPage(c) {
+  const L = "fr";
   const extra = `
-@keyframes kb{from{transform:scale(1.12) translate(0,0)}to{transform:scale(1.0) translate(0,-20px)}}
-@keyframes up{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-.photo{animation:kb 14s linear forwards}
-.a1{animation:up .9s ease-out .6s both}.a2{animation:up .9s ease-out 2.2s both}.a3{animation:up .9s ease-out 4.6s both}.a4{animation:up .9s ease-out 7.2s both}.a5{animation:up .9s ease-out 9.8s both}
-body.hold .photo,body.hold .a1,body.hold .a2,body.hold .a3,body.hold .a4,body.hold .a5{animation-play-state:paused}
-body.hold .a1,body.hold .a2,body.hold .a3,body.hold .a4,body.hold .a5{opacity:0}
-.sub{font-size:22px;letter-spacing:4px;text-transform:uppercase;color:${STONE};margin-top:8px}
-.det .fr{color:rgba(184,179,170,.75);font-size:28px}
-.cta .t2{font-size:26px;color:${STONE};margin-top:8px}`;
-  const city = c.city.en === c.city.fr ? esc(c.city.en) : `${esc(c.city.en)} <span style="font-size:48px;color:${STONE}">· ${esc(c.city.fr)}</span>`;
-  const inner = `<div class="block" style="top:500px">
-    <div class="kicker a1">${esc(c.kicker.en)}<div class="sub">${esc(c.kicker.fr)}</div></div>
-    <div class="city a2" style="font-size:96px">${city}</div><div class="route a2">${c.from} → ${c.to}</div>
-    <div class="price a3"><span class="amt" style="font-size:150px">${fmtEUR(c.price)}</span>${c.was ? `<span class="was">${fmtEUR(c.was)}</span>` : ""}</div>
-    <div class="det a4"><div>${esc(c.carrier)}${c.aircraft ? " · " + esc(c.aircraft) : ""} · ${esc(c.stops.en)}</div><div>${esc(c.seat.en)}</div><div class="fr">${esc(c.seat.fr)}</div></div></div>
-    <div class="cta a5" style="bottom:220px"><div class="k">${c.live ? "Before it goes" : "The next one, before everyone else"} · <span style="color:${STONE}">${c.live ? "Avant qu’il ne parte" : "Le prochain, avant tout le monde"}</span></div>
-    <div class="t">Verified Business deals · link in bio</div><div class="t2">Deals Business vérifiés · lien en bio</div></div>`;
+@keyframes push{from{transform:scale(1.0)}to{transform:scale(1.09)}}
+@keyframes in{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes out{from{opacity:1}to{opacity:0}}
+.photo{animation:push 14s cubic-bezier(.3,0,.7,1) forwards;filter:saturate(.85) contrast(1.05)}
+.page.s .veil{background:linear-gradient(180deg,rgba(14,14,15,.78) 0%,rgba(14,14,15,.22) 30%,rgba(14,14,15,.22) 60%,rgba(14,14,15,.92) 100%)}
+.page.s>.brand,.page.s>.foot{display:none}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(14,14,15,0) 45%,rgba(14,14,15,.55) 100%)}
+.act{position:absolute;left:80px;right:80px;text-align:center;opacity:0}
+.mark{top:120px;font-family:'Playfair Display';font-weight:500;font-size:22px;letter-spacing:12px;color:${IVORY};animation:in 1.2s ease-out .6s both}
+.a1{top:760px;animation:in .9s ease-out .9s both,out .5s ease-in 4.1s forwards}
+.a1 .w{font-family:'Playfair Display';font-weight:500;font-size:132px;line-height:1.02;color:${IVORY}}
+.a1 .s{margin-top:34px;font-size:24px;letter-spacing:8px;text-transform:uppercase;color:${STONE};opacity:0;animation:in .8s ease-out 2.4s both}
+.a2{top:700px;animation:in .9s ease-out 4.6s both,out .5s ease-in 7.6s forwards}
+.a2 .line{width:120px;height:1px;background:${CORAL};margin:0 auto 34px}
+.a2 .amt{font-family:'Playfair Display';font-weight:500;font-size:190px;line-height:1;color:${IVORY};letter-spacing:-2px}
+.a2 .was{font-family:'Playfair Display';font-style:italic;font-size:44px;color:${STONE};text-decoration:line-through;text-decoration-color:${CORAL};margin-top:26px;opacity:0;animation:in .8s ease-out 6.2s both}
+.a2 .p{margin-top:30px;font-size:23px;letter-spacing:5px;text-transform:uppercase;color:${STONE};line-height:1.7;opacity:0;animation:in .8s ease-out 5.4s both}
+.a3{top:780px;animation:in 1s ease-out 8s both,out .5s ease-in 11.6s forwards}
+.a3 .t{font-family:'Playfair Display';font-weight:400;font-size:78px;line-height:1.18;color:${IVORY}}
+.a3 .t em{font-style:italic;color:${CORAL}}
+.a3 .en{margin-top:30px;font-size:24px;letter-spacing:5px;text-transform:uppercase;color:${STONE}}
+.a4{top:800px;animation:in 1s ease-out 12s both}
+.a4 .d{margin:0 auto 30px}
+.a4 .u{font-family:'Geist Mono';font-weight:500;font-size:34px;letter-spacing:8px;color:${IVORY}}
+.a4 .k{margin-top:22px;font-size:22px;letter-spacing:5px;text-transform:uppercase;color:${STONE}}
+body.hold .photo,body.hold .act,body.hold .a1 .s,body.hold .a2 .was,body.hold .a2 .p{animation-play-state:paused}
+body.hold .act{opacity:0}`;
+  const city = esc(c.city[L]);
+  const seatShort = c.seatKind === "flat" ? { fr: "Business · lit à plat", en: "Business · flat bed" } : c.seatKind === "partial" ? { fr: "Business · lit à plat sur le long-courrier", en: "Business · flat bed on the long haul" } : { fr: "Business", en: "Business" };
+  const when = c.verifiedAt ? fmtDay(c.verifiedAt.slice(0, 10), "fr") : (c.foundAt ? fmtDate(c.foundAt, "fr") : "");
+  const proof = c.live ? `Aller-retour · vu à l’écran de paiement le ${esc(when)}` : `Aller-retour · déniché le ${esc(when)}`;
+  const inner = `<div class="vig"></div>
+    <div class="act mark">AERYNDO</div>
+    <div class="act a1"><div class="w">${city}.</div><div class="s">${esc(seatShort.fr)}</div></div>
+    <div class="act a2"><div class="line"></div><div class="amt">${fmtEUR(c.price).replace(/[\u202f\u00a0 ]/g, "<span style=\"display:inline-block;width:.22em\"></span>")}</div>${c.was ? `<div class="was">${fmtEUR(c.was)}</div>` : ""}<div class="p">${proof}<br>${esc(c.from)} → ${esc(c.to)} · ${esc(c.carrier)}</div></div>
+    <div class="act a3"><div class="t">Vous ne payez plus<br><em>le prix affiché.</em></div><div class="en">You no longer pay the advertised fare</div></div>
+    <div class="act a4"><div class="d"><svg width="54" height="54" viewBox="0 0 48 48"><path d="M24 2 L31 18 L46 24 L31 30 L24 46 L17 30 L2 24 L17 18 Z" fill="${CORAL}"/></svg></div><div class="u">aeryndo.co</div><div class="k">${c.live ? "Avant qu’il ne parte · lien en bio" : "Le prochain, avant tout le monde · lien en bio"}</div></div>`;
   return shell(frame("s", inner, c.photo, ""), 1920, extra);
 }
 
