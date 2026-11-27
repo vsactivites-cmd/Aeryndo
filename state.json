@@ -1177,7 +1177,10 @@
       "gate": "instagram",
       "audio": null,
       "audioError": null,
-      "facebook": null,
+      "facebook": {
+        "id": "1434827046378856_122115357195537253",
+        "url": "https://www.facebook.com/1434827046378856_122115357195537253"
+      },
       "facebookError": "Instagram 403 (#200) Permissions error (code 200)",
       "dir": "posts/20261127-fr-deal"
     }
