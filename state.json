@@ -1126,6 +1126,56 @@
       "audio": null,
       "audioError": null,
       "dir": "posts/20261126-fr-refuses"
+    },
+    {
+      "kind": "palmares",
+      "id": "pal-par-kul-2016",
+      "live": false,
+      "from": "PAR",
+      "to": "KUL",
+      "city": {
+        "fr": "Kuala Lumpur",
+        "en": "Kuala Lumpur"
+      },
+      "cityCode": "KUL",
+      "price": 2016,
+      "was": null,
+      "discount": null,
+      "carrier": "Air India",
+      "aircraft": "777 · A320neo",
+      "stops": {
+        "fr": "1 escale",
+        "en": "1 stop"
+      },
+      "seat": {
+        "fr": "Lit à plat sur CDG → DEL (777) ; siège classique sur le tronçon court.",
+        "en": "Flat bed on the long-haul leg (CDG → DEL), standard seat on the short hop."
+      },
+      "seatKind": "partial",
+      "dep": "2027-01-23",
+      "ret": "2027-02-09",
+      "foundAt": "2026-11-22",
+      "photo": "https://www.aeryndo.co/api/photo?city=KUL&portrait=1",
+      "kicker": {
+        "fr": "Déniché le 22 nov. 2026",
+        "en": "Found on 22 Nov 2026"
+      },
+      "savings": null,
+      "livedDays": 1,
+      "slot": "deal",
+      "market": "fr",
+      "date": "2026-11-27",
+      "contentId": "pal-par-kul-2016",
+      "at": "2026-11-27T11:32:11.353Z",
+      "igId": "17917488726517460",
+      "permalink": "https://www.instagram.com/p/DgPlDnEm9WL/",
+      "dry": false,
+      "gate": "instagram",
+      "audio": null,
+      "audioError": null,
+      "facebook": null,
+      "facebookError": "Instagram 403 (#200) Permissions error (code 200)",
+      "dir": "posts/20261127-fr-deal"
     }
   ],
   "runs": [
