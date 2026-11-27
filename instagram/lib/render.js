@@ -156,20 +156,22 @@ function reelPage(c) {
 @keyframes push{from{transform:scale(1.0)}to{transform:scale(1.09)}}
 @keyframes in{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @keyframes out{from{opacity:1}to{opacity:0}}
-.photo{animation:push 14s cubic-bezier(.3,0,.7,1) forwards;filter:saturate(.85) contrast(1.05)}
-.page.s .veil{background:linear-gradient(180deg,rgba(14,14,15,.78) 0%,rgba(14,14,15,.22) 30%,rgba(14,14,15,.22) 60%,rgba(14,14,15,.92) 100%)}
+.photo{animation:push 14s cubic-bezier(.3,0,.7,1) forwards;filter:brightness(.62) saturate(.8) contrast(1.05)}
+.page.s .veil{background:linear-gradient(180deg,rgba(14,14,15,.82) 0%,rgba(14,14,15,.38) 28%,rgba(14,14,15,.5) 50%,rgba(14,14,15,.38) 70%,rgba(14,14,15,.94) 100%)}
+.act{text-shadow:0 2px 28px rgba(0,0,0,.65),0 0 2px rgba(0,0,0,.4)}
+.act::before{content:"";position:absolute;left:-200px;right:-200px;top:-160px;bottom:-160px;background:radial-gradient(ellipse at center,rgba(14,14,15,.55) 0%,rgba(14,14,15,0) 70%);z-index:-1}
 .page.s>.brand,.page.s>.foot{display:none}
 .vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(14,14,15,0) 45%,rgba(14,14,15,.55) 100%)}
 .act{position:absolute;left:80px;right:80px;text-align:center;opacity:0}
 .mark{top:120px;font-family:'Playfair Display';font-weight:500;font-size:22px;letter-spacing:12px;color:${IVORY};animation:in 1.2s ease-out .6s both}
 .a1{top:760px;animation:in .9s ease-out .9s both,out .5s ease-in 4.1s forwards}
 .a1 .w{font-family:'Playfair Display';font-weight:500;font-size:132px;line-height:1.02;color:${IVORY}}
-.a1 .s{margin-top:34px;font-size:24px;letter-spacing:8px;text-transform:uppercase;color:${STONE};opacity:0;animation:in .8s ease-out 2.4s both}
+.a1 .s{margin-top:34px;font-size:24px;letter-spacing:8px;text-transform:uppercase;color:rgba(243,240,233,.85);opacity:0;animation:in .8s ease-out 2.4s both}
 .a2{top:700px;animation:in .9s ease-out 4.6s both,out .5s ease-in 7.6s forwards}
 .a2 .line{width:120px;height:1px;background:${CORAL};margin:0 auto 34px}
 .a2 .amt{font-family:'Playfair Display';font-weight:500;font-size:190px;line-height:1;color:${IVORY};letter-spacing:-2px}
 .a2 .was{font-family:'Playfair Display';font-style:italic;font-size:44px;color:${STONE};text-decoration:line-through;text-decoration-color:${CORAL};margin-top:26px;opacity:0;animation:in .8s ease-out 6.2s both}
-.a2 .p{margin-top:30px;font-size:23px;letter-spacing:5px;text-transform:uppercase;color:${STONE};line-height:1.7;opacity:0;animation:in .8s ease-out 5.4s both}
+.a2 .p{margin-top:30px;font-size:23px;letter-spacing:5px;text-transform:uppercase;color:rgba(243,240,233,.88);line-height:1.7;opacity:0;animation:in .8s ease-out 5.4s both}
 .a3{top:780px;animation:in 1s ease-out 8s both,out .5s ease-in 11.6s forwards}
 .a3 .t{font-family:'Playfair Display';font-weight:400;font-size:78px;line-height:1.18;color:${IVORY}}
 .a3 .t em{font-style:italic;color:${CORAL}}
